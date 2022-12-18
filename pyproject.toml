@@ -9,6 +9,7 @@ start = "optimizer.main:main"
 
 [tool.poetry.dependencies]
 python = "^3.10"
+PuLP = "^2.7.0"
 
 [tool.poetry.dev-dependencies]
 
