@@ -8,8 +8,8 @@ python-versions = "*"
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.10"
-content-hash = "08b3c09db4f224504911b4c375f5eb3bc424854e7c40cfc0575e90baeca55ea2"
+python-versions = "^3.11"
+content-hash = "58a4d6f258f515f5d14ff3a17047aa6be7a5870b1fe62010f7d368ea31ad218a"
 
 [metadata.files]
 pulp = []

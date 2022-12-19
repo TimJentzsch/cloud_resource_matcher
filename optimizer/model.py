@@ -1,6 +1,16 @@
+from dataclasses import dataclass
 from typing import Dict, Optional, Self
 
-from pulp import LpVariable, LpProblem, LpMinimize, lpSum, LpAffineExpression, LpBinary
+import pulp
+from pulp import (
+    LpVariable,
+    LpProblem,
+    LpMinimize,
+    lpSum,
+    LpAffineExpression,
+    LpBinary,
+    LpStatus,
+)
 
 from optimizer.data import (
     BaseData,
@@ -9,6 +19,12 @@ from optimizer.data import (
     PerformanceData,
     MultiCloudData,
 )
+
+
+@dataclass
+class Solution:
+    vm_service_matching: Dict[VirtualMachine, Service]
+    cost: float
 
 
 class Model:
@@ -50,23 +66,24 @@ class Model:
         """Add performance data to the model."""
         self.perf_data = perf_data
 
-        # Enforce minimum performance constraints
-        for v in self.base_data.virtual_machines:
+        # Enforce performance limits of services
+        for s in self.base_data.services:
+            pass
             # RAM
             self.prob += (
                 lpSum(
-                    self.vm_matching[v, s] * perf_data.service_ram[s]
-                    for s in self.base_data.services
+                    self.vm_matching[v, s] * perf_data.virtual_machine_min_ram[v]
+                    for v in self.base_data.virtual_machines
                 )
-                >= perf_data.virtual_machine_min_ram[v]
+                <= perf_data.service_ram[s]
             )
             # vCPUs
             self.prob += (
                 lpSum(
-                    self.vm_matching[v, s] * perf_data.service_cpu_count[s]
-                    for s in self.base_data.services
+                    self.vm_matching[v, s] * perf_data.virtual_machine_min_cpu_count[v]
+                    for v in self.base_data.virtual_machines
                 )
-                >= perf_data.virtual_machine_min_cpu_count[v]
+                <= perf_data.service_cpu_count[s]
             )
 
         return self
@@ -90,7 +107,7 @@ class Model:
             )
             self.prob += csp_used[k] <= used_service_count
             self.prob += (
-                csp_used[k] * len(multi_data.cloud_service_provider_services)
+                csp_used[k] * len(self.base_data.virtual_machines)
                 >= used_service_count
             )
 
@@ -104,10 +121,30 @@ class Model:
             <= multi_data.max_cloud_service_provider_count
         )
 
-    def solve(self) -> LpProblem:
+        return self
+
+    def solve(self) -> Solution:
         """Solve the optimization problem."""
         # Add the objective function
         self.prob += self.objective
 
-        self.prob.solve()
-        return self.prob
+        # Solve the problem
+        status_code = self.prob.solve()
+        status = LpStatus[status_code]
+
+        if status != "Optimal":
+            # TODO: Handle this in a better way, e.g. a custom exception
+            raise RuntimeError(f"Could not optimize problem, status {status}")
+
+        vm_service_matching: Dict[VirtualMachine, Service] = {}
+
+        # Extract the solution
+        for v in self.base_data.virtual_machines:
+            for s in self.base_data.services:
+                if pulp.value(self.vm_matching[v, s]) == 1:
+                    vm_service_matching[v] = s
+
+        cost = self.prob.objective.value()
+        solution = Solution(vm_service_matching=vm_service_matching, cost=cost)
+
+        return solution
