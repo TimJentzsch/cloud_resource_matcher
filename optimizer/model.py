@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from enum import Enum
 from typing import Dict, Optional, Self
 
 import pulp
@@ -23,9 +24,17 @@ from optimizer.solver import Solver
 
 
 @dataclass
-class Solution:
+class SolveSolution:
     vm_service_matching: Dict[VirtualMachine, Service]
     cost: float
+
+
+class SolveErrorReason(Enum):
+    INFEASIBLE = 0
+
+
+class SolveError(RuntimeError):
+    reason: SolveErrorReason
 
 
 class Model:
@@ -123,7 +132,7 @@ class Model:
 
         return self
 
-    def solve(self, solver: Solver = Solver.DEFAULT) -> Solution:
+    def solve(self, solver: Solver = Solver.DEFAULT) -> SolveSolution:
         """Solve the optimization problem."""
         # Add the objective function
         self.prob += self.objective
@@ -150,6 +159,6 @@ class Model:
                     vm_service_matching[v] = s
 
         cost = self.prob.objective.value()
-        solution = Solution(vm_service_matching=vm_service_matching, cost=cost)
+        solution = SolveSolution(vm_service_matching=vm_service_matching, cost=cost)
 
         return solution

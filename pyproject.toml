@@ -10,6 +10,7 @@ start = "optimizer.main:main"
 [tool.poetry.dependencies]
 python = "^3.11"
 PuLP = "^2.7.0"
+pytest = "^7.2.0"
 
 [tool.poetry.dev-dependencies]
 
