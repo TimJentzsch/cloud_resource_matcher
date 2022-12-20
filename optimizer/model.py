@@ -19,6 +19,7 @@ from optimizer.data import (
     PerformanceData,
     MultiCloudData,
 )
+from optimizer.solver import Solver
 
 
 @dataclass
@@ -122,13 +123,18 @@ class Model:
 
         return self
 
-    def solve(self) -> Solution:
+    def solve(self, solver: Solver = Solver.DEFAULT) -> Solution:
         """Solve the optimization problem."""
         # Add the objective function
         self.prob += self.objective
 
+        if solver == Solver.GUROBI:
+            pulp_solver = pulp.GUROBI_CMD()
+        else:
+            pulp_solver = None
+
         # Solve the problem
-        status_code = self.prob.solve()
+        status_code = self.prob.solve(solver=pulp_solver)
         status = LpStatus[status_code]
 
         if status != "Optimal":

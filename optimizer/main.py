@@ -1,5 +1,6 @@
 from optimizer.data import BaseData, PerformanceData, MultiCloudData
 from optimizer.model import Model
+from optimizer.solver import Solver
 
 
 def main():
@@ -45,5 +46,5 @@ def main():
 
     model = Model(base_data).with_performance(perf_data).with_multi_cloud(multi_data)
 
-    solution = model.solve()
+    solution = model.solve(solver=Solver.DEFAULT)
     print(solution)
