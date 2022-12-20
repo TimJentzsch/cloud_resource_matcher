@@ -18,7 +18,7 @@ class BaseData:
     services: List[Service]
 
     # The services that are applicable for each virtual machine
-    virtual_machine_services: Dict[VirtualMachine, Service]
+    virtual_machine_services: Dict[VirtualMachine, List[Service]]
 
     # The base cost for each service
     service_base_costs: Dict[Service, Cost]

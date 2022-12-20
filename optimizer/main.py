@@ -4,7 +4,7 @@ from optimizer.solver import Solver
 
 
 def main():
-    VM_COUNT = 40
+    VM_COUNT = 50
     SERVICE_COUNT = 500
     CSP_COUNT = 3
 
