@@ -107,8 +107,7 @@ class Model:
             )
             self.prob += csp_used[k] <= used_service_count
             self.prob += (
-                csp_used[k] * len(self.base_data.virtual_machines)
-                >= used_service_count
+                csp_used[k] * len(self.base_data.virtual_machines) >= used_service_count
             )
 
         # Enforce minimum and maximum number of used CSPs
