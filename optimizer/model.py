@@ -36,6 +36,10 @@ class SolveErrorReason(Enum):
 class SolveError(RuntimeError):
     reason: SolveErrorReason
 
+    def __init__(self, reason: SolveErrorReason):
+        super().__init__(f"Could not solve optimization problem: {reason}")
+        self.reason = reason
+
 
 class Model:
     """The model for the cloud computing cost optimization problem."""
@@ -58,23 +62,39 @@ class Model:
         self.vm_matching = {
             (v, s): LpVariable(f"vm_matching[{v},{s}]", cat=LpBinary)
             for v in base_data.virtual_machines
-            for s in base_data.services
+            for s in base_data.virtual_machine_services[v]
         }
 
         # Assign each VM to exactly one cloud service
         for v in base_data.virtual_machines:
-            self.prob += lpSum(self.vm_matching[v, s] for s in base_data.services) == 1
+            self.prob += (
+                lpSum(
+                    self.vm_matching[v, s]
+                    for s in base_data.virtual_machine_services[v]
+                )
+                == 1
+            )
 
         # Base costs for used virtual machines
         self.objective = lpSum(
             self.vm_matching[v, s] * base_data.service_base_costs[s]
             for v in base_data.virtual_machines
-            for s in base_data.services
+            for s in base_data.virtual_machine_services[v]
         )
 
     def with_performance(self, perf_data: PerformanceData) -> Self:
         """Add performance data to the model."""
         self.perf_data = perf_data
+
+        # Compute which services can host which virtual machines
+        service_virtual_machines = {
+            s: [
+                v
+                for v in self.base_data.virtual_machines
+                if s in self.base_data.virtual_machine_services[v]
+            ]
+            for s in self.base_data.services
+        }
 
         # Enforce performance limits of services
         for s in self.base_data.services:
@@ -83,7 +103,7 @@ class Model:
             self.prob += (
                 lpSum(
                     self.vm_matching[v, s] * perf_data.virtual_machine_min_ram[v]
-                    for v in self.base_data.virtual_machines
+                    for v in service_virtual_machines[s]
                 )
                 <= perf_data.service_ram[s]
             )
@@ -91,7 +111,7 @@ class Model:
             self.prob += (
                 lpSum(
                     self.vm_matching[v, s] * perf_data.virtual_machine_min_cpu_count[v]
-                    for v in self.base_data.virtual_machines
+                    for v in service_virtual_machines[s]
                 )
                 <= perf_data.service_cpu_count[s]
             )
@@ -114,6 +134,7 @@ class Model:
                 self.vm_matching[v, s]
                 for v in self.base_data.virtual_machines
                 for s in multi_data.cloud_service_provider_services[k]
+                if s in self.base_data.virtual_machine_services[v]
             )
             self.prob += csp_used[k] <= used_service_count
             self.prob += (
@@ -147,8 +168,7 @@ class Model:
         status = LpStatus[status_code]
 
         if status != "Optimal":
-            # TODO: Handle this in a better way, e.g. a custom exception
-            raise RuntimeError(f"Could not optimize problem, status {status}")
+            raise SolveError(SolveErrorReason.INFEASIBLE)
 
         vm_service_matching: Dict[VirtualMachine, Service] = {}
 

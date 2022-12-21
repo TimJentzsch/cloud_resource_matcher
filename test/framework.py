@@ -22,9 +22,9 @@ class Expect:
 
 
 class _ExpectResult(Expect):
-    variables: Optional[List[str]]
+    variables: Optional[List[str]] = None
     variables_exclusive: bool = False
-    variable_values: Optional[Dict[str]]
+    variable_values: Optional[Dict[str, float]] = None
 
     def with_variables(self, variables: List[str], exclusive: bool = False) -> Self:
         """Enforce that the model contains the given variables.
@@ -56,7 +56,9 @@ class _ExpectResult(Expect):
             pytest.fail(f"Missing variables: {missing_variables}")
 
         if exclusive:
-            extra_variables = [var for var in variables if var not in expected_variables]
+            extra_variables = [
+                var for var in variables if var not in expected_variables
+            ]
 
             if len(extra_variables) > 0:
                 pytest.fail(f"Extra (too many) variables: {extra_variables}")
