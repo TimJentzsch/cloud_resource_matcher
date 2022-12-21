@@ -1,9 +1,10 @@
+import math
 from typing import List, Self, Optional, Dict
 
 import pulp
 import pytest
 
-from optimizer.model import Model, SolveError, SolveErrorReason
+from optimizer.model import Model, SolveError, SolveErrorReason, SolveSolution
 
 
 class Expect:
@@ -63,7 +64,8 @@ class _ExpectResult(Expect):
             if len(extra_variables) > 0:
                 pytest.fail(f"Extra (too many) variables: {extra_variables}")
 
-    def _test_variable_values(self, expected_values: Dict[str, float]):
+    @staticmethod
+    def _test_variable_values(expected_values: Dict[str, float]):
         wrong_values = []
 
         for var, expected in expected_values.items():
@@ -99,10 +101,30 @@ class _ExpectInfeasible(_ExpectResult):
 
 
 class _ExpectFeasible(_ExpectResult):
+    objective_value: Optional[float] = None
+    epsilon: Optional[float] = None
+
+    def with_objective_value(self, objective_value: float, epsilon: float = 0.01) -> Self:
+        """Enforce that the solution has the given objective value (i.e. cost).
+
+        :param objective_value: The cost that the solution has to have.
+        :param epsilon: The margin of error for the cost (e.g. due to numerical errors).
+        """
+        self.objective_value = objective_value
+        self.epsilon = epsilon
+
+    @staticmethod
+    def _test_cost(solution: SolveSolution, expected_obj_value: float, epsilon: float):
+        if math.fabs(solution.cost - expected_obj_value) > epsilon:
+            pytest.fail(f"Expected objective value of {expected_obj_value}, got {solution.cost}")
+
     def test(self):
         super().test()
 
         try:
-            self.model.solve()
+            solution = self.model.solve()
+
+            if self.objective_value is not None:
+                self._test_cost(solution, self.objective_value, self.epsilon)
         except SolveError as err:
             pytest.fail(f"Expected problem to be feasible, got {err}")
