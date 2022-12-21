@@ -4,6 +4,7 @@ from test.framework import Expect
 
 
 def test_one_vm_one_service_trivial_solution():
+    """One VM has one valid service and has to match to it."""
     model = Model(
         BaseData(
             virtual_machines=["vm_1"],
@@ -18,7 +19,26 @@ def test_one_vm_one_service_trivial_solution():
     ).test()
 
 
+def test_only_one_valid_matching():
+    """Every VM has only one valid service."""
+    COUNT = 100
+
+    model = Model(
+        BaseData(
+            virtual_machines=[f"vm_{v}" for v in range(COUNT)],
+            services=[f"s_{s}" for s in range(COUNT)],
+            virtual_machine_services={f"vm_{i}": [f"s_{i}"] for i in range(COUNT)},
+            service_base_costs={f"s_{s}": s for s in range(COUNT)},
+        )
+    )
+
+    Expect(model).to_be_feasible().with_vm_service_matching(
+        {f"vm_{i}": f"s_{i}" for i in range(COUNT)}
+    ).test()
+
+
 def test_no_valid_systems_for_vm():
+    """There are no valid services for the only VM."""
     model = Model(
         BaseData(
             virtual_machines=["vm_1"],
