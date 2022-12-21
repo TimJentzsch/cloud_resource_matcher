@@ -174,7 +174,7 @@ class Model:
 
         # Extract the solution
         for v in self.base_data.virtual_machines:
-            for s in self.base_data.services:
+            for s in self.base_data.virtual_machine_services[v]:
                 if pulp.value(self.vm_matching[v, s]) == 1:
                     vm_service_matching[v] = s
 
