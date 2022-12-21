@@ -13,4 +13,4 @@ def test_no_valid_systems_for_vm():
         )
     )
 
-    Expect(model).to_be_infeasible().test()
+    Expect(model).to_be_infeasible().with_variables(set(), exclusive=True).test()
