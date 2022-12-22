@@ -73,7 +73,7 @@ class _ExpectFeasible(_ExpectResult):
     _cost: Optional[float] = None
     _epsilon: Optional[float] = None
 
-    _vm_service_matching: Optional[Dict[VirtualMachine, Service]]
+    _vm_service_matching: Optional[Dict[VirtualMachine, Service]] = None
 
     _variable_values: Optional[Dict[str, float]] = None
 
