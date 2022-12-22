@@ -43,7 +43,7 @@ class _ExpectResult(Expect):
             self._test_variables(self._variables, self._variables_exclusive)
 
     def _test_variables(self, expected_variables: Set[str], exclusive: bool):
-        variables = self._model.prob.variables()
+        variables = [var.name for var in self._model.prob.variables()]
         missing_variables = [var for var in expected_variables if var not in variables]
 
         if len(missing_variables) > 0:
@@ -118,14 +118,14 @@ class _ExpectFeasible(_ExpectResult):
         try:
             solution = self._model.solve()
 
-            if self._cost is not None:
-                self._test_cost(solution, self._cost, self._epsilon)
+            if self._variable_values is not None:
+                self._test_variable_values(self._variable_values)
 
             if self._vm_service_matching is not None:
                 self._test_vm_service_matching(solution, self._vm_service_matching)
 
-            if self._variable_values is not None:
-                self._test_variable_values(self._variable_values)
+            if self._cost is not None:
+                self._test_cost(solution, self._cost, self._epsilon)
         except SolveError as err:
             pytest.fail(f"Expected problem to be feasible, got {err}")
 
@@ -140,15 +140,21 @@ class _ExpectFeasible(_ExpectResult):
     ):
         assert solution.vm_service_matching == expected_matching
 
-    @staticmethod
-    def _test_variable_values(expected_values: Dict[str, float]):
+    def _test_variable_values(self, expected_values: Dict[str, float]):
+        actual_values = {
+            var.name: pulp.value(var)
+            for var in self._model.prob.variables()
+            if var.name in expected_values.keys()
+        }
         wrong_values = []
 
         for var, expected in expected_values.items():
-            actual = pulp.value(var)
+            actual = actual_values[var]
 
             if actual != expected:
-                wrong_values.append({"expected": expected, "actual": actual})
+                wrong_values.append(
+                    {"var": var, "expected": expected, "actual": actual}
+                )
 
         if len(wrong_values) > 0:
             pytest.fail(f"Wrong variable values: {wrong_values}")

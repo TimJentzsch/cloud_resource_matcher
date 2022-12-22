@@ -60,7 +60,7 @@ class Model:
 
         # Assign virtual machine v to cloud service s?
         self.vm_matching = {
-            (v, s): LpVariable(f"vm_matching[{v},{s}]", cat=LpBinary)
+            (v, s): LpVariable(f"vm_matching({v},{s})", cat=LpBinary)
             for v in base_data.virtual_machines
             for s in base_data.virtual_machine_services[v]
         }
@@ -124,7 +124,7 @@ class Model:
 
         # Is cloud service provider k used at all?
         csp_used = {
-            k: LpVariable(f"csp_used[{k}]", cat=LpBinary)
+            k: LpVariable(f"csp_used({k})", cat=LpBinary)
             for k in multi_data.cloud_service_providers
         }
 
@@ -136,6 +136,7 @@ class Model:
                 for s in multi_data.cloud_service_provider_services[k]
                 if s in self.base_data.virtual_machine_services[v]
             )
+            print(f"Used services for {k}: {used_service_count}")
             self.prob += csp_used[k] <= used_service_count
             self.prob += (
                 csp_used[k] * len(self.base_data.virtual_machines) >= used_service_count
