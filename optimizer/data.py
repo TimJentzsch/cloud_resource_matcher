@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Tuple
 from dataclasses import dataclass
 
 
@@ -7,6 +7,7 @@ CloudServiceProvider = str
 Region = str
 VirtualMachine = str
 Cost = float
+TimeUnit = int
 
 
 @dataclass
@@ -22,6 +23,12 @@ class BaseData:
 
     # The base cost for each service
     service_base_costs: Dict[Service, Cost]
+
+    # The discrete units of time when a decision can be made
+    time: List[TimeUnit]
+
+    # The number of virtual machine instances that are needed at a given point in time
+    virtual_machine_demand: Dict[Tuple[VirtualMachine, TimeUnit], int]
 
 
 @dataclass
