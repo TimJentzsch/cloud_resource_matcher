@@ -7,17 +7,19 @@ def test_with_sufficient_resources():
     """The service has enough resources to host the VM."""
     model = Model(
         BaseData(
-            virtual_machines=["vm_1"],
-            services=["s_1"],
-            virtual_machine_services={"vm_1": ["s_1"]},
-            service_base_costs={"s_1": 5},
+            virtual_machines=["vm_0"],
+            services=["s_0"],
+            virtual_machine_services={"vm_0": ["s_0"]},
+            service_base_costs={"s_0": 5},
+            time=[0],
+            virtual_machine_demand={("vm_0", 0): 1},
         )
     ).with_performance(
         PerformanceData(
-            virtual_machine_min_ram={"vm_1": 8},
-            virtual_machine_min_cpu_count={"vm_1": 3},
-            service_ram={"s_1": 8},
-            service_cpu_count={"s_1": 3},
+            virtual_machine_min_ram={"vm_0": 8},
+            virtual_machine_min_cpu_count={"vm_0": 3},
+            service_ram={"s_0": 8},
+            service_cpu_count={"s_0": 3},
         )
     )
 
@@ -28,17 +30,19 @@ def test_with_insufficient_ram():
     """The only service does not have enough RAM for the VM."""
     model = Model(
         BaseData(
-            virtual_machines=["vm_1"],
-            services=["s_1"],
-            virtual_machine_services={"vm_1": ["s_1"]},
-            service_base_costs={"s_1": 5},
+            virtual_machines=["vm_0"],
+            services=["s_0"],
+            virtual_machine_services={"vm_0": ["s_0"]},
+            service_base_costs={"s_0": 5},
+            time=[0],
+            virtual_machine_demand={("vm_0", 0): 1},
         )
     ).with_performance(
         PerformanceData(
-            virtual_machine_min_ram={"vm_1": 3},
-            virtual_machine_min_cpu_count={"vm_1": 0},
-            service_ram={"s_1": 2},
-            service_cpu_count={"s_1": 10},
+            virtual_machine_min_ram={"vm_0": 3},
+            virtual_machine_min_cpu_count={"vm_0": 0},
+            service_ram={"s_0": 2},
+            service_cpu_count={"s_0": 10},
         )
     )
 
@@ -49,17 +53,19 @@ def test_with_insufficient_cpu_count():
     """The only service does not have enough vCPUs for the VM."""
     model = Model(
         BaseData(
-            virtual_machines=["vm_1"],
-            services=["s_1"],
-            virtual_machine_services={"vm_1": ["s_1"]},
-            service_base_costs={"s_1": 5},
+            virtual_machines=["vm_0"],
+            services=["s_0"],
+            virtual_machine_services={"vm_0": ["s_0"]},
+            service_base_costs={"s_0": 5},
+            time=[0],
+            virtual_machine_demand={("vm_0", 0): 1},
         )
     ).with_performance(
         PerformanceData(
-            virtual_machine_min_ram={"vm_1": 0},
-            virtual_machine_min_cpu_count={"vm_1": 3},
-            service_ram={"s_1": 10},
-            service_cpu_count={"s_1": 2},
+            virtual_machine_min_ram={"vm_0": 0},
+            virtual_machine_min_cpu_count={"vm_0": 3},
+            service_ram={"s_0": 10},
+            service_cpu_count={"s_0": 2},
         )
     )
 
@@ -84,6 +90,8 @@ def test_resource_matching():
             service_base_costs={
                 f"s_{s}": (s + 4) % 7 + (s % 3) * (s % 10) for s in range(count)
             },
+            time=[0],
+            virtual_machine_demand={(f"vm_{v}", 0): 1 for v in range(count)},
         )
     ).with_performance(
         PerformanceData(
@@ -97,7 +105,7 @@ def test_resource_matching():
     )
 
     Expect(model).to_be_feasible().with_vm_service_matching(
-        {f"vm_{i}": f"s_{i}" for i in range(count)}
+        {(f"vm_{i}", f"s_{i}", 0): 1 for i in range(count)}
     ).test()
 
 
@@ -105,21 +113,23 @@ def test_cheap_insufficient_service():
     """There are two services, but the cheaper one has insufficient resources."""
     model = Model(
         BaseData(
-            virtual_machines=["vm_1"],
-            services=["s_1", "s_2"],
-            virtual_machine_services={"vm_1": ["s_1", "s_2"]},
+            virtual_machines=["vm_0"],
+            services=["s_0", "s_1"],
+            virtual_machine_services={"vm_0": ["s_0", "s_1"]},
             # Some arbitrary costs to make sure the constraints are actually enforced
-            service_base_costs={"s_1": 2, "s_2": 10},
+            service_base_costs={"s_0": 2, "s_1": 10},
+            time=[0],
+            virtual_machine_demand={("vm_0", 0): 1},
         )
     ).with_performance(
         PerformanceData(
-            virtual_machine_min_ram={"vm_1": 3},
-            virtual_machine_min_cpu_count={"vm_1": 2},
-            service_ram={"s_1": 2, "s_2": 3},
-            service_cpu_count={"s_1": 1, "s_2": 2},
+            virtual_machine_min_ram={"vm_0": 3},
+            virtual_machine_min_cpu_count={"vm_0": 2},
+            service_ram={"s_0": 2, "s_1": 3},
+            service_cpu_count={"s_0": 1, "s_1": 2},
         )
     )
 
     Expect(model).to_be_feasible().with_vm_service_matching(
-        {f"vm_1": f"s_2"}
+        {("vm_0", "s_1", 0): 1}
     ).with_cost(10).test()
