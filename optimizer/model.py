@@ -66,7 +66,9 @@ class Model:
 
         # Assign virtual machine v to cloud service s at time t?
         self.vm_matching = {
-            (v, s, t): LpVariable(f"vm_matching({v},{s},{t})", cat=LpInteger)
+            (v, s, t): LpVariable(
+                f"vm_matching({v},{s},{t})", cat=LpInteger, lowBound=0
+            )
             for v in base_data.virtual_machines
             for s in base_data.virtual_machine_services[v]
             for t in base_data.time
@@ -113,7 +115,6 @@ class Model:
         # Enforce performance limits for every service at every point in time
         for s in self.base_data.services:
             for t in self.base_data.time:
-                # pass
                 # RAM
                 self.prob.addConstraint(
                     LpConstraint(
