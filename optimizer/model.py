@@ -1,3 +1,4 @@
+import tempfile
 from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, Optional, Self, Tuple
@@ -13,6 +14,9 @@ from pulp import (
     LpStatus,
     LpInteger,
     LpConstraint,
+    LpConstraintLE,
+    LpConstraintGE,
+    LpConstraintEQ,
 )
 
 from optimizer.data import (
@@ -82,8 +86,9 @@ class Model:
                         lpSum(
                             self.vm_matching[v, s, t]
                             for s in base_data.virtual_machine_services[v]
-                        )
-                        == base_data.virtual_machine_demand[v, t]
+                        ),
+                        sense=LpConstraintEQ,
+                        rhs=base_data.virtual_machine_demand[v, t],
                     ),
                     f"virtual_machine_demand({v},{t})",
                 )
@@ -122,8 +127,9 @@ class Model:
                             self.vm_matching[v, s, t]
                             * perf_data.virtual_machine_min_ram[v]
                             for v in service_virtual_machines[s]
-                        )
-                        <= perf_data.service_ram[s]
+                        ),
+                        sense=LpConstraintLE,
+                        rhs=perf_data.service_ram[s],
                     ),
                     f"ram_performance_limit({s},{t})",
                 )
@@ -135,8 +141,9 @@ class Model:
                             self.vm_matching[v, s, t]
                             * perf_data.virtual_machine_min_cpu_count[v]
                             for v in service_virtual_machines[s]
-                        )
-                        <= perf_data.service_cpu_count[s]
+                        ),
+                        sense=LpConstraintLE,
+                        rhs=perf_data.service_cpu_count[s],
                     ),
                     f"cpu_performance_limit({s},{t})",
                 )
@@ -164,13 +171,17 @@ class Model:
             )
 
             self.prob.addConstraint(
-                LpConstraint(csp_used[k] <= used_service_count),
+                LpConstraint(
+                    csp_used[k] - used_service_count, sense=LpConstraintLE, rhs=0
+                ),
                 f"csp_used({k})_enforce_0",
             )
             self.prob.addConstraint(
                 LpConstraint(
                     csp_used[k] * len(self.base_data.virtual_machines)
-                    >= used_service_count
+                    - used_service_count,
+                    sense=LpConstraintGE,
+                    rhs=0,
                 ),
                 f"csp_used({k})_enforce_1",
             )
@@ -179,15 +190,17 @@ class Model:
         for k in multi_data.cloud_service_providers:
             self.prob.addConstraint(
                 LpConstraint(
-                    lpSum(csp_used[k] for k in multi_data.cloud_service_providers)
-                    >= multi_data.min_cloud_service_provider_count
+                    lpSum(csp_used[k] for k in multi_data.cloud_service_providers),
+                    sense=LpConstraintGE,
+                    rhs=multi_data.min_cloud_service_provider_count,
                 ),
                 f"min_cloud_service_provider_count({k})",
             )
             self.prob.addConstraint(
                 LpConstraint(
-                    lpSum(csp_used[k] for k in multi_data.cloud_service_providers)
-                    <= multi_data.max_cloud_service_provider_count
+                    lpSum(csp_used[k] for k in multi_data.cloud_service_providers),
+                    sense=LpConstraintLE,
+                    rhs=multi_data.max_cloud_service_provider_count,
                 ),
                 f"max_cloud_service_provider_count({k})",
             )
@@ -226,3 +239,10 @@ class Model:
         solution = SolveSolution(vm_service_matching=vm_service_matching, cost=cost)
 
         return solution
+
+    def get_lp_string(self, line_limit: int = 100) -> str:
+        with tempfile.NamedTemporaryFile(
+            mode="w+", encoding="utf-8", suffix=".lp"
+        ) as file:
+            self.prob.writeLP(filename=file.name)
+            return "".join(file.readlines()[:line_limit])

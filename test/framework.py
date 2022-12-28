@@ -131,6 +131,7 @@ class _ExpectFeasible(_ExpectResult):
             if self._cost is not None:
                 self._test_cost(solution, self._cost, self._epsilon)
         except SolveError as err:
+            self._print_model()
             pytest.fail(f"Expected problem to be feasible, got {err}")
 
     @staticmethod
@@ -162,3 +163,7 @@ class _ExpectFeasible(_ExpectResult):
 
         if len(wrong_values) > 0:
             pytest.fail(f"Wrong variable values: {wrong_values}")
+
+    def _print_model(self, line_limit: int = 100):
+        """Print out the LP model to debug infeasible problems."""
+        print(self._model.get_lp_string(line_limit=line_limit))
