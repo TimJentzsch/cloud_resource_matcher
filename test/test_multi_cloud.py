@@ -26,7 +26,7 @@ def test_min_csp_count_constraint_matching():
     )
 
     Expect(model).to_be_feasible().with_cost(11).with_vm_service_matching(
-        {"vm_0": "s_0", "vm_1": "s_2"}
+        {("vm_0", "s_0", 0): 1, ("vm_1", "s_2", 0): 1}
     ).with_variable_values({"csp_used(csp_1)": 1, "csp_used(csp_2)": 1}).test()
 
 
