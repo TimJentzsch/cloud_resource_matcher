@@ -5,7 +5,13 @@ import pulp
 import pytest
 
 from optimizer.data import VirtualMachine, Service
-from optimizer.model import Model, SolveError, SolveErrorReason, SolveSolution, VmServiceMatching
+from optimizer.model import (
+    Model,
+    SolveError,
+    SolveErrorReason,
+    SolveSolution,
+    VmServiceMatching,
+)
 
 
 class Expect:
@@ -87,9 +93,7 @@ class _ExpectFeasible(_ExpectResult):
         self._epsilon = epsilon
         return self
 
-    def with_vm_service_matching(
-        self, vm_service_matching: VmServiceMatching
-    ) -> Self:
+    def with_vm_service_matching(self, vm_service_matching: VmServiceMatching) -> Self:
         """Enforce that the virtual machines are matched to the given services."""
         self._vm_service_matching = vm_service_matching
         return self
