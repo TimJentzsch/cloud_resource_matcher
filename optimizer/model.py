@@ -127,6 +127,7 @@ class Model:
                             self.vm_matching[v, s, t]
                             * perf_data.virtual_machine_min_ram[v]
                             for v in service_virtual_machines[s]
+                            if v in perf_data.virtual_machine_min_ram.keys()
                         ),
                         sense=LpConstraintLE,
                         rhs=perf_data.service_ram[s],
@@ -141,6 +142,7 @@ class Model:
                             self.vm_matching[v, s, t]
                             * perf_data.virtual_machine_min_cpu_count[v]
                             for v in service_virtual_machines[s]
+                            if v in perf_data.virtual_machine_min_cpu_count.keys()
                         ),
                         sense=LpConstraintLE,
                         rhs=perf_data.service_cpu_count[s],

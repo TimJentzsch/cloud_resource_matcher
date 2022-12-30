@@ -134,3 +134,27 @@ def test_cheap_insufficient_service():
     Expect(model).to_be_feasible().with_vm_service_matching(
         {("vm_0", "s_1", 0): 1}
     ).with_cost(10).test()
+
+
+def test_allowed_incomplete_data():
+    """Make sure that the user is allowed to leave data undefined where it makes sense."""
+    model = Model(
+        BaseData(
+            virtual_machines=["vm_0"],
+            services=["s_0"],
+            virtual_machine_services={"vm_0": ["s_0"]},
+            service_base_costs={"s_0": 1},
+            time=[0],
+            virtual_machine_demand={("vm_0", 0): 1},
+        )
+    ).with_performance(
+        # Leave min requirements undefined
+        PerformanceData(
+            virtual_machine_min_ram={},
+            virtual_machine_min_cpu_count={},
+            service_ram={"s_0": 1},
+            service_cpu_count={"s_0": 1},
+        )
+    )
+
+    Expect(model).to_be_feasible()
