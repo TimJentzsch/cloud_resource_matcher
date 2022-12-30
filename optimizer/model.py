@@ -58,8 +58,8 @@ class Model:
     objective: LpAffineExpression
 
     base_data: BaseData
-    perf_data: Optional[PerformanceData]
-    multi_data: Optional[MultiCloudData]
+    perf_data: Optional[PerformanceData] = None
+    multi_data: Optional[MultiCloudData] = None
 
     vm_matching: Dict[Tuple[VirtualMachine, Service, TimeUnit], LpVariable]
 
@@ -215,6 +215,12 @@ class Model:
         This checks if the data is consistent and if all required values have been provided.
         """
         self.base_data.validate()
+
+        if self.multi_data is not None:
+            self.multi_data.validate(self.base_data)
+
+        if self.perf_data is not None:
+            self.perf_data.validate(self.base_data)
 
     def solve(self, solver: Solver = Solver.DEFAULT) -> SolveSolution:
         """Solve the optimization problem."""
