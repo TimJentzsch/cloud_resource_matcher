@@ -1,6 +1,7 @@
+import tempfile
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, Optional, Self
+from typing import Dict, Optional, Self, Tuple
 
 import pulp
 from pulp import (
@@ -11,6 +12,11 @@ from pulp import (
     LpAffineExpression,
     LpBinary,
     LpStatus,
+    LpInteger,
+    LpConstraint,
+    LpConstraintLE,
+    LpConstraintGE,
+    LpConstraintEQ,
 )
 
 from optimizer.data import (
@@ -19,13 +25,17 @@ from optimizer.data import (
     Service,
     PerformanceData,
     MultiCloudData,
+    TimeUnit,
 )
 from optimizer.solver import Solver
 
 
+VmServiceMatching = Dict[Tuple[VirtualMachine, Service, TimeUnit], int]
+
+
 @dataclass
 class SolveSolution:
-    vm_service_matching: Dict[VirtualMachine, Service]
+    vm_service_matching: VmServiceMatching
     cost: float
 
 
@@ -51,35 +61,46 @@ class Model:
     perf_data: Optional[PerformanceData]
     multi_data: Optional[MultiCloudData]
 
-    vm_matching: Dict[(VirtualMachine, Service)]
+    vm_matching: Dict[Tuple[VirtualMachine, Service, TimeUnit], LpVariable]
 
     def __init__(self, base_data: BaseData):
         """Create a new model for the cost optimization problem."""
         self.base_data = base_data
         self.prob = LpProblem("cloud_cost_optimization", LpMinimize)
 
-        # Assign virtual machine v to cloud service s?
+        # Assign virtual machine v to cloud service s at time t?
         self.vm_matching = {
-            (v, s): LpVariable(f"vm_matching({v},{s})", cat=LpBinary)
+            (v, s, t): LpVariable(
+                f"vm_matching({v},{s},{t})", cat=LpInteger, lowBound=0
+            )
             for v in base_data.virtual_machines
             for s in base_data.virtual_machine_services[v]
+            for t in base_data.time
         }
 
-        # Assign each VM to exactly one cloud service
+        # Satisfy virtual machine demand
         for v in base_data.virtual_machines:
-            self.prob += (
-                lpSum(
-                    self.vm_matching[v, s]
-                    for s in base_data.virtual_machine_services[v]
+            for t in base_data.time:
+                self.prob.addConstraint(
+                    LpConstraint(
+                        lpSum(
+                            self.vm_matching[v, s, t]
+                            for s in base_data.virtual_machine_services[v]
+                        ),
+                        sense=LpConstraintEQ,
+                        rhs=base_data.virtual_machine_demand[v, t],
+                    ),
+                    f"virtual_machine_demand({v},{t})",
                 )
-                == 1
-            )
 
         # Base costs for used virtual machines
-        self.objective = lpSum(
-            self.vm_matching[v, s] * base_data.service_base_costs[s]
-            for v in base_data.virtual_machines
-            for s in base_data.virtual_machine_services[v]
+        self.objective = LpAffineExpression(
+            lpSum(
+                self.vm_matching[v, s, t] * base_data.service_base_costs[s]
+                for v in base_data.virtual_machines
+                for s in base_data.virtual_machine_services[v]
+                for t in base_data.time
+            )
         )
 
     def with_performance(self, perf_data: PerformanceData) -> Self:
@@ -96,25 +117,36 @@ class Model:
             for s in self.base_data.services
         }
 
-        # Enforce performance limits of services
+        # Enforce performance limits for every service at every point in time
         for s in self.base_data.services:
-            pass
-            # RAM
-            self.prob += (
-                lpSum(
-                    self.vm_matching[v, s] * perf_data.virtual_machine_min_ram[v]
-                    for v in service_virtual_machines[s]
+            for t in self.base_data.time:
+                # RAM
+                self.prob.addConstraint(
+                    LpConstraint(
+                        lpSum(
+                            self.vm_matching[v, s, t]
+                            * perf_data.virtual_machine_min_ram[v]
+                            for v in service_virtual_machines[s]
+                        ),
+                        sense=LpConstraintLE,
+                        rhs=perf_data.service_ram[s],
+                    ),
+                    f"ram_performance_limit({s},{t})",
                 )
-                <= perf_data.service_ram[s]
-            )
-            # vCPUs
-            self.prob += (
-                lpSum(
-                    self.vm_matching[v, s] * perf_data.virtual_machine_min_cpu_count[v]
-                    for v in service_virtual_machines[s]
+
+                # vCPUs
+                self.prob.addConstraint(
+                    LpConstraint(
+                        lpSum(
+                            self.vm_matching[v, s, t]
+                            * perf_data.virtual_machine_min_cpu_count[v]
+                            for v in service_virtual_machines[s]
+                        ),
+                        sense=LpConstraintLE,
+                        rhs=perf_data.service_cpu_count[s],
+                    ),
+                    f"cpu_performance_limit({s},{t})",
                 )
-                <= perf_data.service_cpu_count[s]
-            )
 
         return self
 
@@ -131,33 +163,56 @@ class Model:
         # Calculate csp_used values
         for k in multi_data.cloud_service_providers:
             used_service_count = lpSum(
-                self.vm_matching[v, s]
+                self.vm_matching[v, s, t]
                 for v in self.base_data.virtual_machines
                 for s in multi_data.cloud_service_provider_services[k]
                 if s in self.base_data.virtual_machine_services[v]
+                for t in self.base_data.time
             )
-            print(f"Used services for {k}: {used_service_count}")
-            self.prob += csp_used[k] <= used_service_count
-            self.prob += (
-                csp_used[k] * len(self.base_data.virtual_machines) >= used_service_count
+
+            self.prob.addConstraint(
+                LpConstraint(
+                    csp_used[k] - used_service_count, sense=LpConstraintLE, rhs=0
+                ),
+                f"csp_used({k})_enforce_0",
+            )
+            self.prob.addConstraint(
+                LpConstraint(
+                    csp_used[k]
+                    * len(self.base_data.virtual_machines)
+                    * len(self.base_data.time)
+                    - used_service_count,
+                    sense=LpConstraintGE,
+                    rhs=0,
+                ),
+                f"csp_used({k})_enforce_1",
             )
 
         # Enforce minimum and maximum number of used CSPs
-        self.prob += (
-            lpSum(csp_used[k] for k in multi_data.cloud_service_providers)
-            >= multi_data.min_cloud_service_provider_count
-        )
-        self.prob += (
-            lpSum(csp_used[k] for k in multi_data.cloud_service_providers)
-            <= multi_data.max_cloud_service_provider_count
-        )
+        for k in multi_data.cloud_service_providers:
+            self.prob.addConstraint(
+                LpConstraint(
+                    lpSum(csp_used[k] for k in multi_data.cloud_service_providers),
+                    sense=LpConstraintGE,
+                    rhs=multi_data.min_cloud_service_provider_count,
+                ),
+                f"min_cloud_service_provider_count({k})",
+            )
+            self.prob.addConstraint(
+                LpConstraint(
+                    lpSum(csp_used[k] for k in multi_data.cloud_service_providers),
+                    sense=LpConstraintLE,
+                    rhs=multi_data.max_cloud_service_provider_count,
+                ),
+                f"max_cloud_service_provider_count({k})",
+            )
 
         return self
 
     def solve(self, solver: Solver = Solver.DEFAULT) -> SolveSolution:
         """Solve the optimization problem."""
         # Add the objective function
-        self.prob += self.objective
+        self.prob.setObjective(self.objective)
 
         if solver == Solver.GUROBI:
             pulp_solver = pulp.GUROBI_CMD()
@@ -171,15 +226,25 @@ class Model:
         if status != "Optimal":
             raise SolveError(SolveErrorReason.INFEASIBLE)
 
-        vm_service_matching: Dict[VirtualMachine, Service] = {}
+        vm_service_matching: VmServiceMatching = {}
 
         # Extract the solution
         for v in self.base_data.virtual_machines:
             for s in self.base_data.virtual_machine_services[v]:
-                if pulp.value(self.vm_matching[v, s]) == 1:
-                    vm_service_matching[v] = s
+                for t in self.base_data.time:
+                    value = round(pulp.value(self.vm_matching[v, s, t]))
+
+                    if value >= 1:
+                        vm_service_matching[v, s, t] = value
 
         cost = self.prob.objective.value()
         solution = SolveSolution(vm_service_matching=vm_service_matching, cost=cost)
 
         return solution
+
+    def get_lp_string(self, line_limit: int = 100) -> str:
+        with tempfile.NamedTemporaryFile(
+            mode="w+", encoding="utf-8", suffix=".lp"
+        ) as file:
+            self.prob.writeLP(filename=file.name)
+            return "".join(file.readlines()[:line_limit])

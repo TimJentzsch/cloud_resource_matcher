@@ -5,7 +5,13 @@ import pulp
 import pytest
 
 from optimizer.data import VirtualMachine, Service
-from optimizer.model import Model, SolveError, SolveErrorReason, SolveSolution
+from optimizer.model import (
+    Model,
+    SolveError,
+    SolveErrorReason,
+    SolveSolution,
+    VmServiceMatching,
+)
 
 
 class Expect:
@@ -73,7 +79,7 @@ class _ExpectFeasible(_ExpectResult):
     _cost: Optional[float] = None
     _epsilon: Optional[float] = None
 
-    _vm_service_matching: Optional[Dict[VirtualMachine, Service]] = None
+    _vm_service_matching: Optional[VmServiceMatching] = None
 
     _variable_values: Optional[Dict[str, float]] = None
 
@@ -87,9 +93,7 @@ class _ExpectFeasible(_ExpectResult):
         self._epsilon = epsilon
         return self
 
-    def with_vm_service_matching(
-        self, vm_service_matching: Dict[VirtualMachine, Service]
-    ) -> Self:
+    def with_vm_service_matching(self, vm_service_matching: VmServiceMatching) -> Self:
         """Enforce that the virtual machines are matched to the given services."""
         self._vm_service_matching = vm_service_matching
         return self
@@ -127,6 +131,7 @@ class _ExpectFeasible(_ExpectResult):
             if self._cost is not None:
                 self._test_cost(solution, self._cost, self._epsilon)
         except SolveError as err:
+            self._print_model()
             pytest.fail(f"Expected problem to be feasible, got {err}")
 
     @staticmethod
@@ -136,7 +141,7 @@ class _ExpectFeasible(_ExpectResult):
 
     @staticmethod
     def _test_vm_service_matching(
-        solution: SolveSolution, expected_matching: Dict[VirtualMachine, Service]
+        solution: SolveSolution, expected_matching: VmServiceMatching
     ):
         assert solution.vm_service_matching == expected_matching
 
@@ -158,3 +163,7 @@ class _ExpectFeasible(_ExpectResult):
 
         if len(wrong_values) > 0:
             pytest.fail(f"Wrong variable values: {wrong_values}")
+
+    def _print_model(self, line_limit: int = 100):
+        """Print out the LP model to debug infeasible problems."""
+        print(self._model.get_lp_string(line_limit=line_limit))

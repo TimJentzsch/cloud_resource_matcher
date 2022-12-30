@@ -7,33 +7,37 @@ def test_one_vm_one_service_trivial_solution():
     """One VM has one valid service and has to match to it."""
     model = Model(
         BaseData(
-            virtual_machines=["vm_1"],
-            services=["s_1"],
-            virtual_machine_services={"vm_1": ["s_1"]},
-            service_base_costs={"s_1": 5},
+            virtual_machines=["vm_0"],
+            services=["s_0"],
+            virtual_machine_services={"vm_0": ["s_0"]},
+            service_base_costs={"s_0": 5},
+            time=[0],
+            virtual_machine_demand={("vm_0", 0): 1},
         )
     )
 
     Expect(model).to_be_feasible().with_cost(5).with_vm_service_matching(
-        {"vm_1": "s_1"}
+        {("vm_0", "s_0", 0): 1}
     ).test()
 
 
 def test_only_one_valid_matching():
     """Every VM has only one valid service."""
-    COUNT = 100
+    count = 100
 
     model = Model(
         BaseData(
-            virtual_machines=[f"vm_{v}" for v in range(COUNT)],
-            services=[f"s_{s}" for s in range(COUNT)],
-            virtual_machine_services={f"vm_{i}": [f"s_{i}"] for i in range(COUNT)},
-            service_base_costs={f"s_{s}": s for s in range(COUNT)},
+            virtual_machines=[f"vm_{v}" for v in range(count)],
+            services=[f"s_{s}" for s in range(count)],
+            virtual_machine_services={f"vm_{i}": [f"s_{i}"] for i in range(count)},
+            service_base_costs={f"s_{s}": s for s in range(count)},
+            time=[0],
+            virtual_machine_demand={(f"vm_{v}", 0): 1 for v in range(count)},
         )
     )
 
     Expect(model).to_be_feasible().with_vm_service_matching(
-        {f"vm_{i}": f"s_{i}" for i in range(COUNT)}
+        {(f"vm_{i}", f"s_{i}", 0): 1 for i in range(count)}
     ).test()
 
 
@@ -41,11 +45,47 @@ def test_no_valid_systems_for_vm():
     """There are no valid services for the only VM."""
     model = Model(
         BaseData(
-            virtual_machines=["vm_1"],
-            services=["s_1"],
-            virtual_machine_services={"vm_1": []},
-            service_base_costs={"s_1": 5},
+            virtual_machines=["vm_0"],
+            services=["s_0"],
+            virtual_machine_services={"vm_0": []},
+            service_base_costs={"s_0": 5},
+            time=[0],
+            virtual_machine_demand={("vm_0", 0): 1},
         )
     )
 
     Expect(model).to_be_infeasible().with_variables(set(), exclusive=True).test()
+
+
+def test_one_vm_multiple_time_units():
+    model = Model(
+        BaseData(
+            virtual_machines=["vm_0"],
+            services=["s_0"],
+            virtual_machine_services={"vm_0": ["s_0"]},
+            service_base_costs={"s_0": 5},
+            time=[0, 1],
+            virtual_machine_demand={("vm_0", 0): 1, ("vm_0", 1): 1},
+        )
+    )
+
+    Expect(model).to_be_feasible().with_cost(10).with_vm_service_matching(
+        {("vm_0", "s_0", 0): 1, ("vm_0", "s_0", 1): 1}
+    ).test()
+
+
+def test_one_vm_multiple_time_units_varying_demand():
+    model = Model(
+        BaseData(
+            virtual_machines=["vm_0"],
+            services=["s_0"],
+            virtual_machine_services={"vm_0": ["s_0"]},
+            service_base_costs={"s_0": 1},
+            time=[0, 1, 2],
+            virtual_machine_demand={("vm_0", 0): 5, ("vm_0", 1): 3, ("vm_0", 2): 2},
+        )
+    )
+
+    Expect(model).to_be_feasible().with_cost(10).with_vm_service_matching(
+        {("vm_0", "s_0", 0): 5, ("vm_0", "s_0", 1): 3, ("vm_0", "s_0", 2): 2}
+    ).test()
