@@ -54,7 +54,7 @@ def main():
     model = Model(base_data).with_performance(perf_data).with_multi_cloud(multi_data)
 
     try:
-        solution = model.solve(solver=Solver.DEFAULT)
+        solution = model.validate_and_solve(solver=Solver.DEFAULT)
         print("=== SOLUTION FOUND ===\n")
         print(f"Cost: {solution.cost}")
     except SolveError as e:

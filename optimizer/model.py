@@ -209,6 +209,13 @@ class Model:
 
         return self
 
+    def validate_data(self):
+        """Validate the provided data.
+
+        This checks if the data is consistent and if all required values have been provided.
+        """
+        self.base_data.validate()
+
     def solve(self, solver: Solver = Solver.DEFAULT) -> SolveSolution:
         """Solve the optimization problem."""
         # Add the objective function
@@ -241,6 +248,12 @@ class Model:
         solution = SolveSolution(vm_service_matching=vm_service_matching, cost=cost)
 
         return solution
+
+    def validate_and_solve(self, solver: Solver = Solver.DEFAULT) -> SolveSolution:
+        """Validate the provided data and then solve the optimization problem."""
+        self.validate_data()
+
+        return self.solve(solver)
 
     def get_lp_string(self, line_limit: int = 100) -> str:
         with tempfile.NamedTemporaryFile(
