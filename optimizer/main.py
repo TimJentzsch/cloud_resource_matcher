@@ -1,12 +1,12 @@
 from optimizer.data import BaseData, PerformanceData, MultiCloudData
-from optimizer.model import Model
+from optimizer.model import Model, SolveError
 from optimizer.solver import Solver
 
 
 def main():
     vm_count = 50
     service_count = 500
-    time_count = 30
+    time_count = 50
     csp_count = 3
 
     base_data = BaseData(
@@ -24,7 +24,7 @@ def main():
         },
         time=list(range(time_count)),
         virtual_machine_demand={
-            (f"vm_{v}", t): (v + t) % 3 + 1
+            (f"vm_{v}", t): (v % 2) * (t % 3) + 1
             for v in range(vm_count)
             for t in range(time_count)
         },
@@ -53,5 +53,10 @@ def main():
 
     model = Model(base_data).with_performance(perf_data).with_multi_cloud(multi_data)
 
-    solution = model.solve(solver=Solver.DEFAULT)
-    print(solution)
+    try:
+        solution = model.solve(solver=Solver.DEFAULT)
+        print("=== SOLUTION FOUND ===\n")
+        print(f"Cost: {solution.cost}")
+    except SolveError as e:
+        print("=== PROBLEM INFEASIBLE ===\n")
+        print(f"{e.reason}")
