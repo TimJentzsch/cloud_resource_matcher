@@ -101,3 +101,28 @@ def test_max_csp_count_constraint_infeasible():
     )
 
     Expect(model).to_be_infeasible().test()
+
+
+def test_with_multiple_time_points():
+    """Make sure that the CSP constraints also work for multiple time points."""
+    model = Model(
+        BaseData(
+            virtual_machines=["vm_0"],
+            services=["s_0"],
+            virtual_machine_services={"vm_0": ["s_0"]},
+            service_base_costs={"s_0": 10},
+            time=[0, 1],
+            virtual_machine_demand={("vm_0", 0): 1, ("vm_0", 1): 1},
+        )
+    ).with_multi_cloud(
+        MultiCloudData(
+            cloud_service_providers=["csp_1"],
+            cloud_service_provider_services={"csp_1": ["s_0"]},
+            min_cloud_service_provider_count=1,
+            max_cloud_service_provider_count=1,
+        )
+    )
+
+    Expect(model).to_be_feasible().with_vm_service_matching(
+        {("vm_0", "s_0", 0): 1, ("vm_0", "s_0", 1): 1}
+    ).with_cost(20).test()
