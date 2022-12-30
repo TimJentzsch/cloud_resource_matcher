@@ -1,4 +1,4 @@
-from optimizer.data import BaseData
+from optimizer.data.base_data import BaseData
 from optimizer.model import Model
 from test.framework import Expect
 

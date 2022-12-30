@@ -1,4 +1,6 @@
-from optimizer.data import BaseData, PerformanceData, MultiCloudData
+from optimizer.data.base_data import BaseData
+from optimizer.data.performance_data import PerformanceData
+from optimizer.data.multi_cloud_data import MultiCloudData
 from optimizer.model import Model, SolveError
 from optimizer.solver import Solver
 

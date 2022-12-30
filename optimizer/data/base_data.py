@@ -1,13 +1,7 @@
-from typing import List, Dict, Tuple
 from dataclasses import dataclass
+from typing import List, Dict, Tuple
 
-
-Service = str
-CloudServiceProvider = str
-Region = str
-VirtualMachine = str
-Cost = float
-TimeUnit = int
+from optimizer.data import Service, VirtualMachine, Cost, TimeUnit
 
 
 @dataclass
@@ -75,33 +69,3 @@ class BaseData:
             ), f"{v} in virtual_machine_demand is not a valid VM"
             assert t in self.time, f"{t} in virtual_machine_demand is not a valid time"
             assert demand >= 0, f"Demand {demand} for VM {v} at time {t} is negative"
-
-
-@dataclass
-class PerformanceData:
-    # The minimum amount of RAM each virtual machine requires
-    virtual_machine_min_ram: Dict[VirtualMachine, int]
-
-    # The minimum mount of vCPUs each virtual machine requires
-    virtual_machine_min_cpu_count: Dict[VirtualMachine, int]
-
-    # The amount of RAM each service has
-    service_ram: Dict[Service, int]
-
-    # The amount of vCPUs each service has
-    service_cpu_count: Dict[Service, int]
-
-
-@dataclass
-class MultiCloudData:
-    # The available cloud service providers
-    cloud_service_providers: List[CloudServiceProvider]
-
-    # The services each cloud service provider offers
-    cloud_service_provider_services: Dict[CloudServiceProvider, List[Service]]
-
-    # The minimum number of cloud service providers that have to be used
-    min_cloud_service_provider_count: int
-
-    # The maximum number of cloud service providers that can be used
-    max_cloud_service_provider_count: int

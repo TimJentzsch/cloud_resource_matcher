@@ -20,13 +20,13 @@ from pulp import (
 )
 
 from optimizer.data import (
-    BaseData,
     VirtualMachine,
     Service,
-    PerformanceData,
-    MultiCloudData,
     TimeUnit,
 )
+from optimizer.data.base_data import BaseData
+from optimizer.data.multi_cloud_data import MultiCloudData
+from optimizer.data.performance_data import PerformanceData
 from optimizer.solver import Solver
 
 
