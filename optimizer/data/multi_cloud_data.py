@@ -37,9 +37,24 @@ class MultiCloudData:
                     s in base_data.services
                 ), f"{s} in cloud_service_provider_services is not a valid service"
 
+        for s in base_data.services:
+            matched_to_csp = False
+
+            for services in self.cloud_service_provider_services.values():
+                if s in services:
+                    matched_to_csp = True
+                    break
+
+            assert matched_to_csp is True
+
+        # Validate min/max counts
         assert (
             self.min_cloud_service_provider_count >= 0
         ), "min_cloud_service_provider_count is negative"
         assert (
             self.max_cloud_service_provider_count >= 0
         ), "max_cloud_service_provider_count is negative"
+        assert (
+            self.min_cloud_service_provider_count
+            <= self.max_cloud_service_provider_count
+        ), "min_cloud_service_provider_count must be smaller or equal than max_cloud_service_provider_count"
