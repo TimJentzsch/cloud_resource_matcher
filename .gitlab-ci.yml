@@ -2,6 +2,11 @@
 
 image: python:3.11
 
+# Only run for merge requests, not on every push
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+
 stages:
   - lint
   - test
