@@ -53,10 +53,14 @@ def main():
         max_cloud_service_provider_count=3,
     )
 
-    model = Model(base_data).with_performance(perf_data).with_multi_cloud(multi_data)
+    model = (
+        Model(base_data.validate())
+        .with_performance(perf_data.validate(base_data))
+        .with_multi_cloud(multi_data.validate(base_data))
+    )
 
     try:
-        solution = model.validate_and_solve(solver=Solver.DEFAULT)
+        solution = model.solve(solver=Solver.DEFAULT)
         print("=== SOLUTION FOUND ===\n")
         print(f"Cost: {solution.cost}")
     except SolveError as e:

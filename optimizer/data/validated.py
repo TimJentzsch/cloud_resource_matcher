@@ -11,4 +11,5 @@ class Validated(Generic[T]):
     This should be constructed by using the `.validate` functions of the data types.
     When constructing this type directly, you _must_ ensure that the data is always valid.
     """
+
     data: T

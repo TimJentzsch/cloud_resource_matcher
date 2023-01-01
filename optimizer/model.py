@@ -27,6 +27,7 @@ from optimizer.data import (
 from optimizer.data.base_data import BaseData
 from optimizer.data.multi_cloud_data import MultiCloudData
 from optimizer.data.performance_data import PerformanceData
+from optimizer.data.validated import Validated
 from optimizer.solver import Solver
 
 
@@ -63,8 +64,9 @@ class Model:
 
     vm_matching: Dict[Tuple[VirtualMachine, Service, TimeUnit], LpVariable]
 
-    def __init__(self, base_data: BaseData):
+    def __init__(self, validated_base_data: Validated[BaseData]):
         """Create a new model for the cost optimization problem."""
+        base_data = validated_base_data.data
         self.base_data = base_data
         self.prob = LpProblem("cloud_cost_optimization", LpMinimize)
 
@@ -103,8 +105,9 @@ class Model:
             )
         )
 
-    def with_performance(self, perf_data: PerformanceData) -> Self:
+    def with_performance(self, validated_perf_data: Validated[PerformanceData]) -> Self:
         """Add performance data to the model."""
+        perf_data = validated_perf_data.data
         self.perf_data = perf_data
 
         # Compute which services can host which virtual machines
@@ -152,8 +155,9 @@ class Model:
 
         return self
 
-    def with_multi_cloud(self, multi_data: MultiCloudData) -> Self:
+    def with_multi_cloud(self, validated_multi_data: Validated[MultiCloudData]) -> Self:
         """Add multi cloud data to the model."""
+        multi_data = validated_multi_data.data
         self.multi_data = multi_data
 
         # Is cloud service provider k used at all?
@@ -211,19 +215,6 @@ class Model:
 
         return self
 
-    def validate_data(self):
-        """Validate the provided data.
-
-        This checks if the data is consistent and if all required values have been provided.
-        """
-        self.base_data.validate()
-
-        if self.multi_data is not None:
-            self.multi_data.validate(self.base_data)
-
-        if self.perf_data is not None:
-            self.perf_data.validate(self.base_data)
-
     def solve(self, solver: Solver = Solver.DEFAULT) -> SolveSolution:
         """Solve the optimization problem."""
         # Add the objective function
@@ -256,12 +247,6 @@ class Model:
         solution = SolveSolution(vm_service_matching=vm_service_matching, cost=cost)
 
         return solution
-
-    def validate_and_solve(self, solver: Solver = Solver.DEFAULT) -> SolveSolution:
-        """Validate the provided data and then solve the optimization problem."""
-        self.validate_data()
-
-        return self.solve(solver)
 
     def get_lp_string(self, line_limit: int = 100) -> str:
         with tempfile.NamedTemporaryFile(

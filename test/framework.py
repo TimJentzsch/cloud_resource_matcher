@@ -68,7 +68,7 @@ class _ExpectInfeasible(_ExpectResult):
         super().test()
 
         try:
-            solution = self._model.validate_and_solve()
+            solution = self._model.solve()
             pytest.fail(f"Expected problem to be infeasible, got {solution}")
         except SolveError as err:
             assert err.reason == SolveErrorReason.INFEASIBLE
@@ -119,7 +119,7 @@ class _ExpectFeasible(_ExpectResult):
         super().test()
 
         try:
-            solution = self._model.validate_and_solve()
+            solution = self._model.solve()
 
             if self._variable_values is not None:
                 self._test_variable_values(self._variable_values)
