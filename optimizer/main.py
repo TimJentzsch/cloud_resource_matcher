@@ -1,4 +1,6 @@
-from optimizer.data import BaseData, PerformanceData, MultiCloudData
+from optimizer.data.base_data import BaseData
+from optimizer.data.performance_data import PerformanceData
+from optimizer.data.multi_cloud_data import MultiCloudData
 from optimizer.model import Model, SolveError
 from optimizer.solver import Solver
 
@@ -51,7 +53,11 @@ def main():
         max_cloud_service_provider_count=3,
     )
 
-    model = Model(base_data).with_performance(perf_data).with_multi_cloud(multi_data)
+    model = (
+        Model(base_data.validate())
+        .with_performance(perf_data.validate(base_data))
+        .with_multi_cloud(multi_data.validate(base_data))
+    )
 
     try:
         solution = model.solve(solver=Solver.DEFAULT)

@@ -4,7 +4,6 @@ from typing import Self, Optional, Dict, Set
 import pulp
 import pytest
 
-from optimizer.data import VirtualMachine, Service
 from optimizer.model import (
     Model,
     SolveError,

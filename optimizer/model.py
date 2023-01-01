@@ -20,13 +20,14 @@ from pulp import (
 )
 
 from optimizer.data import (
-    BaseData,
     VirtualMachine,
     Service,
-    PerformanceData,
-    MultiCloudData,
     TimeUnit,
 )
+from optimizer.data.base_data import BaseData
+from optimizer.data.multi_cloud_data import MultiCloudData
+from optimizer.data.performance_data import PerformanceData
+from optimizer.data.validated import Validated
 from optimizer.solver import Solver
 
 
@@ -58,13 +59,14 @@ class Model:
     objective: LpAffineExpression
 
     base_data: BaseData
-    perf_data: Optional[PerformanceData]
-    multi_data: Optional[MultiCloudData]
+    perf_data: Optional[PerformanceData] = None
+    multi_data: Optional[MultiCloudData] = None
 
     vm_matching: Dict[Tuple[VirtualMachine, Service, TimeUnit], LpVariable]
 
-    def __init__(self, base_data: BaseData):
+    def __init__(self, validated_base_data: Validated[BaseData]):
         """Create a new model for the cost optimization problem."""
+        base_data = validated_base_data.data
         self.base_data = base_data
         self.prob = LpProblem("cloud_cost_optimization", LpMinimize)
 
@@ -103,8 +105,9 @@ class Model:
             )
         )
 
-    def with_performance(self, perf_data: PerformanceData) -> Self:
+    def with_performance(self, validated_perf_data: Validated[PerformanceData]) -> Self:
         """Add performance data to the model."""
+        perf_data = validated_perf_data.data
         self.perf_data = perf_data
 
         # Compute which services can host which virtual machines
@@ -127,6 +130,7 @@ class Model:
                             self.vm_matching[v, s, t]
                             * perf_data.virtual_machine_min_ram[v]
                             for v in service_virtual_machines[s]
+                            if v in perf_data.virtual_machine_min_ram.keys()
                         ),
                         sense=LpConstraintLE,
                         rhs=perf_data.service_ram[s],
@@ -141,6 +145,7 @@ class Model:
                             self.vm_matching[v, s, t]
                             * perf_data.virtual_machine_min_cpu_count[v]
                             for v in service_virtual_machines[s]
+                            if v in perf_data.virtual_machine_min_cpu_count.keys()
                         ),
                         sense=LpConstraintLE,
                         rhs=perf_data.service_cpu_count[s],
@@ -150,8 +155,9 @@ class Model:
 
         return self
 
-    def with_multi_cloud(self, multi_data: MultiCloudData) -> Self:
+    def with_multi_cloud(self, validated_multi_data: Validated[MultiCloudData]) -> Self:
         """Add multi cloud data to the model."""
+        multi_data = validated_multi_data.data
         self.multi_data = multi_data
 
         # Is cloud service provider k used at all?
