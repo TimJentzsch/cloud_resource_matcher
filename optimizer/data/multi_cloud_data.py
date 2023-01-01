@@ -1,8 +1,9 @@
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import List, Dict, Self
 
 from optimizer.data import Service, CloudServiceProvider
 from optimizer.data.base_data import BaseData
+from optimizer.data.validated import Validated
 
 
 @dataclass
@@ -19,7 +20,7 @@ class MultiCloudData:
     # The maximum number of cloud service providers that can be used
     max_cloud_service_provider_count: int
 
-    def validate(self, base_data: BaseData):
+    def validate(self, base_data: BaseData) -> Validated[Self]:
         """Validate the data for consistency."""
         # Validate cloud_service_provider_services
         for csp in self.cloud_service_providers:
@@ -58,3 +59,5 @@ class MultiCloudData:
             self.min_cloud_service_provider_count
             <= self.max_cloud_service_provider_count
         ), "min_cloud_service_provider_count must be smaller or equal than max_cloud_service_provider_count"
+
+        return Validated(self)

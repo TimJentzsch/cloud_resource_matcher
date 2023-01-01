@@ -1,7 +1,8 @@
 from dataclasses import dataclass
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Self
 
 from optimizer.data import Service, VirtualMachine, Cost, TimeUnit
+from optimizer.data.validated import Validated
 
 
 @dataclass
@@ -24,7 +25,7 @@ class BaseData:
     # The number of virtual machine instances that are needed at a given point in time
     virtual_machine_demand: Dict[Tuple[VirtualMachine, TimeUnit], int]
 
-    def validate(self):
+    def validate(self) -> Validated[Self]:
         """Validate the data for consistency."""
         # Validate virtual_machine_services
         for v in self.virtual_machines:
@@ -69,3 +70,5 @@ class BaseData:
             ), f"{v} in virtual_machine_demand is not a valid VM"
             assert t in self.time, f"{t} in virtual_machine_demand is not a valid time"
             assert demand >= 0, f"Demand {demand} for VM {v} at time {t} is negative"
+
+        return Validated(self)
