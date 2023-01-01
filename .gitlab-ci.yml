@@ -1,0 +1,21 @@
+# Adapted from <https://medium.com/@paweldudzinski/python-applications-continuous-integration-with-poetry-and-gitlab-pipelines-ac539888251a>
+
+image: python:3.11
+
+stages:
+  - lint
+  - test
+
+before_script:
+  - pip install poetry
+  - poetry install
+
+Check formatting:
+  stage: lint
+  script:
+    - poetry run black --check .
+
+Run unit tests:
+  stage: test
+  script:
+    - poetry run pytest
