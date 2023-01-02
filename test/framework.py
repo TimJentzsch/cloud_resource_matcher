@@ -1,8 +1,9 @@
 import math
-from typing import Self, Optional, Dict, Set
+from typing import Self, Optional, Dict, Set, List
 
 import pulp
 import pytest
+from pulp import LpVariable
 
 from optimizer.model import (
     Model,
@@ -15,9 +16,21 @@ from optimizer.model import (
 
 class Expect:
     _model: Model
+    _variables: Optional[Set[str]] = None
+    _fixed_variable_values: Optional[Dict[str, float]] = None
 
     def __init__(self, model: Model):
         self._model = model
+
+    def with_fixed_variable_values(self, fixed_values: Dict[str, float]):
+        """Fix the values of the given variables."""
+        # The variables must be in the model
+        if not self._variables:
+            self._variables = set(fixed_values.keys())
+        else:
+            self._variables = self._variables.union(fixed_values.keys())
+
+        self._fixed_variable_values = fixed_values
 
     def to_be_infeasible(self) -> "_ExpectInfeasible":
         """The given problem is unsolvable."""
@@ -29,7 +42,6 @@ class Expect:
 
 
 class _ExpectResult(Expect):
-    _variables: Optional[Set[str]] = None
     _variables_exclusive: bool = False
 
     def with_variables(self, variables: Set[str], *, exclusive: bool = False) -> Self:
@@ -44,8 +56,23 @@ class _ExpectResult(Expect):
 
     def test(self):
         """Test all conditions."""
+        # First, fix the model's variables to the given values, if applicable
+        if self._fixed_variable_values is not None:
+            self._fix_variable_values(self._fixed_variable_values)
+
+        # Then test stuff
         if self._variables is not None:
             self._test_variables(self._variables, self._variables_exclusive)
+
+    def _fix_variable_values(self, values: Dict[str, float]):
+        variables: List[LpVariable] = self._model.prob.variables()
+
+        for var_name, value in values.items():
+            for var in variables:
+                if var.name == var_name:
+                    var.setInitialValue(value)
+                    var.fixValue()
+                    break
 
     def _test_variables(self, expected_variables: Set[str], exclusive: bool):
         variables = [var.name for var in self._model.prob.variables()]
