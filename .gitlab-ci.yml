@@ -20,6 +20,11 @@ Check formatting:
   script:
     - poetry run black --check .
 
+Check types:
+  stage: lint
+  script:
+    - poetry run pyright
+
 Run unit tests:
   stage: test
   script:
