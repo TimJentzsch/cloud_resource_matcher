@@ -107,6 +107,7 @@ class _ExpectResult:
 
     def _test_variables(self):
         variables = [var.name for var in self._expect._model.prob.variables()]
+        print("variables", variables)
         missing_variables = [
             var for var in self._expect._variables if var not in variables
         ]
