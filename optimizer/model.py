@@ -157,6 +157,7 @@ class Model:
 
     def with_multi_cloud(self, validated_multi_data: Validated[MultiCloudData]) -> Self:
         """Add multi cloud data to the model."""
+        print("with multi cloud")
         multi_data = validated_multi_data.data
         self.multi_data = multi_data
 
@@ -165,6 +166,8 @@ class Model:
             k: LpVariable(f"csp_used({k})", cat=LpBinary)
             for k in multi_data.cloud_service_providers
         }
+
+        print("csp used", csp_used)
 
         # Calculate csp_used values
         for k in multi_data.cloud_service_providers:

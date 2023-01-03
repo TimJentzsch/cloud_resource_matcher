@@ -1,7 +1,6 @@
 import math
-from typing import Self, Optional, Dict, Set, List
+from typing import Self, Optional, Dict, Set, List, Iterable
 
-import pulp
 import pytest
 from pulp import LpVariable
 
@@ -16,21 +15,45 @@ from optimizer.model import (
 
 class Expect:
     _model: Model
-    _variables: Optional[Set[str]] = None
-    _fixed_variable_values: Optional[Dict[str, float]] = None
+
+    _variables: Set[str]
+    _variables_exclusive: bool = False
+
+    _fixed_variable_values: Dict[str, float]
 
     def __init__(self, model: Model):
         self._model = model
+        self._variables = set()
+        self._fixed_variable_values = dict()
 
-    def with_fixed_variable_values(self, fixed_values: Dict[str, float]):
+    def with_variables(
+        self, variables: Iterable[str], *, exclusive: bool = False
+    ) -> Self:
+        """Enforce that the model contains the given variables.
+
+        :param variables: The variables that must be in the model.
+        :param exclusive: If set to true, the model must not contain any other variables.
+        """
+        self._variables = self._variables.union(variables)
+        self._variables_exclusive = self._variables_exclusive or exclusive
+        return self
+
+    def with_fixed_variable_values(self, fixed_values: Dict[str, float]) -> Self:
         """Fix the values of the given variables."""
         # The variables must be in the model
-        if not self._variables:
-            self._variables = set(fixed_values.keys())
-        else:
-            self._variables = self._variables.union(fixed_values.keys())
+        self.with_variables(fixed_values.keys())
 
-        self._fixed_variable_values = fixed_values
+        for var_name, value in fixed_values.items():
+            self._fixed_variable_values[var_name] = value
+
+        return self
+
+    def with_fixed_vm_service_matching(self, matching: VmServiceMatching) -> Self:
+        """Fix the values of the variables defined by the given VM-service matching."""
+        self.with_fixed_variable_values(
+            {f"vm_matching({v},{s},{t})": val for (v, s, t), val in matching.items()}
+        )
+        return self
 
     def to_be_infeasible(self) -> "_ExpectInfeasible":
         """The given problem is unsolvable."""
@@ -42,49 +65,33 @@ class Expect:
 
 
 class _ExpectResult(Expect):
-    _variables_exclusive: bool = False
-
-    def with_variables(self, variables: Set[str], *, exclusive: bool = False) -> Self:
-        """Enforce that the model contains the given variables.
-
-        :param variables: The variables that must be in the model.
-        :param exclusive: If set to true, the model must not contain any other variables.
-        """
-        self._variables = variables
-        self._variables_exclusive = self._variables_exclusive or exclusive
-        return self
-
     def test(self):
         """Test all conditions."""
         # First, fix the model's variables to the given values, if applicable
-        if self._fixed_variable_values is not None:
-            self._fix_variable_values(self._fixed_variable_values)
+        self._fix_variable_values()
 
         # Then test stuff
-        if self._variables is not None:
-            self._test_variables(self._variables, self._variables_exclusive)
+        self._test_variables()
 
-    def _fix_variable_values(self, values: Dict[str, float]):
+    def _fix_variable_values(self):
         variables: List[LpVariable] = self._model.prob.variables()
 
-        for var_name, value in values.items():
+        for var_name, value in self._fixed_variable_values.items():
             for var in variables:
                 if var.name == var_name:
                     var.setInitialValue(value)
                     var.fixValue()
                     break
 
-    def _test_variables(self, expected_variables: Set[str], exclusive: bool):
+    def _test_variables(self):
         variables = [var.name for var in self._model.prob.variables()]
-        missing_variables = [var for var in expected_variables if var not in variables]
+        missing_variables = [var for var in self._variables if var not in variables]
 
         if len(missing_variables) > 0:
             pytest.fail(f"Missing variables: {missing_variables}")
 
-        if exclusive:
-            extra_variables = [
-                var for var in variables if var not in expected_variables
-            ]
+        if self._variables_exclusive:
+            extra_variables = [var for var in variables if var not in self._variables]
 
             if len(extra_variables) > 0:
                 pytest.fail(f"Extra (too many) variables: {extra_variables}")
@@ -92,7 +99,7 @@ class _ExpectResult(Expect):
 
 class _ExpectInfeasible(_ExpectResult):
     def test(self):
-        super().test()
+        super(_ExpectInfeasible, self).test()
 
         try:
             solution = self._model.solve()
@@ -107,7 +114,11 @@ class _ExpectFeasible(_ExpectResult):
 
     _vm_service_matching: Optional[VmServiceMatching] = None
 
-    _variable_values: Optional[Dict[str, float]] = None
+    _variable_values: Dict[str, float]
+
+    def __init__(self, model: Model):
+        super(_ExpectFeasible, self).__init__(model)
+        self._variable_values = dict()
 
     def with_cost(self, cost: float, *, epsilon: float = 0.01) -> Self:
         """Enforce that the solution has the given objective value (i.e. cost).
@@ -122,6 +133,7 @@ class _ExpectFeasible(_ExpectResult):
     def with_vm_service_matching(self, vm_service_matching: VmServiceMatching) -> Self:
         """Enforce that the virtual machines are matched to the given services."""
         self._vm_service_matching = vm_service_matching
+
         return self
 
     def with_variable_values(
@@ -132,54 +144,52 @@ class _ExpectFeasible(_ExpectResult):
         :param variable_values: The variables that must be in the model and their values.
         :param exclusive: If set to true, the model must not contain any other variables.
         """
+        print("Variable values", variable_values)
         # The variables must be in the model
-        if not self._variables:
-            self._variables = set(variable_values.keys())
-        else:
-            self._variables = self._variables.union(variable_values.keys())
+        self.with_variables(variable_values.keys(), exclusive=exclusive)
 
-        self._variable_values = variable_values
-        self._variables_exclusive = self._variables_exclusive or exclusive
+        for var_name, value in variable_values.items():
+            self._variable_values[var_name] = value
+
         return self
 
     def test(self):
-        super().test()
+        super(_ExpectFeasible, self).test()
 
         try:
             solution = self._model.solve()
 
-            if self._variable_values is not None:
-                self._test_variable_values(self._variable_values)
-
-            if self._vm_service_matching is not None:
-                self._test_vm_service_matching(solution, self._vm_service_matching)
-
-            if self._cost is not None:
-                self._test_cost(solution, self._cost, self._epsilon)
+            self._test_variable_values()
+            self._test_vm_service_matching(solution)
+            self._test_cost(solution)
         except SolveError as err:
             self._print_model()
             pytest.fail(f"Expected problem to be feasible, got {err}")
 
-    @staticmethod
-    def _test_cost(solution: SolveSolution, expected_cost: float, epsilon: float):
-        if math.fabs(solution.cost - expected_cost) > epsilon:
-            pytest.fail(f"Expected cost of {expected_cost}, got {solution.cost}")
+    def _test_cost(self, solution: SolveSolution):
+        if self._cost is None or self._epsilon is None:
+            return
 
-    @staticmethod
-    def _test_vm_service_matching(
-        solution: SolveSolution, expected_matching: VmServiceMatching
-    ):
-        assert solution.vm_service_matching == expected_matching
+        if math.fabs(solution.cost - self._cost) > self._epsilon:
+            pytest.fail(f"Expected cost of {self._cost}, got {solution.cost}")
 
-    def _test_variable_values(self, expected_values: Dict[str, float]):
+    def _test_vm_service_matching(self, solution: SolveSolution):
+        if self._vm_service_matching is None:
+            return
+
+        assert (
+            solution.vm_service_matching == self._vm_service_matching
+        ), "Different VM/Service matching than expected"
+
+    def _test_variable_values(self):
         actual_values = {
-            var.name: pulp.value(var)
+            var.name: var.value()
             for var in self._model.prob.variables()
-            if var.name in expected_values.keys()
+            if var.name in self._variable_values.keys()
         }
         wrong_values = []
 
-        for var, expected in expected_values.items():
+        for var, expected in self._variable_values.items():
             actual = actual_values[var]
 
             if actual != expected:
