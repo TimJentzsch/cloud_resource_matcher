@@ -92,18 +92,17 @@ def test_one_vm_multiple_time_units_varying_demand():
 
 
 def test_should_be_infeasible_on_disallowed_service_matching():
-    pass
-    # model = Model(
-    #     BaseData(
-    #         virtual_machines=["vm_0"],
-    #         services=["s_0", "s_1"],
-    #         virtual_machine_services={"vm_0": ["s_0"]},
-    #         service_base_costs={"s_0": 1, "s_1": 1},
-    #         time=[0],
-    #         virtual_machine_demand={("vm_0", 0): 1},
-    #     ).validate()
-    # )
-    #
-    # Expect(model).with_fixed_vm_service_matching(
-    #     {("vm_0", "s_1", 0): 1}
-    # ).to_be_infeasible().test()
+    model = Model(
+        BaseData(
+            virtual_machines=["vm_0"],
+            services=["s_0", "s_1"],
+            virtual_machine_services={"vm_0": ["s_0"]},
+            service_base_costs={"s_0": 1, "s_1": 1},
+            time=[0],
+            virtual_machine_demand={("vm_0", 0): 1},
+        ).validate()
+    )
+
+    Expect(model).with_fixed_vm_service_matching(
+        {("vm_0", "s_1", 0): 1}
+    ).to_be_infeasible().test()

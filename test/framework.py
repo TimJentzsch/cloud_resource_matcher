@@ -26,7 +26,7 @@ class Expect:
         self._variables = set()
         self._fixed_variable_values = dict()
 
-    def with_variables(
+    def _with_variables(
         self, variables: Iterable[str], *, exclusive: bool = False
     ) -> Self:
         """Enforce that the model contains the given variables.
@@ -40,16 +40,19 @@ class Expect:
 
     def with_fixed_variable_values(self, fixed_values: Dict[str, float]) -> Self:
         """Fix the values of the given variables."""
+        print("With fixed vars", fixed_values)
         # The variables must be in the model
-        self.with_variables(fixed_values.keys())
+        self._with_variables(fixed_values.keys())
 
         for var_name, value in fixed_values.items():
+            print(f"name {var_name} value {value}")
             self._fixed_variable_values[var_name] = value
 
         return self
 
     def with_fixed_vm_service_matching(self, matching: VmServiceMatching) -> Self:
         """Fix the values of the variables defined by the given VM-service matching."""
+        print("With fixed matching", matching)
         self.with_fixed_variable_values(
             {f"vm_matching({v},{s},{t})": val for (v, s, t), val in matching.items()}
         )
@@ -57,14 +60,19 @@ class Expect:
 
     def to_be_infeasible(self) -> "_ExpectInfeasible":
         """The given problem is unsolvable."""
-        return _ExpectInfeasible(self._model)
+        return _ExpectInfeasible(self)
 
     def to_be_feasible(self) -> "_ExpectFeasible":
         """The given problem has a solution."""
-        return _ExpectFeasible(self._model)
+        return _ExpectFeasible(self)
 
 
-class _ExpectResult(Expect):
+class _ExpectResult:
+    _expect: Expect
+
+    def __init__(self, expect: Expect):
+        self._expect = expect
+
     def test(self):
         """Test all conditions."""
         # First, fix the model's variables to the given values, if applicable
@@ -73,10 +81,24 @@ class _ExpectResult(Expect):
         # Then test stuff
         self._test_variables()
 
-    def _fix_variable_values(self):
-        variables: List[LpVariable] = self._model.prob.variables()
+    def with_variables(
+        self, variables: Iterable[str], *, exclusive: bool = False
+    ) -> Self:
+        """Enforce that the model contains the given variables.
 
-        for var_name, value in self._fixed_variable_values.items():
+        :param variables: The variables that must be in the model.
+        :param exclusive: If set to true, the model must not contain any other variables.
+        """
+        self._expect._with_variables(variables, exclusive=exclusive)
+        return self
+
+    def _solve(self) -> SolveSolution:
+        return self._expect._model.solve()
+
+    def _fix_variable_values(self):
+        variables: List[LpVariable] = self._expect._model.prob.variables()
+
+        for var_name, value in self._expect._fixed_variable_values.items():
             for var in variables:
                 if var.name == var_name:
                     var.setInitialValue(value)
@@ -84,25 +106,32 @@ class _ExpectResult(Expect):
                     break
 
     def _test_variables(self):
-        variables = [var.name for var in self._model.prob.variables()]
-        missing_variables = [var for var in self._variables if var not in variables]
+        variables = [var.name for var in self._expect._model.prob.variables()]
+        missing_variables = [
+            var for var in self._expect._variables if var not in variables
+        ]
 
         if len(missing_variables) > 0:
             pytest.fail(f"Missing variables: {missing_variables}")
 
-        if self._variables_exclusive:
-            extra_variables = [var for var in variables if var not in self._variables]
+        if self._expect._variables_exclusive:
+            extra_variables = [
+                var for var in variables if var not in self._expect._variables
+            ]
 
             if len(extra_variables) > 0:
                 pytest.fail(f"Extra (too many) variables: {extra_variables}")
 
 
 class _ExpectInfeasible(_ExpectResult):
+    def __init__(self, expect: Expect):
+        super(_ExpectInfeasible, self).__init__(expect)
+
     def test(self):
         super(_ExpectInfeasible, self).test()
 
         try:
-            solution = self._model.solve()
+            solution = self._solve()
             pytest.fail(f"Expected problem to be infeasible, got {solution}")
         except SolveError as err:
             assert err.reason == SolveErrorReason.INFEASIBLE
@@ -116,8 +145,8 @@ class _ExpectFeasible(_ExpectResult):
 
     _variable_values: Dict[str, float]
 
-    def __init__(self, model: Model):
-        super(_ExpectFeasible, self).__init__(model)
+    def __init__(self, expect: Expect):
+        super(_ExpectFeasible, self).__init__(expect)
         self._variable_values = dict()
 
     def with_cost(self, cost: float, *, epsilon: float = 0.01) -> Self:
@@ -146,7 +175,7 @@ class _ExpectFeasible(_ExpectResult):
         """
         print("Variable values", variable_values)
         # The variables must be in the model
-        self.with_variables(variable_values.keys(), exclusive=exclusive)
+        self._expect._with_variables(variable_values.keys(), exclusive=exclusive)
 
         for var_name, value in variable_values.items():
             self._variable_values[var_name] = value
@@ -157,7 +186,7 @@ class _ExpectFeasible(_ExpectResult):
         super(_ExpectFeasible, self).test()
 
         try:
-            solution = self._model.solve()
+            solution = self._solve()
 
             self._test_variable_values()
             self._test_vm_service_matching(solution)
@@ -184,7 +213,7 @@ class _ExpectFeasible(_ExpectResult):
     def _test_variable_values(self):
         actual_values = {
             var.name: var.value()
-            for var in self._model.prob.variables()
+            for var in self._expect._model.prob.variables()
             if var.name in self._variable_values.keys()
         }
         wrong_values = []
@@ -202,4 +231,4 @@ class _ExpectFeasible(_ExpectResult):
 
     def _print_model(self, line_limit: int = 100):
         """Print out the LP model to debug infeasible problems."""
-        print(self._model.get_lp_string(line_limit=line_limit))
+        print(self._expect._model.get_lp_string(line_limit=line_limit))
