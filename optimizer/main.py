@@ -7,8 +7,8 @@ from optimizer.solver import Solver
 
 def main():
     vm_count = 50
-    service_count = 500
-    time_count = 50
+    service_count = 50
+    time_count = 500
     csp_count = 3
 
     base_data = BaseData(
