@@ -43,13 +43,15 @@ class NetworkData:
 
     def validate(self, base_data: BaseData) -> Validated[Self]:
         # Validate location_latency
-        for loc1, loc2 in self.location_latency.keys():
+        for (loc1, loc2), latency in self.location_latency.items():
             assert (
                 loc1 in self.locations
             ), f"{loc1} in location_latency is not a valid location"
             assert (
                 loc2 in self.locations
             ), f"{loc2} in location_latency is not a valid location"
+
+            assert latency >= 0, f"Latency must not be negative"
 
         for loc1 in self.locations:
             for loc2 in self.locations:
@@ -75,13 +77,15 @@ class NetworkData:
             ), f"No location defined for service {s}"
 
         # Validate virtual_machine_max_latency
-        for v, loc in self.virtual_machine_max_latency.keys():
+        for (v, loc), latency in self.virtual_machine_max_latency.items():
             assert (
                 v in base_data.virtual_machines
             ), f"{v} in virtual_machine_max_latency is not a valid VM"
             assert (
                 loc in self.locations
             ), f"{loc} in virtual_machine_max_latency is not a valid location"
+
+            assert latency >= 0, f"The maximum latency must not be negative"
 
         # Validate virtual_machine_location_traffic
         for v, loc in self.virtual_machine_location_traffic.keys():
