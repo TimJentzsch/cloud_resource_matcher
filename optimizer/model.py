@@ -26,6 +26,7 @@ from optimizer.data import (
 )
 from optimizer.data.base_data import BaseData
 from optimizer.data.multi_cloud_data import MultiCloudData
+from optimizer.data.network_data import NetworkData
 from optimizer.data.performance_data import PerformanceData
 from optimizer.data.validated import Validated
 from optimizer.solver import Solver
@@ -61,6 +62,7 @@ class Model:
     base_data: BaseData
     perf_data: Optional[PerformanceData] = None
     multi_data: Optional[MultiCloudData] = None
+    network_data: Optional[NetworkData] = None
 
     vm_matching: Dict[Tuple[VirtualMachine, Service, TimeUnit], LpVariable]
 
@@ -157,7 +159,6 @@ class Model:
 
     def with_multi_cloud(self, validated_multi_data: Validated[MultiCloudData]) -> Self:
         """Add multi cloud data to the model."""
-        print("with multi cloud")
         multi_data = validated_multi_data.data
         self.multi_data = multi_data
 
@@ -166,8 +167,6 @@ class Model:
             k: LpVariable(f"csp_used({k})", cat=LpBinary)
             for k in multi_data.cloud_service_providers
         }
-
-        print("csp used", csp_used)
 
         # Calculate csp_used values
         for k in multi_data.cloud_service_providers:
@@ -217,6 +216,32 @@ class Model:
             )
 
         return self
+
+    def with_network(self, validated_network_data: Validated[NetworkData]) -> Self:
+        """Add network data to the model."""
+        network_data = validated_network_data.data
+        self.network_data = network_data
+
+        # Is VM v located at location loc at time t?
+        vm_locations = {
+            (v, loc, t): LpVariable(f"vm_location({v},{loc},{t})", cat=LpBinary)
+            for v in self.base_data.virtual_machines
+            for loc in network_data.locations
+            for t in self.base_data.time
+        }
+
+        # Every VM is placed at exactly one location
+        for v in self.base_data.virtual_machines:
+            for t in self.base_data.time:
+                self.prob += lpSum(vm_locations[v, loc, t] for loc in network_data.locations) == 1
+
+        # The VMs location is the location of the service where it's placed
+        for v in self.base_data.virtual_machines:
+            for loc in network_data.locations:
+                for t in self.base_data.time:
+                    for s in self.base_data.services:
+                        if loc in network_data.service_location[s]:
+                            self.prob += vm_locations[v, loc, t] >= self.vm_matching[v, s, t]
 
     def solve(self, solver: Solver = Solver.DEFAULT) -> SolveSolution:
         """Solve the optimization problem."""
