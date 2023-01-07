@@ -88,7 +88,7 @@ class NetworkData:
             assert latency >= 0, f"The maximum latency must not be negative"
 
         # Validate virtual_machine_location_traffic
-        for v, loc in self.virtual_machine_location_traffic.keys():
+        for (v, loc), traffic in self.virtual_machine_location_traffic.items():
             assert (
                 v in base_data.virtual_machines
             ), f"{v} in virtual_machine_location_traffic is not a valid VM"
@@ -96,14 +96,20 @@ class NetworkData:
                 loc in self.locations
             ), f"{loc} in virtual_machine_location_traffic is not a valid location"
 
+            assert (
+                traffic >= 0
+            ), f"Traffic for VM {v} and location {loc} must not be negative"
+
         # Validate virtual_machine_virtual_machine_traffic
-        for v1, v2 in self.virtual_machine_virtual_machine_traffic.keys():
+        for (v1, v2), traffic in self.virtual_machine_virtual_machine_traffic.items():
             assert (
                 v1 in base_data.virtual_machines
             ), f"{v1} in virtual_machine_virtual_machine_traffic is not a valid VM"
             assert (
                 v2 in base_data.virtual_machines
             ), f"{v2} in virtual_machine_virtual_machine_traffic is not a valid VM"
+
+            assert traffic >= 0, f"Traffic for VM {v1} and VM {v2} must not be negative"
 
         # Validate location_traffic_cost
         for loc1, loc2 in self.location_traffic_cost:
