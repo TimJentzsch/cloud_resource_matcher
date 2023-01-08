@@ -248,6 +248,18 @@ class Model:
                                 vm_locations[v, loc, t] >= self.vm_matching[v, s, t]
                             )
 
+        # Pay for VM -> location traffic
+        self.objective += lpSum(
+            vm_locations[vm, vm_loc, t]
+            * network_data.location_traffic_cost[vm_loc, loc]
+            for (
+                vm,
+                loc,
+            ), traffic in network_data.virtual_machine_location_traffic.items()
+            for vm_loc in network_data.locations
+            for t in self.base_data.time
+        )
+
     def solve(self, solver: Solver = Solver.DEFAULT) -> SolveSolution:
         """Solve the optimization problem."""
         # Add the objective function
