@@ -222,26 +222,31 @@ class Model:
         network_data = validated_network_data.data
         self.network_data = network_data
 
-        # Is VM v located at location loc at time t?
+        # How many VMs v are located at location loc at time t?
         vm_locations = {
-            (v, loc, t): LpVariable(f"vm_location({v},{loc},{t})", cat=LpBinary)
+            (v, loc, t): LpVariable(f"vm_location({v},{loc},{t})", cat=LpInteger)
             for v in self.base_data.virtual_machines
             for loc in network_data.locations
             for t in self.base_data.time
         }
 
-        # Every VM is placed at exactly one location
+        # All VMs are placed at exactly one location
         for v in self.base_data.virtual_machines:
             for t in self.base_data.time:
-                self.prob += lpSum(vm_locations[v, loc, t] for loc in network_data.locations) == 1
+                self.prob += (
+                    lpSum(vm_locations[v, loc, t] for loc in network_data.locations)
+                    == self.base_data.virtual_machine_demand[v, t]
+                )
 
         # The VMs location is the location of the service where it's placed
         for v in self.base_data.virtual_machines:
             for loc in network_data.locations:
                 for t in self.base_data.time:
-                    for s in self.base_data.services:
+                    for s in self.base_data.virtual_machine_services[v]:
                         if loc in network_data.service_location[s]:
-                            self.prob += vm_locations[v, loc, t] >= self.vm_matching[v, s, t]
+                            self.prob += (
+                                vm_locations[v, loc, t] >= self.vm_matching[v, s, t]
+                            )
 
     def solve(self, solver: Solver = Solver.DEFAULT) -> SolveSolution:
         """Solve the optimization problem."""
