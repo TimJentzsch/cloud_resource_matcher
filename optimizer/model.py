@@ -260,6 +260,8 @@ class Model:
             for t in self.base_data.time
         )
 
+        return self
+
     def solve(self, solver: Solver = Solver.DEFAULT) -> SolveSolution:
         """Solve the optimization problem."""
         # Add the objective function
