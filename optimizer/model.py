@@ -26,7 +26,7 @@ from optimizer.data import (
 )
 from optimizer.data.base_data import BaseData
 from optimizer.data.multi_cloud_data import MultiCloudData
-from optimizer.data.network_data import NetworkData
+from optimizer.data.network_data import NetworkData, Location
 from optimizer.data.performance_data import PerformanceData
 from optimizer.data.validated import Validated
 from optimizer.solver import Solver
@@ -223,7 +223,7 @@ class Model:
         self.network_data = network_data
 
         # How many VMs v are located at location loc at time t?
-        vm_locations = {
+        vm_locations: dict[tuple[VirtualMachine, Location, TimeUnit], LpVariable] = {
             (v, loc, t): LpVariable(f"vm_location({v},{loc},{t})", cat=LpInteger)
             for v in self.base_data.virtual_machines
             for loc in network_data.locations
@@ -251,12 +251,78 @@ class Model:
         # Pay for VM -> location traffic
         self.objective += lpSum(
             vm_locations[vm, vm_loc, t]
+            * traffic
             * network_data.location_traffic_cost[vm_loc, loc]
             for (
                 vm,
                 loc,
             ), traffic in network_data.virtual_machine_location_traffic.items()
             for vm_loc in network_data.locations
+            for t in self.base_data.time
+        )
+
+        # === virtual_machine_virtual_machine_traffic ===
+
+        # The number of vm1 -> vm2 connections where vm1 is at loc1 and vm2 is at loc2 (at time t)
+        vm_vm_locations: dict[
+            tuple[VirtualMachine, VirtualMachine, Location, Location, TimeUnit],
+            LpVariable,
+        ] = {
+            (vm1, vm2, loc1, loc2, t): LpVariable(
+                f"vm_vm_locations({vm1},{vm2},{loc1},{loc2})", cat=LpInteger
+            )
+            for (
+                vm1,
+                vm2,
+            ) in network_data.virtual_machine_virtual_machine_traffic.keys()
+            for loc1 in network_data.locations
+            for loc2 in network_data.locations
+            for t in self.base_data.time
+        }
+
+        # Make enough connections between each VM pair
+        for (vm1, vm2) in network_data.virtual_machine_virtual_machine_traffic.keys():
+            for t in self.base_data.time:
+                self.prob += (
+                    lpSum(
+                        vm_vm_locations[vm1, vm2, loc1, loc2, t]
+                        for loc1 in network_data.locations
+                        for loc2 in network_data.locations
+                    )
+                    == network_data.virtual_machine_virtual_machine_traffic[vm1, vm2]
+                )
+
+        # The connections must be at the locations where the VMs are actually placed
+        for t in self.base_data.time:
+            for (
+                vm1,
+                vm2,
+            ) in network_data.virtual_machine_virtual_machine_traffic.keys():
+                # Make enough outgoing connections from each location
+                for loc1 in network_data.locations:
+                    self.prob += vm_locations[vm1, loc1, t] == lpSum(
+                        vm_vm_locations[vm1, vm2, loc1, loc2, t]
+                        for loc2 in network_data.locations
+                    )
+
+                # Have enough VMs at the incoming location
+                for loc2 in network_data.locations:
+                    self.prob += vm_locations[vm2, loc2, t] >= lpSum(
+                        vm_vm_locations[vm1, vm2, loc1, loc2, t]
+                        for loc1 in network_data.locations
+                    )
+
+        # Pay for VM -> location traffic caused by VM -> VM connections
+        self.objective += lpSum(
+            vm_vm_locations[vm1, vm2, loc1, loc2, t]
+            * traffic
+            * network_data.location_traffic_cost[loc1, loc2]
+            for (
+                vm1,
+                vm2,
+            ), traffic in network_data.virtual_machine_virtual_machine_traffic.items()
+            for loc1 in network_data.locations
+            for loc2 in network_data.locations
             for t in self.base_data.time
         )
 
