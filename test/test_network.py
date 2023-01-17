@@ -47,7 +47,7 @@ def test_computation_of_vm_locations():
             "vm_location(vm_1,loc_0,0)": 0,
             "vm_location(vm_1,loc_1,0)": 4,
         }
-    )
+    ).test()
 
 
 def test_computation_of_vm_locations_split():
@@ -98,7 +98,7 @@ def test_computation_of_vm_locations_split():
             "vm_location(vm_1,loc_0,0)": 2,
             "vm_location(vm_1,loc_1,0)": 2,
         }
-    )
+    ).test()
 
 
 def test_should_pay_for_vm_location_costs():
@@ -119,13 +119,14 @@ def test_should_pay_for_vm_location_costs():
             service_location={"s_0": "loc_0"},
             virtual_machine_max_latency={},
             virtual_machine_virtual_machine_traffic={},
-            virtual_machine_location_traffic={("vm_0", "loc_0"): 1},
+            virtual_machine_location_traffic={("vm_0", "loc_0"): 3},
             location_traffic_cost={("loc_0", "loc_0"): 2},
         ).validate(base_data)
     )
 
-    # Service base cost + network costs for every VM instance
-    Expect(model).to_be_feasible().with_cost(5 + 3 * 1 * 2)
+    # Make sure the network costs are included in the total costs
+    # demand * service base cost + demand * traffic * traffic cost
+    Expect(model).to_be_feasible().with_cost(3 * 5 + 3 * 3 * 2).test()
 
 
 def test_should_be_infeasible_if_max_latency_is_violated():
@@ -161,7 +162,7 @@ def test_should_be_infeasible_if_max_latency_is_violated():
         ).validate(base_data)
     )
 
-    Expect(model).to_be_infeasible()
+    Expect(model).to_be_infeasible().test()
 
 
 def test_should_choose_matching_that_respects_max_latency():
@@ -204,4 +205,4 @@ def test_should_choose_matching_that_respects_max_latency():
             "vm_location(vm_0,loc_0,0)": 1,
             "vm_location(vm_0,loc_1,0)": 0,
         }
-    )
+    ).test()
