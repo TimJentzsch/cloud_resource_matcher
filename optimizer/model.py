@@ -306,30 +306,29 @@ class Model:
                             >= vm_vm_locations[vm1, vm2, loc1, loc2, t]
                         )
 
-        # Respect maximum latency for each VM
+        # Respect maximum latencies
         for t in self.base_data.time:
+            # For VM -> location traffic
             for (
                 vm1,
                 loc2,
-            ), max_latency in network_data.virtual_machine_max_latency.items():
+            ), max_latency in network_data.virtual_machine_location_max_latency.items():
                 for loc1 in network_data.locations:
                     if network_data.location_latency[loc1, loc2] > max_latency:
-                        # For VM -> location traffic
                         if (
                             vm1,
                             loc2,
                         ) in network_data.virtual_machine_location_traffic.keys():
                             self.prob += vm_locations[vm1, loc1, t] == 0
 
-                        # For VM -> VM traffic
-                        for vm2 in self.base_data.virtual_machines:
-                            if (
-                                (vm1, vm2)
-                                in network_data.virtual_machine_virtual_machine_traffic.keys()
-                            ):
-                                self.prob += (
-                                    vm_vm_locations[vm1, vm2, loc1, loc2, t] == 0
-                                )
+            # For VM -> VM traffic
+            for (vm1, vm2), max_latency in network_data.virtual_machine_virtual_machine_max_latency.items():
+                for loc1 in network_data.locations:
+                    for loc2 in network_data.locations:
+                        if network_data.location_latency[loc1, loc2] > max_latency:
+                            self.prob += (
+                                vm_vm_locations[vm1, vm2, loc1, loc2, t] == 0
+                            )
 
         # Pay for VM -> location traffic caused by VM -> VM connections
         self.objective += lpSum(

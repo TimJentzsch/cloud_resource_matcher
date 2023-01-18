@@ -24,18 +24,23 @@ class NetworkData:
     # This must be specified for every service
     service_location: dict[Service, Location]
 
-    # The maximum latency a virtual machine can have to a given location
-    virtual_machine_max_latency: dict[tuple[VirtualMachine, Location], Latency]
-
     # The network traffic between a virtual machine and a given location
     virtual_machine_location_traffic: dict[
         tuple[VirtualMachine, Location], NetworkTraffic
     ]
 
+    # The maximum latency a virtual machine can have to a given location
+    # There must be traffic between the VM and the location
+    virtual_machine_location_max_latency: dict[tuple[VirtualMachine, Location], Latency]
+
     # The network traffic between two virtual machines
     virtual_machine_virtual_machine_traffic: dict[
         tuple[VirtualMachine, VirtualMachine], NetworkTraffic
     ]
+
+    # The maximum latency between two virtual machines
+    # There must be traffic between the two virtual machines
+    virtual_machine_virtual_machine_max_latency: dict[tuple[VirtualMachine, VirtualMachine], Latency]
 
     # The cost of network traffic between two locations
     # This must be specified for every pair of locations
@@ -77,7 +82,7 @@ class NetworkData:
             ), f"No location defined for service {s}"
 
         # Validate virtual_machine_max_latency
-        for (v, loc), latency in self.virtual_machine_max_latency.items():
+        for (v, loc), latency in self.virtual_machine_location_max_latency.items():
             assert (
                 v in base_data.virtual_machines
             ), f"{v} in virtual_machine_max_latency is not a valid VM"

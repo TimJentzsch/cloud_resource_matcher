@@ -29,7 +29,8 @@ def test_computation_of_vm_locations():
                 for loc2 in locations
             },
             service_location={"s_0": "loc_0", "s_1": "loc_1"},
-            virtual_machine_max_latency={},
+            virtual_machine_location_max_latency={},
+            virtual_machine_virtual_machine_max_latency={},
             virtual_machine_virtual_machine_traffic={},
             virtual_machine_location_traffic={},
             location_traffic_cost={
@@ -75,7 +76,8 @@ def test_computation_of_vm_locations_split():
                 for loc2 in locations
             },
             service_location={"s_0": "loc_0", "s_1": "loc_1"},
-            virtual_machine_max_latency={},
+            virtual_machine_location_max_latency={},
+            virtual_machine_virtual_machine_max_latency={},
             virtual_machine_virtual_machine_traffic={},
             virtual_machine_location_traffic={},
             location_traffic_cost={
@@ -117,7 +119,8 @@ def test_should_pay_for_vm_location_costs():
             locations={"loc_0"},
             location_latency={("loc_0", "loc_0"): 0},
             service_location={"s_0": "loc_0"},
-            virtual_machine_max_latency={},
+            virtual_machine_location_max_latency={},
+            virtual_machine_virtual_machine_max_latency={},
             virtual_machine_virtual_machine_traffic={},
             virtual_machine_location_traffic={("vm_0", "loc_0"): 3},
             location_traffic_cost={("loc_0", "loc_0"): 2},
@@ -151,7 +154,8 @@ def test_should_be_infeasible_if_max_latency_is_violated():
                 for loc2 in locations
             },
             service_location={"s_0": "loc_0"},
-            virtual_machine_max_latency={("vm_0", "loc_1"): 5},
+            virtual_machine_location_max_latency={("vm_0", "loc_1"): 5},
+            virtual_machine_virtual_machine_max_latency={},
             virtual_machine_virtual_machine_traffic={},
             virtual_machine_location_traffic={("vm_0", "loc_1"): 1},
             location_traffic_cost={
@@ -187,7 +191,8 @@ def test_should_choose_matching_that_respects_max_latency():
                 for loc2 in locations
             },
             service_location={"s_0": "loc_0", "s_1": "loc_1"},
-            virtual_machine_max_latency={("vm_0", "loc_0"): 5},
+            virtual_machine_location_max_latency={("vm_0", "loc_0"): 5},
+            virtual_machine_virtual_machine_max_latency={},
             virtual_machine_virtual_machine_traffic={},
             virtual_machine_location_traffic={("vm_0", "loc_0"): 1},
             location_traffic_cost={
@@ -230,7 +235,8 @@ def test_should_calculate_connections_between_vms():
                 for loc2 in locations
             },
             service_location={"s_0": "loc_0", "s_1": "loc_1"},
-            virtual_machine_max_latency={},
+            virtual_machine_location_max_latency={},
+            virtual_machine_virtual_machine_max_latency={},
             virtual_machine_virtual_machine_traffic={
                 ("vm_0", "vm_1"): 2,
                 ("vm_1", "vm_0"): 1,
@@ -258,3 +264,42 @@ def test_should_calculate_connections_between_vms():
             "vm_vm_locations(vm_1,vm_0,loc_1,loc_1,0)": 0,
         }
     ).test()
+
+
+def test_should_consider_latency_for_vm_vm_connections():
+    """One of the connections between two VMs violates the maximum latency."""
+    base_data = BaseData(
+        virtual_machines=["vm_0", "vm_1"],
+        services=["s_0", "s_1"],
+        virtual_machine_services={"vm_0": ["s_0"], "vm_1": ["s_1"]},
+        service_base_costs={"s_0": 5, "s_1": 5},
+        time=[0],
+        virtual_machine_demand={("vm_0", 0): 1, ("vm_1", 0): 1},
+    )
+
+    locations = {"loc_0", "loc_1"}
+
+    model = Model(base_data.validate()).with_network(
+        NetworkData(
+            locations=locations,
+            location_latency={
+                (loc1, loc2): 0 if loc1 == loc2 else 10
+                for loc1 in locations
+                for loc2 in locations
+            },
+            service_location={"s_0": "loc_0", "s_1": "loc_1"},
+            virtual_machine_location_max_latency={},
+            virtual_machine_virtual_machine_max_latency={("vm_0", "vm_1"): 5},
+            virtual_machine_virtual_machine_traffic={
+                ("vm_0", "vm_1"): 1,
+            },
+            virtual_machine_location_traffic={},
+            location_traffic_cost={
+                (loc1, loc2): 0 if loc1 == loc2 else 10
+                for loc1 in locations
+                for loc2 in locations
+            },
+        ).validate(base_data)
+    )
+
+    Expect(model).to_be_infeasible().test()
