@@ -322,13 +322,16 @@ class Model:
                             self.prob += vm_locations[vm1, loc1, t] == 0
 
             # For VM -> VM traffic
-            for (vm1, vm2), max_latency in network_data.virtual_machine_virtual_machine_max_latency.items():
+            for (
+                vm1,
+                vm2,
+            ), max_latency in (
+                network_data.virtual_machine_virtual_machine_max_latency.items()
+            ):
                 for loc1 in network_data.locations:
                     for loc2 in network_data.locations:
                         if network_data.location_latency[loc1, loc2] > max_latency:
-                            self.prob += (
-                                vm_vm_locations[vm1, vm2, loc1, loc2, t] == 0
-                            )
+                            self.prob += vm_vm_locations[vm1, vm2, loc1, loc2, t] == 0
 
         # Pay for VM -> location traffic caused by VM -> VM connections
         self.objective += lpSum(

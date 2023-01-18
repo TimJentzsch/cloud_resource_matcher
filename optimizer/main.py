@@ -78,11 +78,12 @@ def main():
             for v in range(vm_count)
             for loc in range(location_count)
         },
-        virtual_machine_max_latency={
+        virtual_machine_location_max_latency={
             (f"vm_{v}", f"loc_{loc}"): v % 20 + 10
             for v in range(vm_count)
             for loc in range(location_count)
         },
+        virtual_machine_virtual_machine_max_latency={},
         virtual_machine_virtual_machine_traffic={},
     )
 
