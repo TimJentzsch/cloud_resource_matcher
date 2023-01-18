@@ -26,6 +26,7 @@ from optimizer.data import (
 )
 from optimizer.data.base_data import BaseData
 from optimizer.data.multi_cloud_data import MultiCloudData
+from optimizer.data.network_data import NetworkData, Location
 from optimizer.data.performance_data import PerformanceData
 from optimizer.data.validated import Validated
 from optimizer.solver import Solver
@@ -61,6 +62,7 @@ class Model:
     base_data: BaseData
     perf_data: Optional[PerformanceData] = None
     multi_data: Optional[MultiCloudData] = None
+    network_data: Optional[NetworkData] = None
 
     vm_matching: Dict[Tuple[VirtualMachine, Service, TimeUnit], LpVariable]
 
@@ -157,7 +159,6 @@ class Model:
 
     def with_multi_cloud(self, validated_multi_data: Validated[MultiCloudData]) -> Self:
         """Add multi cloud data to the model."""
-        print("with multi cloud")
         multi_data = validated_multi_data.data
         self.multi_data = multi_data
 
@@ -166,8 +167,6 @@ class Model:
             k: LpVariable(f"csp_used({k})", cat=LpBinary)
             for k in multi_data.cloud_service_providers
         }
-
-        print("csp used", csp_used)
 
         # Calculate csp_used values
         for k in multi_data.cloud_service_providers:
@@ -215,6 +214,138 @@ class Model:
                 ),
                 f"max_cloud_service_provider_count({k})",
             )
+
+        return self
+
+    def with_network(self, validated_network_data: Validated[NetworkData]) -> Self:
+        """Add network data to the model."""
+        network_data = validated_network_data.data
+        self.network_data = network_data
+
+        # How many VMs v are located at location loc at time t?
+        vm_locations: dict[tuple[VirtualMachine, Location, TimeUnit], LpVariable] = {
+            (v, loc, t): LpVariable(
+                f"vm_location({v},{loc},{t})", cat=LpInteger, lowBound=0
+            )
+            for v in self.base_data.virtual_machines
+            for loc in network_data.locations
+            for t in self.base_data.time
+        }
+
+        # All VMs are placed at exactly one location
+        for v in self.base_data.virtual_machines:
+            for t in self.base_data.time:
+                self.prob += (
+                    lpSum(vm_locations[v, loc, t] for loc in network_data.locations)
+                    == self.base_data.virtual_machine_demand[v, t]
+                )
+
+        # The VMs location is the location of the service where it's placed
+        for v in self.base_data.virtual_machines:
+            for loc in network_data.locations:
+                for t in self.base_data.time:
+                    for s in self.base_data.virtual_machine_services[v]:
+                        if loc in network_data.service_location[s]:
+                            self.prob += (
+                                vm_locations[v, loc, t] >= self.vm_matching[v, s, t]
+                            )
+
+        # Pay for VM -> location traffic
+        self.objective += lpSum(
+            vm_locations[vm, vm_loc, t]
+            * traffic
+            * network_data.location_traffic_cost[vm_loc, loc]
+            for (
+                vm,
+                loc,
+            ), traffic in network_data.virtual_machine_location_traffic.items()
+            for vm_loc in network_data.locations
+            for t in self.base_data.time
+        )
+
+        # === virtual_machine_virtual_machine_traffic ===
+
+        # The number of vm1 -> vm2 connections where vm1 is at loc1 and vm2 is at loc2 (at time t)
+        vm_vm_locations: dict[
+            tuple[VirtualMachine, VirtualMachine, Location, Location, TimeUnit],
+            LpVariable,
+        ] = {
+            (vm1, vm2, loc1, loc2, t): LpVariable(
+                f"vm_vm_locations({vm1},{vm2},{loc1},{loc2},{t})",
+                cat=LpInteger,
+                lowBound=0,
+            )
+            for (
+                vm1,
+                vm2,
+            ) in network_data.virtual_machine_virtual_machine_traffic.keys()
+            for loc1 in network_data.locations
+            for loc2 in network_data.locations
+            for t in self.base_data.time
+        }
+
+        # The connections must be at the locations where the VMs are actually placed
+        for t in self.base_data.time:
+            for (
+                vm1,
+                vm2,
+            ) in network_data.virtual_machine_virtual_machine_traffic.keys():
+                # Make enough outgoing connections from each location
+                for loc1 in network_data.locations:
+                    self.prob += vm_locations[vm1, loc1, t] == lpSum(
+                        vm_vm_locations[vm1, vm2, loc1, loc2, t]
+                        for loc2 in network_data.locations
+                    )
+
+                # Have at least one VM at the incoming location
+                for loc1 in network_data.locations:
+                    for loc2 in network_data.locations:
+                        self.prob += (
+                            vm_locations[vm2, loc2, t]
+                            * self.base_data.virtual_machine_demand[vm1, t]
+                            >= vm_vm_locations[vm1, vm2, loc1, loc2, t]
+                        )
+
+        # Respect maximum latencies
+        for t in self.base_data.time:
+            # For VM -> location traffic
+            for (
+                vm1,
+                loc2,
+            ), max_latency in network_data.virtual_machine_location_max_latency.items():
+                for loc1 in network_data.locations:
+                    if network_data.location_latency[loc1, loc2] > max_latency:
+                        if (
+                            vm1,
+                            loc2,
+                        ) in network_data.virtual_machine_location_traffic.keys():
+                            self.prob += vm_locations[vm1, loc1, t] == 0
+
+            # For VM -> VM traffic
+            for (
+                vm1,
+                vm2,
+            ), max_latency in (
+                network_data.virtual_machine_virtual_machine_max_latency.items()
+            ):
+                for loc1 in network_data.locations:
+                    for loc2 in network_data.locations:
+                        if network_data.location_latency[loc1, loc2] > max_latency:
+                            self.prob += vm_vm_locations[vm1, vm2, loc1, loc2, t] == 0
+
+        # Pay for VM -> location traffic caused by VM -> VM connections
+        self.objective += lpSum(
+            vm_vm_locations[vm1, vm2, loc1, loc2, t]
+            * traffic
+            * network_data.location_traffic_cost[loc1, loc2]
+            for (
+                vm1,
+                vm2,
+            ), traffic in network_data.virtual_machine_virtual_machine_traffic.items()
+            for loc1 in network_data.locations
+            for loc2 in network_data.locations
+            for t in self.base_data.time
+        )
 
         return self
 
