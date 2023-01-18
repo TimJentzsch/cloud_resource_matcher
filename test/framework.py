@@ -40,7 +40,6 @@ class Expect:
 
     def with_fixed_variable_values(self, fixed_values: Dict[str, float]) -> Self:
         """Fix the values of the given variables."""
-        print("With fixed vars", fixed_values)
         # The variables must be in the model
         self._with_variables(fixed_values.keys())
 
@@ -52,7 +51,6 @@ class Expect:
 
     def with_fixed_vm_service_matching(self, matching: VmServiceMatching) -> Self:
         """Fix the values of the variables defined by the given VM-service matching."""
-        print("With fixed matching", matching)
         self.with_fixed_variable_values(
             {f"vm_matching({v},{s},{t})": val for (v, s, t), val in matching.items()}
         )
@@ -107,10 +105,11 @@ class _ExpectResult:
 
     def _test_variables(self):
         variables = [var.name for var in self._expect._model.prob.variables()]
-        print("variables", variables)
         missing_variables = [
             var for var in self._expect._variables if var not in variables
         ]
+        for var in missing_variables:
+            assert not var in variables
 
         if len(missing_variables) > 0:
             pytest.fail(f"Missing variables: {missing_variables}")
