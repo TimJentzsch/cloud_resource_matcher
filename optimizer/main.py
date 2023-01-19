@@ -34,11 +34,10 @@ def main():
         },
     )
 
-    # TODO: Fix this making the model infeasible
     perf_data = PerformanceData(
-        virtual_machine_min_ram={f"vm_{v}": (v % 4) * 2 + 1 for v in range(vm_count)},
+        virtual_machine_min_ram={f"vm_{v}": v % 4 + 1 for v in range(vm_count)},
         virtual_machine_min_cpu_count={
-            # f"vm_{v}": (v + 2) % 5 + 1 for v in range(vm_count)
+            f"vm_{v}": (v + 2) % 3 + 1 for v in range(vm_count)
         },
         service_ram={f"service_{s}": (s + 4) % 30 + 5 for s in range(service_count)},
         service_cpu_count={f"service_{s}": s % 23 + 1 for s in range(service_count)},
@@ -88,11 +87,10 @@ def main():
     )
 
     model = (
-        Model(base_data.validate())
-        # .with_performance(perf_data.validate(base_data))
-        .with_multi_cloud(multi_data.validate(base_data)).with_network(
-            network_data.validate(base_data)
-        )
+        Model(base_data.validate()).with_performance(perf_data.validate(base_data))
+        # .with_multi_cloud(multi_data.validate(base_data)).with_network(
+        #     network_data.validate(base_data)
+        # )
     )
 
     try:

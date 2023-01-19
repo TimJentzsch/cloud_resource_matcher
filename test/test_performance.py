@@ -158,3 +158,26 @@ def test_allowed_incomplete_data():
     )
 
     Expect(model).to_be_feasible()
+
+
+def test_should_work_with_higher_virtual_machine_demand():
+    """Some virtual machines have a demand higher than 1."""
+    base_data = BaseData(
+        virtual_machines=["vm_0"],
+        services=["s_0"],
+        virtual_machine_services={"vm_0": ["s_0"]},
+        service_base_costs={"s_0": 1},
+        time=[0],
+        virtual_machine_demand={("vm_0", 0): 2},
+    )
+
+    model = Model(base_data.validate()).with_performance(
+        PerformanceData(
+            virtual_machine_min_ram={"vm_0": 1},
+            virtual_machine_min_cpu_count={"vm_0": 1},
+            service_ram={"s_0": 2},
+            service_cpu_count={"s_0": 2},
+        ).validate(base_data)
+    )
+
+    Expect(model).to_be_feasible().with_vm_service_matching({("vm_0", "s_0", 0): 2})
