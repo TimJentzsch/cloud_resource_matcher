@@ -24,7 +24,9 @@ def test_with_sufficient_resources():
         ).validate(base_data)
     )
 
-    Expect(model).to_be_feasible().with_cost(5).test()
+    Expect(model).to_be_feasible().with_cost(5).with_service_instance_count(
+        {("s_0", 0): 1}
+    ).test()
 
 
 def test_with_insufficient_ram():
@@ -181,3 +183,28 @@ def test_should_work_with_higher_virtual_machine_demand():
     )
 
     Expect(model).to_be_feasible().with_vm_service_matching({("vm_0", "s_0", 0): 2})
+
+
+def test_should_buy_multiple_services_if_needed():
+    """There are two virtual machines and one service instance can only host one VM."""
+    base_data = BaseData(
+        virtual_machines=["vm_0", "vm_1"],
+        services=["s_0"],
+        virtual_machine_services={"vm_0": ["s_0"], "vm_1": ["s_0"]},
+        service_base_costs={"s_0": 1},
+        time=[0],
+        virtual_machine_demand={("vm_0", 0): 1, ("vm_1", 0): 1},
+    )
+
+    model = Model(base_data.validate()).with_performance(
+        PerformanceData(
+            virtual_machine_min_ram={"vm_0": 1},
+            virtual_machine_min_cpu_count={"vm_0": 1},
+            service_ram={"s_0": 1},
+            service_cpu_count={"s_0": 1},
+        ).validate(base_data)
+    )
+
+    Expect(model).to_be_feasible().with_vm_service_matching(
+        {("vm_0", "s_0", 0): 1, ("vm_1", "s_0", 0): 1}
+    ).with_service_instance_count({("s_0", 0): 2}).with_cost(2)

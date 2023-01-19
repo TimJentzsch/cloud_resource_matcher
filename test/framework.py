@@ -10,6 +10,7 @@ from optimizer.model import (
     SolveErrorReason,
     SolveSolution,
     VmServiceMatching,
+    ServiceInstanceCount,
 )
 
 
@@ -142,6 +143,7 @@ class _ExpectFeasible(_ExpectResult):
     _epsilon: Optional[float] = None
 
     _vm_service_matching: Optional[VmServiceMatching] = None
+    _service_instance_count: Optional[ServiceInstanceCount] = None
 
     _variable_values: Dict[str, float]
 
@@ -162,6 +164,14 @@ class _ExpectFeasible(_ExpectResult):
     def with_vm_service_matching(self, vm_service_matching: VmServiceMatching) -> Self:
         """Enforce that the virtual machines are matched to the given services."""
         self._vm_service_matching = vm_service_matching
+
+        return self
+
+    def with_service_instance_count(
+        self, service_instance_count: ServiceInstanceCount
+    ) -> Self:
+        """Enforce that the right amount of instances are bought for each service."""
+        self._service_instance_count = service_instance_count
 
         return self
 
@@ -190,6 +200,7 @@ class _ExpectFeasible(_ExpectResult):
 
             self._test_variable_values()
             self._test_vm_service_matching(solution)
+            self._test_service_instance_count(solution)
             self._test_cost(solution)
         except SolveError as err:
             self._print_model()
@@ -209,6 +220,14 @@ class _ExpectFeasible(_ExpectResult):
         assert (
             solution.vm_service_matching == self._vm_service_matching
         ), "Different VM/Service matching than expected"
+
+    def _test_service_instance_count(self, solution: SolveSolution):
+        if self._service_instance_count is None:
+            return
+
+        assert (
+            solution.service_instance_count == self._service_instance_count
+        ), "Different service instance counts than expected"
 
     def _test_variable_values(self):
         actual_values = {

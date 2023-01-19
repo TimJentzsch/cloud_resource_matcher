@@ -13,10 +13,6 @@ from pulp import (
     LpBinary,
     LpStatus,
     LpInteger,
-    LpConstraint,
-    LpConstraintLE,
-    LpConstraintGE,
-    LpConstraintEQ,
 )
 
 from optimizer.data import (
@@ -32,12 +28,14 @@ from optimizer.data.validated import Validated
 from optimizer.solver import Solver
 
 
-VmServiceMatching = Dict[Tuple[VirtualMachine, Service, TimeUnit], int]
+VmServiceMatching = dict[tuple[VirtualMachine, Service, TimeUnit], int]
+ServiceInstanceCount = dict[tuple[Service, TimeUnit], int]
 
 
 @dataclass
 class SolveSolution:
     vm_service_matching: VmServiceMatching
+    service_instance_count: ServiceInstanceCount
     cost: float
 
 
@@ -67,7 +65,7 @@ class Model:
     # Which virtual machine to put on which service
     vm_matching: Dict[Tuple[VirtualMachine, Service, TimeUnit], LpVariable]
     # The number of instances to buy of each service
-    service_instances: dict[tuple[Service, TimeUnit], LpVariable]
+    service_instance_count: dict[tuple[Service, TimeUnit], LpVariable]
 
     def __init__(self, validated_base_data: Validated[BaseData]):
         """Create a new model for the cost optimization problem."""
@@ -96,8 +94,10 @@ class Model:
         }
 
         # Buy how many services instances for s at time t?
-        self.service_instances = {
-            (s, t): LpVariable(f"service_instances({s},{t})", cat=LpInteger, lowBound=0)
+        self.service_instance_count = {
+            (s, t): LpVariable(
+                f"service_instance_count({s},{t})", cat=LpInteger, lowBound=0
+            )
             for s in self.base_data.services
             for t in base_data.time
         }
@@ -113,7 +113,7 @@ class Model:
         for s in base_data.services:
             for t in base_data.time:
                 self.prob += (
-                    self.service_used[s, t] <= self.service_instances[s, t],
+                    self.service_used[s, t] <= self.service_instance_count[s, t],
                     f"connect_service_instances_and_service_used({s},{t})",
                 )
 
@@ -147,7 +147,7 @@ class Model:
         # Base costs for used services
         self.objective = LpAffineExpression(
             lpSum(
-                self.service_instances[s, t] * base_data.service_base_costs[s]
+                self.service_instance_count[s, t] * base_data.service_base_costs[s]
                 for s in base_data.services
                 for t in base_data.time
             )
@@ -396,9 +396,9 @@ class Model:
         if status != "Optimal":
             raise SolveError(SolveErrorReason.INFEASIBLE)
 
+        # Extract the solution
         vm_service_matching: VmServiceMatching = {}
 
-        # Extract the solution
         for v in self.base_data.virtual_machines:
             for s in self.base_data.virtual_machine_services[v]:
                 for t in self.base_data.time:
@@ -407,8 +407,21 @@ class Model:
                     if value >= 1:
                         vm_service_matching[v, s, t] = value
 
+        service_instance_count: ServiceInstanceCount = {}
+
+        for s in self.base_data.services:
+            for t in self.base_data.time:
+                value = round(pulp.value(self.service_instance_count[s, t]))
+
+                if value >= 1:
+                    service_instance_count[s, t] = value
+
         cost = self.prob.objective.value()
-        solution = SolveSolution(vm_service_matching=vm_service_matching, cost=cost)
+        solution = SolveSolution(
+            vm_service_matching=vm_service_matching,
+            service_instance_count=service_instance_count,
+            cost=cost,
+        )
 
         return solution
 

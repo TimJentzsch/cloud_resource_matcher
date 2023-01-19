@@ -55,7 +55,7 @@ def test_no_valid_systems_for_vm():
     )
 
     Expect(model).to_be_infeasible().with_variables(
-        {"service_instances(s_0,0)", "service_used(s_0,0)"}, exclusive=True
+        {"service_instance_count(s_0,0)", "service_used(s_0,0)"}, exclusive=True
     ).test()
 
 
