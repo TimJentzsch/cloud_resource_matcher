@@ -2,17 +2,19 @@ from optimizer.data.base_data import BaseData
 from optimizer.data.network_data import NetworkData
 from optimizer.data.performance_data import PerformanceData
 from optimizer.data.multi_cloud_data import MultiCloudData
-from optimizer.model import Model, SolveError
+from optimizer.model import Model, SolveError, SolveSolution
 from optimizer.solver import Solver
 
 
-def main():
-    vm_count = 50
-    service_count = 50
-    time_count = 500
-    csp_count = 3
-    location_count = 5
-
+def solve_demo_model(
+    vm_count: int,
+    service_count: int,
+    time_count: int,
+    csp_count: int,
+    location_count: int,
+    solver: Solver = Solver.CBC,
+) -> SolveSolution:
+    """Create and solve a model based on demo data."""
     base_data = BaseData(
         virtual_machines=[f"vm_{v}" for v in range(vm_count)],
         services=[f"service_{s}" for s in range(service_count)],
@@ -93,8 +95,68 @@ def main():
         # )
     )
 
+    return model.solve(solver=solver)
+
+
+def main():
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Optimize the costs for cloud computing applications."
+    )
+    parser.add_argument(
+        "--solver",
+        choices=["cbc", "gurobi"],
+        default="cbc",
+        help="The solver to use to solve the mixed-integer program.",
+    )
+    parser.add_argument(
+        "--vm-count",
+        type=int,
+        default=50,
+        help="The number of virtual machines (VMs) in the demo data.",
+    )
+    parser.add_argument(
+        "--service-count",
+        type=int,
+        default=50,
+        help="The number of cloud services in the demo data.",
+    )
+    parser.add_argument(
+        "--time-count",
+        type=int,
+        default=500,
+        help="The number of discrete time units in the demo data.",
+    )
+    parser.add_argument(
+        "--location-count",
+        type=int,
+        default=5,
+        help="The number of locations in the demo data. This is used for the networking data.",
+    )
+    parser.add_argument(
+        "--csp-count",
+        type=int,
+        default=3,
+        help="The number of cloud service providers (CSPs) in the demo data.",
+    )
+
+    args = parser.parse_args()
+
+    if args.solver == "gurobi":
+        solver = Solver.GUROBI
+    else:
+        solver = Solver.CBC
+
     try:
-        solution = model.solve(solver=Solver.DEFAULT)
+        solution = solve_demo_model(
+            vm_count=args.vm_count,
+            service_count=args.service_count,
+            time_count=args.time_count,
+            location_count=args.location_count,
+            csp_count=args.csp_count,
+            solver=solver,
+        )
         print("=== SOLUTION FOUND ===\n")
         print(f"Cost: {solution.cost}")
     except SolveError as e:
