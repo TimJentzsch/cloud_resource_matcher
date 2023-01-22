@@ -1,3 +1,9 @@
+import datetime
+import time
+from datetime import timedelta, datetime
+from typing import Optional
+
+from optimizer.data import Cost
 from optimizer.data.base_data import BaseData
 from optimizer.data.network_data import NetworkData
 from optimizer.data.performance_data import PerformanceData
@@ -13,6 +19,9 @@ def solve_demo_model(
     csp_count: int,
     location_count: int,
     solver: Solver = Solver.CBC,
+    time_limit: Optional[timedelta] = None,
+    cost_gap_abs: Optional[Cost] = None,
+    cost_gap_rel: Optional[float] = None,
 ) -> SolveSolution:
     """Create and solve a model based on demo data."""
     base_data = BaseData(
@@ -95,7 +104,12 @@ def solve_demo_model(
         # )
     )
 
-    return model.solve(solver=solver)
+    return model.solve(
+        solver=solver,
+        time_limit=time_limit,
+        cost_gap_abs=cost_gap_abs,
+        cost_gap_rel=cost_gap_rel,
+    )
 
 
 def main():
@@ -140,6 +154,27 @@ def main():
         default=3,
         help="The number of cloud service providers (CSPs) in the demo data.",
     )
+    parser.add_argument(
+        "--time-limit-sec",
+        type=float,
+        default=None,
+        help="The maximum amount of time to solve the problem, in seconds.",
+    )
+    parser.add_argument(
+        "--cost-gap-abs",
+        type=float,
+        default=None,
+        help="The absolute tolerance for the cost until the optimization stops.",
+    )
+    parser.add_argument(
+        "--cost-gap-rel",
+        type=float,
+        default=None,
+        help=(
+            "The relative tolerance for the cost until the optimization stops. "
+            "A fractional value between 0.0 and 1.0"
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -147,6 +182,22 @@ def main():
         solver = Solver.GUROBI
     else:
         solver = Solver.CBC
+
+    if args.cost_gap_rel is not None:
+        if args.cost_gap_rel < 0.0 or args.cost_gap_rel > 1.0:
+            print(
+                "--cost-gap-rel must be a value between 0.0 and 1.0, "
+                f"but it's {args.cost_gap_rel}"
+            )
+            exit(102)
+            return
+
+    if args.time_limit_sec is not None:
+        time_limit = timedelta(seconds=args.time_limit_sec)
+    else:
+        time_limit = None
+
+    start_time = datetime.now()
 
     try:
         solution = solve_demo_model(
@@ -156,10 +207,20 @@ def main():
             location_count=args.location_count,
             csp_count=args.csp_count,
             solver=solver,
+            time_limit=time_limit,
+            cost_gap_abs=args.cost_gap_abs,
+            cost_gap_rel=args.cost_gap_rel,
         )
+
+        duration = datetime.now() - start_time
+
         print("=== SOLUTION FOUND ===\n")
         print(f"Cost: {solution.cost}")
+        print(f"Duration: {duration.total_seconds():.2f}s")
     except SolveError as e:
+        duration = datetime.now() - start_time
+
         print("=== PROBLEM INFEASIBLE ===\n")
         print(f"{e.reason}")
+        print(f"Duration: {duration.total_seconds():.2f}s")
         exit(101)

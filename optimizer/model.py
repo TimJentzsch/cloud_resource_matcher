@@ -1,5 +1,6 @@
 import tempfile
 from dataclasses import dataclass
+from datetime import timedelta
 from enum import Enum
 from typing import Dict, Optional, Self, Tuple
 
@@ -19,6 +20,7 @@ from optimizer.data import (
     VirtualMachine,
     Service,
     TimeUnit,
+    Cost,
 )
 from optimizer.data.base_data import BaseData
 from optimizer.data.multi_cloud_data import MultiCloudData
@@ -379,15 +381,36 @@ class Model:
 
         return self
 
-    def solve(self, solver: Solver = Solver.CBC) -> SolveSolution:
-        """Solve the optimization problem."""
+    def solve(
+        self,
+        solver: Solver = Solver.CBC,
+        time_limit: Optional[timedelta] = None,
+        cost_gap_abs: Optional[Cost] = None,
+        cost_gap_rel: Optional[float] = None,
+    ) -> SolveSolution:
+        """Solve the optimization problem.
+
+        :param solver: The solver to use to solve the mixed-integer program.
+        :param time_limit: The maximum amount of time after which to stop the optimization.
+        :param cost_gap_abs: The absolute cost tolerance for the solver to stop.
+        :param cost_gap_rel: The relative cost tolerance for the solver to stop as a fraction.
+        Must be a value between 0.0 and 1.0.
+        """
         # Add the objective function
         self.prob.setObjective(self.objective)
 
+        time_limit_sec = None if time_limit is None else time_limit.total_seconds()
+
         if solver == Solver.GUROBI:
-            pulp_solver = pulp.GUROBI_CMD()
+            pulp_solver = pulp.GUROBI_CMD(
+                timeLimit=time_limit_sec, gapAbs=cost_gap_abs, gapRel=cost_gap_rel
+            )
+        elif solver == Solver.CBC:
+            pulp_solver = pulp.PULP_CBC_CMD(
+                timeLimit=time_limit_sec, gapAbs=cost_gap_abs, gapRel=cost_gap_rel
+            )
         else:
-            pulp_solver = None
+            raise RuntimeError(f"Unsupported solver '{solver}'")
 
         # Solve the problem
         status_code = self.prob.solve(solver=pulp_solver)
