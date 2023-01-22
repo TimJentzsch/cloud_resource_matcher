@@ -54,7 +54,9 @@ def test_no_valid_systems_for_vm():
         ).validate()
     )
 
-    Expect(model).to_be_infeasible().with_variables(set(), exclusive=True).test()
+    Expect(model).to_be_infeasible().with_variables(
+        {"service_instance_count(s_0,0)", "service_used(s_0,0)"}, exclusive=True
+    ).test()
 
 
 def test_one_vm_multiple_time_units():
@@ -86,6 +88,6 @@ def test_one_vm_multiple_time_units_varying_demand():
         ).validate()
     )
 
-    Expect(model).to_be_feasible().with_cost(10).with_vm_service_matching(
+    Expect(model).to_be_feasible().with_cost(3).with_vm_service_matching(
         {("vm_0", "s_0", 0): 5, ("vm_0", "s_0", 1): 3, ("vm_0", "s_0", 2): 2}
     ).test()

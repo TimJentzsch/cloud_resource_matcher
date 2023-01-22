@@ -13,10 +13,6 @@ from pulp import (
     LpBinary,
     LpStatus,
     LpInteger,
-    LpConstraint,
-    LpConstraintLE,
-    LpConstraintGE,
-    LpConstraintEQ,
 )
 
 from optimizer.data import (
@@ -32,12 +28,14 @@ from optimizer.data.validated import Validated
 from optimizer.solver import Solver
 
 
-VmServiceMatching = Dict[Tuple[VirtualMachine, Service, TimeUnit], int]
+VmServiceMatching = dict[tuple[VirtualMachine, Service, TimeUnit], int]
+ServiceInstanceCount = dict[tuple[Service, TimeUnit], int]
 
 
 @dataclass
 class SolveSolution:
     vm_service_matching: VmServiceMatching
+    service_instance_count: ServiceInstanceCount
     cost: float
 
 
@@ -64,13 +62,26 @@ class Model:
     multi_data: Optional[MultiCloudData] = None
     network_data: Optional[NetworkData] = None
 
+    # Which virtual machine to put on which service
     vm_matching: Dict[Tuple[VirtualMachine, Service, TimeUnit], LpVariable]
+    # The number of instances to buy of each service
+    service_instance_count: dict[tuple[Service, TimeUnit], LpVariable]
 
     def __init__(self, validated_base_data: Validated[BaseData]):
         """Create a new model for the cost optimization problem."""
         base_data = validated_base_data.data
         self.base_data = base_data
         self.prob = LpProblem("cloud_cost_optimization", LpMinimize)
+
+        # The virtual machines that can use service s
+        service_virtual_machines: dict[Service, set[VirtualMachine]] = {
+            s: set(
+                vm
+                for vm in base_data.virtual_machines
+                if s in base_data.virtual_machine_services[vm]
+            )
+            for s in base_data.services
+        }
 
         # Assign virtual machine v to cloud service s at time t?
         self.vm_matching = {
@@ -82,27 +93,62 @@ class Model:
             for t in base_data.time
         }
 
+        # Buy how many services instances for s at time t?
+        self.service_instance_count = {
+            (s, t): LpVariable(
+                f"service_instance_count({s},{t})", cat=LpInteger, lowBound=0
+            )
+            for s in self.base_data.services
+            for t in base_data.time
+        }
+
+        # Has service s been purchased at time t at all?
+        self.service_used = {
+            (s, t): LpVariable(f"service_used({s},{t})", cat=LpBinary)
+            for s in self.base_data.services
+            for t in base_data.time
+        }
+
+        # Calculate service_used
+        for s in base_data.services:
+            for t in base_data.time:
+                self.prob += (
+                    self.service_used[s, t] <= self.service_instance_count[s, t],
+                    f"connect_service_instances_and_service_used({s},{t})",
+                )
+
         # Satisfy virtual machine demand
         for v in base_data.virtual_machines:
             for t in base_data.time:
-                self.prob.addConstraint(
-                    LpConstraint(
-                        lpSum(
-                            self.vm_matching[v, s, t]
-                            for s in base_data.virtual_machine_services[v]
-                        ),
-                        sense=LpConstraintEQ,
-                        rhs=base_data.virtual_machine_demand[v, t],
-                    ),
+                self.prob += (
+                    lpSum(
+                        self.vm_matching[v, s, t]
+                        for s in base_data.virtual_machine_services[v]
+                    )
+                    == base_data.virtual_machine_demand[v, t],
                     f"virtual_machine_demand({v},{t})",
                 )
 
-        # Base costs for used virtual machines
+        # Only assign VMs to services that have been bought
+        for s in base_data.services:
+            for t in base_data.time:
+                self.prob += (
+                    lpSum(
+                        self.vm_matching[vm, s, t] for vm in service_virtual_machines[s]
+                    )
+                    <= self.service_used[s, t]
+                    * sum(
+                        base_data.virtual_machine_demand[vm, t]
+                        for vm in service_virtual_machines[s]
+                    ),
+                    f"vms_to_bought_service({s},{t})",
+                )
+
+        # Base costs for used services
         self.objective = LpAffineExpression(
             lpSum(
-                self.vm_matching[v, s, t] * base_data.service_base_costs[s]
-                for v in base_data.virtual_machines
-                for s in base_data.virtual_machine_services[v]
+                self.service_instance_count[s, t] * base_data.service_base_costs[s]
+                for s in base_data.services
                 for t in base_data.time
             )
         )
@@ -126,32 +172,25 @@ class Model:
         for s in self.base_data.services:
             for t in self.base_data.time:
                 # RAM
-                self.prob.addConstraint(
-                    LpConstraint(
-                        lpSum(
-                            self.vm_matching[v, s, t]
-                            * perf_data.virtual_machine_min_ram[v]
-                            for v in service_virtual_machines[s]
-                            if v in perf_data.virtual_machine_min_ram.keys()
-                        ),
-                        sense=LpConstraintLE,
-                        rhs=perf_data.service_ram[s],
-                    ),
+                self.prob += (
+                    lpSum(
+                        self.vm_matching[v, s, t] * perf_data.virtual_machine_min_ram[v]
+                        for v in service_virtual_machines[s]
+                        if v in perf_data.virtual_machine_min_ram.keys()
+                    )
+                    <= perf_data.service_ram[s],
                     f"ram_performance_limit({s},{t})",
                 )
 
                 # vCPUs
                 self.prob.addConstraint(
-                    LpConstraint(
-                        lpSum(
-                            self.vm_matching[v, s, t]
-                            * perf_data.virtual_machine_min_cpu_count[v]
-                            for v in service_virtual_machines[s]
-                            if v in perf_data.virtual_machine_min_cpu_count.keys()
-                        ),
-                        sense=LpConstraintLE,
-                        rhs=perf_data.service_cpu_count[s],
-                    ),
+                    lpSum(
+                        self.vm_matching[v, s, t]
+                        * perf_data.virtual_machine_min_cpu_count[v]
+                        for v in service_virtual_machines[s]
+                        if v in perf_data.virtual_machine_min_cpu_count.keys()
+                    )
+                    <= perf_data.service_cpu_count[s],
                     f"cpu_performance_limit({s},{t})",
                 )
 
@@ -178,40 +217,31 @@ class Model:
                 for t in self.base_data.time
             )
 
-            self.prob.addConstraint(
-                LpConstraint(
-                    csp_used[k] - used_service_count, sense=LpConstraintLE, rhs=0
-                ),
+            self.prob += (
+                csp_used[k] - used_service_count <= 0,
                 f"csp_used({k})_enforce_0",
             )
-            self.prob.addConstraint(
-                LpConstraint(
+            self.prob += (
+                (
                     csp_used[k]
                     * len(self.base_data.virtual_machines)
                     * len(self.base_data.time)
-                    - used_service_count,
-                    sense=LpConstraintGE,
-                    rhs=0,
-                ),
+                    - used_service_count
+                )
+                >= 0,
                 f"csp_used({k})_enforce_1",
             )
 
         # Enforce minimum and maximum number of used CSPs
         for k in multi_data.cloud_service_providers:
             self.prob.addConstraint(
-                LpConstraint(
-                    lpSum(csp_used[k] for k in multi_data.cloud_service_providers),
-                    sense=LpConstraintGE,
-                    rhs=multi_data.min_cloud_service_provider_count,
-                ),
+                lpSum(csp_used[k] for k in multi_data.cloud_service_providers)
+                >= multi_data.min_cloud_service_provider_count,
                 f"min_cloud_service_provider_count({k})",
             )
             self.prob.addConstraint(
-                LpConstraint(
-                    lpSum(csp_used[k] for k in multi_data.cloud_service_providers),
-                    sense=LpConstraintLE,
-                    rhs=multi_data.max_cloud_service_provider_count,
-                ),
+                lpSum(csp_used[k] for k in multi_data.cloud_service_providers)
+                <= multi_data.max_cloud_service_provider_count,
                 f"max_cloud_service_provider_count({k})",
             )
 
@@ -366,9 +396,9 @@ class Model:
         if status != "Optimal":
             raise SolveError(SolveErrorReason.INFEASIBLE)
 
+        # Extract the solution
         vm_service_matching: VmServiceMatching = {}
 
-        # Extract the solution
         for v in self.base_data.virtual_machines:
             for s in self.base_data.virtual_machine_services[v]:
                 for t in self.base_data.time:
@@ -377,8 +407,21 @@ class Model:
                     if value >= 1:
                         vm_service_matching[v, s, t] = value
 
+        service_instance_count: ServiceInstanceCount = {}
+
+        for s in self.base_data.services:
+            for t in self.base_data.time:
+                value = round(pulp.value(self.service_instance_count[s, t]))
+
+                if value >= 1:
+                    service_instance_count[s, t] = value
+
         cost = self.prob.objective.value()
-        solution = SolveSolution(vm_service_matching=vm_service_matching, cost=cost)
+        solution = SolveSolution(
+            vm_service_matching=vm_service_matching,
+            service_instance_count=service_instance_count,
+            cost=cost,
+        )
 
         return solution
 

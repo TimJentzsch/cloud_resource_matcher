@@ -128,8 +128,8 @@ def test_should_pay_for_vm_location_costs():
     )
 
     # Make sure the network costs are included in the total costs
-    # demand * service base cost + demand * traffic * traffic cost
-    Expect(model).to_be_feasible().with_cost(3 * 5 + 3 * 3 * 2).test()
+    # service base cost + demand * traffic * traffic cost
+    Expect(model).to_be_feasible().with_cost(5 + 3 * 3 * 2).test()
 
 
 def test_should_be_infeasible_if_max_latency_is_violated():
