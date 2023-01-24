@@ -27,8 +27,7 @@ from optimizer.data.multi_cloud_data import MultiCloudData
 from optimizer.data.network_data import NetworkData, Location
 from optimizer.data.performance_data import PerformanceData
 from optimizer.data.validated import Validated
-from optimizer.solver import Solver
-
+from optimizer.solver import Solver, get_pulp_solver
 
 VmServiceMatching = dict[tuple[VirtualMachine, Service, TimeUnit], int]
 ServiceInstanceCount = dict[tuple[Service, TimeUnit], int]
@@ -399,24 +398,12 @@ class Model:
         # Add the objective function
         self.prob.setObjective(self.objective)
 
-        time_limit_sec = None if time_limit is None else time_limit.total_seconds()
-
-        if solver == Solver.GUROBI:
-            pulp_solver = pulp.GUROBI_CMD(
-                timeLimit=time_limit_sec, gapAbs=cost_gap_abs, gapRel=cost_gap_rel
-            )
-        elif solver == Solver.SCIP:
-            pulp_solver = pulp.SCIP_CMD(
-                timeLimit=time_limit_sec,
-                gapAbs=cost_gap_abs,
-                gapRel=cost_gap_rel,
-            )
-        elif solver == Solver.CBC:
-            pulp_solver = pulp.PULP_CBC_CMD(
-                timeLimit=time_limit_sec, gapAbs=cost_gap_abs, gapRel=cost_gap_rel
-            )
-        else:
-            raise RuntimeError(f"Unsupported solver '{solver}'")
+        pulp_solver = get_pulp_solver(
+            solver=solver,
+            time_limit=time_limit,
+            cost_gap_abs=cost_gap_abs,
+            cost_gap_rel=cost_gap_rel,
+        )
 
         # Solve the problem
         status_code = self.prob.solve(solver=pulp_solver)
