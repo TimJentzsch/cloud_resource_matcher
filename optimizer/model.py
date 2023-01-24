@@ -405,6 +405,12 @@ class Model:
             pulp_solver = pulp.GUROBI_CMD(
                 timeLimit=time_limit_sec, gapAbs=cost_gap_abs, gapRel=cost_gap_rel
             )
+        elif solver == Solver.SCIP:
+            pulp_solver = pulp.SCIP_CMD(
+                timeLimit=time_limit_sec,
+                gapAbs=cost_gap_abs,
+                gapRel=cost_gap_rel,
+            )
         elif solver == Solver.CBC:
             pulp_solver = pulp.PULP_CBC_CMD(
                 timeLimit=time_limit_sec, gapAbs=cost_gap_abs, gapRel=cost_gap_rel

@@ -120,7 +120,7 @@ def main():
     )
     parser.add_argument(
         "--solver",
-        choices=["cbc", "gurobi"],
+        choices=["cbc", "gurobi", "scip"],
         default="cbc",
         help="The solver to use to solve the mixed-integer program.",
     )
@@ -180,8 +180,12 @@ def main():
 
     if args.solver == "gurobi":
         solver = Solver.GUROBI
-    else:
+    elif args.solver == "scip":
+        solver = Solver.SCIP
+    elif args.solver == "cbc":
         solver = Solver.CBC
+    else:
+        raise RuntimeError(f"Unsupported solver {args.solver}")
 
     if args.cost_gap_rel is not None:
         if args.cost_gap_rel < 0.0 or args.cost_gap_rel > 1.0:
