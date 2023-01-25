@@ -21,6 +21,10 @@ class Solver(Enum):
     # <https://scipopt.org/>
     SCIP = 2
 
+    # A parallelized version of SCIP.
+    # <https://ug.zib.de>
+    FSCIP = 3
+
 
 def get_pulp_solver(
     solver: Solver = Solver.CBC,
@@ -35,7 +39,9 @@ def get_pulp_solver(
         timeLimit=time_limit_sec, gapAbs=cost_gap_abs, gapRel=cost_gap_rel
     )
 
-    if solver == Solver.GUROBI:
+    if solver == Solver.CBC:
+        return pulp.PULP_CBC_CMD(**base_params)
+    elif solver == Solver.GUROBI:
         return pulp.GUROBI_CMD(**base_params)
     elif solver == Solver.SCIP:
         scip_options = [
@@ -43,7 +49,7 @@ def get_pulp_solver(
             "set heuristics emphasis aggressive",
         ]
         return pulp.SCIP_CMD(**base_params, options=scip_options)
-    elif solver == Solver.CBC:
-        return pulp.PULP_CBC_CMD(**base_params)
+    elif solver == Solver.FSCIP:
+        return pulp.FSCIP_CMD(**base_params)
     else:
         raise RuntimeError(f"Unsupported solver '{solver}'")

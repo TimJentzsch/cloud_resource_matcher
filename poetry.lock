@@ -131,9 +131,9 @@ develop = false
 
 [package.source]
 type = "git"
-url = "https://github.com/coin-or/pulp.git"
-reference = "006753076be18ee857339d333a5db11e599f21a2"
-resolved_reference = "006753076be18ee857339d333a5db11e599f21a2"
+url = "https://github.com/TimJentzsch/pulp.git"
+reference = "ff1f470320ecbe43afce48253e50b14cbc125757"
+resolved_reference = "ff1f470320ecbe43afce48253e50b14cbc125757"
 
 [[package]]
 name = "pyright"
@@ -184,7 +184,7 @@ testing-integration = ["build[virtualenv]", "filelock (>=3.4.0)", "jaraco.envs (
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.11"
-content-hash = "6910df1b26ab8adaa8b5e2b6ba0aac927d8313c723253822682f41de5d0dcf50"
+content-hash = "87d20fb75b71701772e02c8346cbc2153973c3c4a3ad80d3aae9976d36eeafa3"
 
 [metadata.files]
 attrs = [
