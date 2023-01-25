@@ -38,7 +38,11 @@ def get_pulp_solver(
     if solver == Solver.GUROBI:
         return pulp.GUROBI_CMD(**base_params)
     elif solver == Solver.SCIP:
-        return pulp.SCIP_CMD(**base_params)
+        scip_options = [
+            "set presolving emphasis aggressive",
+            "set heuristics emphasis aggressive",
+        ]
+        return pulp.SCIP_CMD(**base_params, options=scip_options)
     elif solver == Solver.CBC:
         return pulp.PULP_CBC_CMD(**base_params)
     else:
