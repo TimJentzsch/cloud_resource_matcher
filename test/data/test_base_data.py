@@ -12,7 +12,7 @@ def test_should_not_raise_error_for_valid_data():
         service_base_costs={"s_0": 5},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 1},
-        max_service_instances={},
+        max_service_instances={"s_0": 1},
     )
 
     data.validate()
@@ -153,6 +153,38 @@ class TestVirtualMachineDemand:
             time=[0],
             virtual_machine_demand={("vm_0", 0): -1},
             max_service_instances={},
+        )
+
+        with pytest.raises(AssertionError):
+            data.validate()
+
+
+class TestMaxServiceInstances:
+    def test_should_raise_error_for_invalid_service(self):
+        """One of the services does not exist."""
+        data = BaseData(
+            virtual_machines=["vm_0"],
+            services=["s_0"],
+            virtual_machine_services={"vm_0": ["s_0"]},
+            service_base_costs={"s_0": 1},
+            time=[0],
+            virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={"s_0": 1, "s_1": 1},
+        )
+
+        with pytest.raises(AssertionError):
+            data.validate()
+
+    def test_should_raise_error_for_negative_instance_count(self):
+        """A maximum instance count is negative."""
+        data = BaseData(
+            virtual_machines=["vm_0"],
+            services=["s_0"],
+            virtual_machine_services={"vm_0": ["s_0"]},
+            service_base_costs={"s_0": 1},
+            time=[0],
+            virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={"s_0": -1},
         )
 
         with pytest.raises(AssertionError):
