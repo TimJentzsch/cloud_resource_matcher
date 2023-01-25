@@ -15,6 +15,7 @@ def test_min_csp_count_constraint_matching():
         service_base_costs={"s_0": 1, "s_1": 1, "s_2": 10},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 1, ("vm_1", 0): 1},
+        max_service_instances={},
     )
 
     model = Model(base_data.validate()).with_multi_cloud(
@@ -42,6 +43,7 @@ def test_max_csp_count_constraint_matching():
         service_base_costs={"s_0": 10, "s_1": 10, "s_2": 1},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 1, ("vm_1", 0): 1},
+        max_service_instances={},
     )
 
     model = Model(base_data.validate()).with_multi_cloud(
@@ -67,6 +69,7 @@ def test_min_csp_count_constraint_infeasible():
         service_base_costs={"s_0": 10},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 1},
+        max_service_instances={},
     )
 
     model = Model(base_data.validate()).with_multi_cloud(
@@ -90,6 +93,7 @@ def test_max_csp_count_constraint_infeasible():
         service_base_costs={"s_0": 10, "s_1": 10},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 1, ("vm_1", 0): 1},
+        max_service_instances={},
     )
 
     model = Model(base_data.validate()).with_multi_cloud(
@@ -113,6 +117,7 @@ def test_with_multiple_time_points():
         service_base_costs={"s_0": 10},
         time=[0, 1],
         virtual_machine_demand={("vm_0", 0): 1, ("vm_0", 1): 1},
+        max_service_instances={},
     )
 
     model = Model(base_data.validate()).with_multi_cloud(

@@ -16,6 +16,7 @@ def test_computation_of_vm_locations():
         service_base_costs={"s_0": 5, "s_1": 5},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 3, ("vm_1", 0): 4},
+        max_service_instances={},
     )
 
     locations = {"loc_0", "loc_1"}
@@ -63,6 +64,7 @@ def test_computation_of_vm_locations_split():
         service_base_costs={"s_0": 5, "s_1": 5},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 3, ("vm_1", 0): 4},
+        max_service_instances={},
     )
 
     locations = {"loc_0", "loc_1"}
@@ -112,6 +114,7 @@ def test_should_pay_for_vm_location_costs():
         service_base_costs={"s_0": 5},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 3},
+        max_service_instances={},
     )
 
     model = Model(base_data.validate()).with_network(
@@ -141,6 +144,7 @@ def test_should_be_infeasible_if_max_latency_is_violated():
         service_base_costs={"s_0": 5},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 1},
+        max_service_instances={},
     )
 
     locations = {"loc_0", "loc_1"}
@@ -178,6 +182,7 @@ def test_should_choose_matching_that_respects_max_latency():
         service_base_costs={"s_0": 5, "s_1": 5},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 1},
+        max_service_instances={},
     )
 
     locations = {"loc_0", "loc_1"}
@@ -222,6 +227,7 @@ def test_should_calculate_connections_between_vms():
         service_base_costs={"s_0": 5, "s_1": 5},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 1, ("vm_1", 0): 3},
+        max_service_instances={},
     )
 
     locations = {"loc_0", "loc_1"}
@@ -275,6 +281,7 @@ def test_should_consider_latency_for_vm_vm_connections():
         service_base_costs={"s_0": 5, "s_1": 5},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 1, ("vm_1", 0): 1},
+        max_service_instances={},
     )
 
     locations = {"loc_0", "loc_1"}

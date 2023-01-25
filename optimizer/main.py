@@ -41,6 +41,7 @@ def solve_demo_model(
             for v in range(vm_count)
             for t in range(time_count)
         },
+        max_service_instances={},
     )
 
     perf_data = PerformanceData(
@@ -87,7 +88,7 @@ def solve_demo_model(
             for loc in range(location_count)
         },
         virtual_machine_location_max_latency={
-            (f"vm_{v}", f"loc_{loc}"): v % 20 + 10
+            (f"vm_{v}", f"loc_{loc}"): v % 20 + 20
             for v in range(vm_count)
             for loc in range(location_count)
         },
@@ -97,9 +98,8 @@ def solve_demo_model(
 
     model = (
         Model(base_data.validate()).with_performance(perf_data.validate(base_data))
-        # .with_multi_cloud(multi_data.validate(base_data)).with_network(
-        #     network_data.validate(base_data)
-        # )
+        # .with_multi_cloud(multi_data.validate(base_data))
+        # .with_network(network_data.validate(base_data))
     )
 
     return model.solve(
@@ -137,7 +137,7 @@ def main():
     parser.add_argument(
         "--time-count",
         type=int,
-        default=500,
+        default=400,
         help="The number of discrete time units in the demo data.",
     )
     parser.add_argument(

@@ -13,6 +13,7 @@ def test_one_vm_one_service_trivial_solution():
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         ).validate()
     )
 
@@ -33,6 +34,7 @@ def test_only_one_valid_matching():
             service_base_costs={f"s_{s}": s for s in range(count)},
             time=[0],
             virtual_machine_demand={(f"vm_{v}", 0): 1 for v in range(count)},
+            max_service_instances={},
         ).validate()
     )
 
@@ -51,6 +53,7 @@ def test_no_valid_systems_for_vm():
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         ).validate()
     )
 
@@ -68,6 +71,7 @@ def test_one_vm_multiple_time_units():
             service_base_costs={"s_0": 5},
             time=[0, 1],
             virtual_machine_demand={("vm_0", 0): 1, ("vm_0", 1): 1},
+            max_service_instances={},
         ).validate()
     )
 
@@ -85,6 +89,7 @@ def test_one_vm_multiple_time_units_varying_demand():
             service_base_costs={"s_0": 1},
             time=[0, 1, 2],
             virtual_machine_demand={("vm_0", 0): 5, ("vm_0", 1): 3, ("vm_0", 2): 2},
+            max_service_instances={},
         ).validate()
     )
 

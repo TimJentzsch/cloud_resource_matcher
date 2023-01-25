@@ -110,6 +110,14 @@ class Model:
             for t in base_data.time
         }
 
+        # Enforce limits for service instance count
+        for s, max_instances in base_data.max_service_instances.items():
+            for t in base_data.time:
+                self.prob += (
+                    self.service_instance_count[s, t] <= max_instances,
+                    f"max_service_instances({s},{t})",
+                )
+
         # Calculate service_used
         for s in base_data.services:
             for t in base_data.time:
@@ -179,7 +187,7 @@ class Model:
                         for v in service_virtual_machines[s]
                         if v in perf_data.virtual_machine_min_ram.keys()
                     )
-                    <= perf_data.service_ram[s],
+                    <= perf_data.service_ram[s] * self.service_instance_count[s, t],
                     f"ram_performance_limit({s},{t})",
                 )
 
@@ -191,7 +199,8 @@ class Model:
                         for v in service_virtual_machines[s]
                         if v in perf_data.virtual_machine_min_cpu_count.keys()
                     )
-                    <= perf_data.service_cpu_count[s],
+                    <= perf_data.service_cpu_count[s]
+                    * self.service_instance_count[s, t],
                     f"cpu_performance_limit({s},{t})",
                 )
 
