@@ -1,3 +1,5 @@
+import pytest
+
 from optimizer.data.base_data import BaseData
 from optimizer.data.performance_data import PerformanceData
 from optimizer.model import Model
@@ -39,7 +41,7 @@ def test_with_insufficient_ram():
         service_base_costs={"s_0": 5},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 1},
-        max_service_instances={},
+        max_service_instances={"s_0": 1},
     )
 
     model = Model(base_data.validate()).with_performance(
@@ -63,7 +65,7 @@ def test_with_insufficient_cpu_count():
         service_base_costs={"s_0": 5},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 1},
-        max_service_instances={},
+        max_service_instances={"s_0": 1},
     )
 
     model = Model(base_data.validate()).with_performance(
@@ -97,7 +99,7 @@ def test_resource_matching():
         },
         time=[0],
         virtual_machine_demand={(f"vm_{v}", 0): 1 for v in range(count)},
-        max_service_instances={},
+        max_service_instances={f"s_{s}": 1 for s in range(count)},
     )
 
     model = Model(base_data.validate()).with_performance(
@@ -126,7 +128,7 @@ def test_cheap_insufficient_service():
         service_base_costs={"s_0": 2, "s_1": 10},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 1},
-        max_service_instances={},
+        max_service_instances={"s_0": 1, "s_1": 1},
     )
 
     model = Model(base_data.validate()).with_performance(
@@ -216,3 +218,116 @@ def test_should_buy_multiple_services_if_needed():
     Expect(model).to_be_feasible().with_vm_service_matching(
         {("vm_0", "s_0", 0): 1, ("vm_1", "s_0", 0): 1}
     ).with_service_instance_count({("s_0", 0): 2}).with_cost(2)
+
+
+def test_should_be_feasible_if_service_can_be_bought_enough_times_two_instances():
+    """There is demand for two VM instances, which each occupy the service fully.
+    Two service instances can be bought to cover this demand.
+    """
+    base_data = BaseData(
+        virtual_machines=["vm_0"],
+        services=["s_0"],
+        virtual_machine_services={"vm_0": ["s_0"]},
+        service_base_costs={"s_0": 1},
+        time=[0],
+        virtual_machine_demand={("vm_0", 0): 2},
+        max_service_instances={"s_0": 2},
+    )
+
+    model = Model(base_data.validate()).with_performance(
+        PerformanceData(
+            virtual_machine_min_ram={"vm_0": 1},
+            virtual_machine_min_cpu_count={"vm_0": 1},
+            service_ram={"s_0": 1},
+            service_cpu_count={"s_0": 1},
+        ).validate(base_data)
+    )
+
+    Expect(model).to_be_feasible().with_cost(2).with_vm_service_matching(
+        {("vm_0", "s_0", 0): 2}
+    ).with_service_instance_count({("s_0", 0): 2}).test()
+
+
+def test_should_be_feasible_if_service_can_be_bought_enough_times_two_vms():
+    """There is demand for two VMs, which each occupy the service fully.
+    Two service instances can be bought to cover this demand.
+    """
+    base_data = BaseData(
+        virtual_machines=["vm_0", "vm_1"],
+        services=["s_0"],
+        virtual_machine_services={"vm_0": ["s_0"], "vm_1": ["s_0"]},
+        service_base_costs={"s_0": 1},
+        time=[0],
+        virtual_machine_demand={("vm_0", 0): 1, ("vm_1", 0): 1},
+        max_service_instances={"s_0": 2},
+    )
+
+    model = Model(base_data.validate()).with_performance(
+        PerformanceData(
+            virtual_machine_min_ram={"vm_0": 1, "vm_1": 1},
+            virtual_machine_min_cpu_count={"vm_0": 1, "vm_1": 1},
+            service_ram={"s_0": 1},
+            service_cpu_count={"s_0": 1},
+        ).validate(base_data)
+    )
+
+    Expect(model).to_be_feasible().with_cost(2).with_vm_service_matching(
+        {("vm_0", "s_0", 0): 1, ("vm_1", "s_0", 0): 1}
+    ).with_service_instance_count({("s_0", 0): 2}).test()
+
+
+@pytest.mark.skip("TODO: This needs to be enforced")
+def test_should_be_infeasible_if_vms_cant_be_split():
+    """There is a service with performance 3 and max instance count of 2.
+    There is a demand of VMs with performance 2 and demand 3.
+
+    In total, the two services have enough performance to serve all 3 VMs.
+    But this would require to "split" one VM between the two service instances,
+    which is not possible.
+    """
+    base_data = BaseData(
+        virtual_machines=["vm_0"],
+        services=["s_0"],
+        virtual_machine_services={"vm_0": ["s_0"]},
+        service_base_costs={"s_0": 1},
+        time=[0],
+        virtual_machine_demand={("vm_0", 0): 3},
+        max_service_instances={"s_0": 2},
+    )
+
+    model = Model(base_data.validate()).with_performance(
+        PerformanceData(
+            virtual_machine_min_ram={"vm_0": 2},
+            virtual_machine_min_cpu_count={"vm_0": 2},
+            service_ram={"s_0": 3},
+            service_cpu_count={"s_0": 3},
+        ).validate(base_data)
+    )
+
+    Expect(model).to_be_infeasible().test()
+
+
+def test_should_be_infeasible_if_not_enough_service_instances_can_be_bought():
+    """There is demand for two VMs, which each occupy the service fully.
+    But only one instance of the service may be bought.
+    """
+    base_data = BaseData(
+        virtual_machines=["vm_0"],
+        services=["s_0"],
+        virtual_machine_services={"vm_0": ["s_0"]},
+        service_base_costs={"s_0": 1},
+        time=[0],
+        virtual_machine_demand={("vm_0", 0): 2},
+        max_service_instances={"s_0": 1},
+    )
+
+    model = Model(base_data.validate()).with_performance(
+        PerformanceData(
+            virtual_machine_min_ram={"vm_0": 1},
+            virtual_machine_min_cpu_count={"vm_0": 1},
+            service_ram={"s_0": 1},
+            service_cpu_count={"s_0": 1},
+        ).validate(base_data)
+    )
+
+    Expect(model).to_be_infeasible().test()
