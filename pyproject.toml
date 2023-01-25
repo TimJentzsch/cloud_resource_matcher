@@ -9,7 +9,7 @@ start = "optimizer.main:main"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-PuLP = "^2.7.0"
+PuLP = { git = "https://github.com/TimJentzsch/pulp.git", rev = "bbf66492535607c145add532a503160a3c00c330" }
 pytest = "^7.2.0"
 pyright = "^1.1.286"
 
