@@ -1,5 +1,6 @@
 import tempfile
 from dataclasses import dataclass
+from datetime import timedelta
 from enum import Enum
 from typing import Dict, Optional, Self, Tuple
 
@@ -19,14 +20,14 @@ from optimizer.data import (
     VirtualMachine,
     Service,
     TimeUnit,
+    Cost,
 )
 from optimizer.data.base_data import BaseData
 from optimizer.data.multi_cloud_data import MultiCloudData
 from optimizer.data.network_data import NetworkData, Location
 from optimizer.data.performance_data import PerformanceData
 from optimizer.data.validated import Validated
-from optimizer.solver import Solver
-
+from optimizer.solver import Solver, get_pulp_solver
 
 VmServiceMatching = dict[tuple[VirtualMachine, Service, TimeUnit], int]
 ServiceInstanceCount = dict[tuple[Service, TimeUnit], int]
@@ -379,15 +380,30 @@ class Model:
 
         return self
 
-    def solve(self, solver: Solver = Solver.DEFAULT) -> SolveSolution:
-        """Solve the optimization problem."""
+    def solve(
+        self,
+        solver: Solver = Solver.CBC,
+        time_limit: Optional[timedelta] = None,
+        cost_gap_abs: Optional[Cost] = None,
+        cost_gap_rel: Optional[float] = None,
+    ) -> SolveSolution:
+        """Solve the optimization problem.
+
+        :param solver: The solver to use to solve the mixed-integer program.
+        :param time_limit: The maximum amount of time after which to stop the optimization.
+        :param cost_gap_abs: The absolute cost tolerance for the solver to stop.
+        :param cost_gap_rel: The relative cost tolerance for the solver to stop as a fraction.
+        Must be a value between 0.0 and 1.0.
+        """
         # Add the objective function
         self.prob.setObjective(self.objective)
 
-        if solver == Solver.GUROBI:
-            pulp_solver = pulp.GUROBI_CMD()
-        else:
-            pulp_solver = None
+        pulp_solver = get_pulp_solver(
+            solver=solver,
+            time_limit=time_limit,
+            cost_gap_abs=cost_gap_abs,
+            cost_gap_rel=cost_gap_rel,
+        )
 
         # Solve the problem
         status_code = self.prob.solve(solver=pulp_solver)

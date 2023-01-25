@@ -1,18 +1,27 @@
+from datetime import timedelta, datetime
+from typing import Optional
+
+from optimizer.data import Cost
 from optimizer.data.base_data import BaseData
 from optimizer.data.network_data import NetworkData
 from optimizer.data.performance_data import PerformanceData
 from optimizer.data.multi_cloud_data import MultiCloudData
-from optimizer.model import Model, SolveError
+from optimizer.model import Model, SolveError, SolveSolution
 from optimizer.solver import Solver
 
 
-def main():
-    vm_count = 50
-    service_count = 50
-    time_count = 500
-    csp_count = 3
-    location_count = 5
-
+def solve_demo_model(
+    vm_count: int,
+    service_count: int,
+    time_count: int,
+    csp_count: int,
+    location_count: int,
+    solver: Solver = Solver.CBC,
+    time_limit: Optional[timedelta] = None,
+    cost_gap_abs: Optional[Cost] = None,
+    cost_gap_rel: Optional[float] = None,
+) -> SolveSolution:
+    """Create and solve a model based on demo data."""
     base_data = BaseData(
         virtual_machines=[f"vm_{v}" for v in range(vm_count)],
         services=[f"service_{s}" for s in range(service_count)],
@@ -93,11 +102,129 @@ def main():
         # )
     )
 
+    return model.solve(
+        solver=solver,
+        time_limit=time_limit,
+        cost_gap_abs=cost_gap_abs,
+        cost_gap_rel=cost_gap_rel,
+    )
+
+
+def main():
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Optimize the costs for cloud computing applications."
+    )
+    parser.add_argument(
+        "--solver",
+        choices=["cbc", "gurobi", "scip", "fscip"],
+        default="cbc",
+        help="The solver to use to solve the mixed-integer program.",
+    )
+    parser.add_argument(
+        "--vm-count",
+        type=int,
+        default=50,
+        help="The number of virtual machines (VMs) in the demo data.",
+    )
+    parser.add_argument(
+        "--service-count",
+        type=int,
+        default=50,
+        help="The number of cloud services in the demo data.",
+    )
+    parser.add_argument(
+        "--time-count",
+        type=int,
+        default=500,
+        help="The number of discrete time units in the demo data.",
+    )
+    parser.add_argument(
+        "--location-count",
+        type=int,
+        default=5,
+        help="The number of locations in the demo data. This is used for the networking data.",
+    )
+    parser.add_argument(
+        "--csp-count",
+        type=int,
+        default=3,
+        help="The number of cloud service providers (CSPs) in the demo data.",
+    )
+    parser.add_argument(
+        "--time-limit-sec",
+        type=float,
+        default=None,
+        help="The maximum amount of time to solve the problem, in seconds.",
+    )
+    parser.add_argument(
+        "--cost-gap-abs",
+        type=float,
+        default=None,
+        help="The absolute tolerance for the cost until the optimization stops.",
+    )
+    parser.add_argument(
+        "--cost-gap-rel",
+        type=float,
+        default=None,
+        help=(
+            "The relative tolerance for the cost until the optimization stops. "
+            "A fractional value between 0.0 and 1.0"
+        ),
+    )
+
+    args = parser.parse_args()
+
+    if args.solver == "cbc":
+        solver = Solver.CBC
+    elif args.solver == "gurobi":
+        solver = Solver.GUROBI
+    elif args.solver == "scip":
+        solver = Solver.SCIP
+    elif args.solver == "fscip":
+        solver = Solver.FSCIP
+    else:
+        raise RuntimeError(f"Unsupported solver {args.solver}")
+
+    if args.cost_gap_rel is not None:
+        if args.cost_gap_rel < 0.0 or args.cost_gap_rel > 1.0:
+            print(
+                "--cost-gap-rel must be a value between 0.0 and 1.0, "
+                f"but it's {args.cost_gap_rel}"
+            )
+            exit(102)
+            return
+
+    if args.time_limit_sec is not None:
+        time_limit = timedelta(seconds=args.time_limit_sec)
+    else:
+        time_limit = None
+
+    start_time = datetime.now()
+
     try:
-        solution = model.solve(solver=Solver.DEFAULT)
+        solution = solve_demo_model(
+            vm_count=args.vm_count,
+            service_count=args.service_count,
+            time_count=args.time_count,
+            location_count=args.location_count,
+            csp_count=args.csp_count,
+            solver=solver,
+            time_limit=time_limit,
+            cost_gap_abs=args.cost_gap_abs,
+            cost_gap_rel=args.cost_gap_rel,
+        )
+
+        duration = datetime.now() - start_time
+
         print("=== SOLUTION FOUND ===\n")
         print(f"Cost: {solution.cost}")
+        print(f"Duration: {duration.total_seconds():.2f}s")
     except SolveError as e:
+        duration = datetime.now() - start_time
+
         print("=== PROBLEM INFEASIBLE ===\n")
         print(f"{e.reason}")
+        print(f"Duration: {duration.total_seconds():.2f}s")
         exit(101)
