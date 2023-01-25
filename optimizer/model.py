@@ -110,6 +110,14 @@ class Model:
             for t in base_data.time
         }
 
+        # Enforce limits for service instance count
+        for s, max_instances in base_data.max_service_instances.items():
+            for t in base_data.time:
+                self.prob += (
+                    self.service_instance_count[s, t] <= max_instances,
+                    f"max_service_instances({s},{t})",
+                )
+
         # Calculate service_used
         for s in base_data.services:
             for t in base_data.time:
