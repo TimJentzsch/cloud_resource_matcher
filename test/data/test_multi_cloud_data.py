@@ -13,6 +13,7 @@ def test_should_not_raise_error_for_valid_data():
         service_base_costs={"s_0": 5},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 1},
+        max_service_instances={},
     )
 
     multi_data = MultiCloudData(
@@ -35,6 +36,7 @@ class TestValidateCloudServiceProviderServices:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         multi_data = MultiCloudData(
@@ -56,6 +58,7 @@ class TestValidateCloudServiceProviderServices:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         multi_data = MultiCloudData(
@@ -77,6 +80,7 @@ class TestValidateCloudServiceProviderServices:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         multi_data = MultiCloudData(
@@ -98,6 +102,7 @@ class TestValidateCloudServiceProviderServices:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         multi_data = MultiCloudData(
@@ -122,6 +127,7 @@ class TestValidateCloudServiceProviderMinMaxCounts:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         multi_data = MultiCloudData(
@@ -144,6 +150,7 @@ class TestValidateCloudServiceProviderMinMaxCounts:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         multi_data = MultiCloudData(
@@ -166,6 +173,7 @@ class TestValidateCloudServiceProviderMinMaxCounts:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         multi_data = MultiCloudData(

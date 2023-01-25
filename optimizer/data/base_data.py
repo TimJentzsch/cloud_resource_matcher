@@ -25,6 +25,9 @@ class BaseData:
     # The number of virtual machine instances that are needed at a given point in time
     virtual_machine_demand: Dict[Tuple[VirtualMachine, TimeUnit], int]
 
+    # The maximum number of instances available for each service
+    max_service_instances: Dict[Service, int]
+
     def validate(self) -> Validated[Self]:
         """Validate the data for consistency."""
         # Validate virtual_machine_services
@@ -70,5 +73,14 @@ class BaseData:
             ), f"{v} in virtual_machine_demand is not a valid VM"
             assert t in self.time, f"{t} in virtual_machine_demand is not a valid time"
             assert demand >= 0, f"Demand {demand} for VM {v} at time {t} is negative"
+
+        # Validate max_service_instances
+        for (s, instances) in self.max_service_instances.items():
+            assert (
+                s in self.services
+            ), f"{s} in max_service_instances is not a valid service"
+            assert (
+                instances >= 0
+            ), f"Negative max instance count {instances} for service {s}"
 
         return Validated(self)

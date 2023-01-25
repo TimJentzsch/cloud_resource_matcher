@@ -13,6 +13,7 @@ def test_should_not_raise_error_for_valid_data():
         service_base_costs={"s_0": 5},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 1},
+        max_service_instances={},
     )
 
     network_data = NetworkData(
@@ -39,6 +40,7 @@ class TestValidateLocationLatency:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         network_data = NetworkData(
@@ -64,6 +66,7 @@ class TestValidateLocationLatency:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         network_data = NetworkData(
@@ -89,6 +92,7 @@ class TestValidateLocationLatency:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         network_data = NetworkData(
@@ -117,6 +121,7 @@ class TestValidateServiceLocation:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         network_data = NetworkData(
@@ -143,6 +148,7 @@ class TestValidateServiceLocation:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         network_data = NetworkData(
@@ -169,6 +175,7 @@ class TestValidateServiceLocation:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         network_data = NetworkData(
@@ -197,6 +204,7 @@ class TestValidateVirtualMachineMaxLatency:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         network_data = NetworkData(
@@ -223,6 +231,7 @@ class TestValidateVirtualMachineMaxLatency:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         network_data = NetworkData(
@@ -249,6 +258,7 @@ class TestValidateVirtualMachineMaxLatency:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         network_data = NetworkData(
@@ -277,6 +287,7 @@ class TestValidateVirtualMachineLocationTraffic:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         network_data = NetworkData(
@@ -306,6 +317,7 @@ class TestValidateVirtualMachineLocationTraffic:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         network_data = NetworkData(
@@ -335,6 +347,7 @@ class TestValidateVirtualMachineLocationTraffic:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         network_data = NetworkData(
@@ -363,6 +376,7 @@ class TestValidateVirtualMachineVirtualMachineTraffic:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         network_data = NetworkData(
@@ -389,6 +403,7 @@ class TestValidateVirtualMachineVirtualMachineTraffic:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         network_data = NetworkData(
@@ -417,6 +432,7 @@ class TestValidateLocationTrafficCost:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         network_data = NetworkData(
@@ -443,6 +459,7 @@ class TestValidateLocationTrafficCost:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         network_data = NetworkData(

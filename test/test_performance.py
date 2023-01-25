@@ -13,6 +13,7 @@ def test_with_sufficient_resources():
         service_base_costs={"s_0": 5},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 1},
+        max_service_instances={},
     )
 
     model = Model(base_data.validate()).with_performance(
@@ -38,6 +39,7 @@ def test_with_insufficient_ram():
         service_base_costs={"s_0": 5},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 1},
+        max_service_instances={},
     )
 
     model = Model(base_data.validate()).with_performance(
@@ -61,6 +63,7 @@ def test_with_insufficient_cpu_count():
         service_base_costs={"s_0": 5},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 1},
+        max_service_instances={},
     )
 
     model = Model(base_data.validate()).with_performance(
@@ -94,6 +97,7 @@ def test_resource_matching():
         },
         time=[0],
         virtual_machine_demand={(f"vm_{v}", 0): 1 for v in range(count)},
+        max_service_instances={},
     )
 
     model = Model(base_data.validate()).with_performance(
@@ -122,6 +126,7 @@ def test_cheap_insufficient_service():
         service_base_costs={"s_0": 2, "s_1": 10},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 1},
+        max_service_instances={},
     )
 
     model = Model(base_data.validate()).with_performance(
@@ -147,6 +152,7 @@ def test_allowed_incomplete_data():
         service_base_costs={"s_0": 1},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 1},
+        max_service_instances={},
     )
 
     model = Model(base_data.validate()).with_performance(
@@ -171,6 +177,7 @@ def test_should_work_with_higher_virtual_machine_demand():
         service_base_costs={"s_0": 1},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 2},
+        max_service_instances={},
     )
 
     model = Model(base_data.validate()).with_performance(
@@ -194,6 +201,7 @@ def test_should_buy_multiple_services_if_needed():
         service_base_costs={"s_0": 1},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 1, ("vm_1", 0): 1},
+        max_service_instances={},
     )
 
     model = Model(base_data.validate()).with_performance(

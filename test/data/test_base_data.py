@@ -12,6 +12,7 @@ def test_should_not_raise_error_for_valid_data():
         service_base_costs={"s_0": 5},
         time=[0],
         virtual_machine_demand={("vm_0", 0): 1},
+        max_service_instances={},
     )
 
     data.validate()
@@ -27,6 +28,7 @@ class TestValidateVirtualMachineServices:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         with pytest.raises(AssertionError):
@@ -41,6 +43,7 @@ class TestValidateVirtualMachineServices:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={},
+            max_service_instances={},
         )
 
         with pytest.raises(AssertionError):
@@ -55,6 +58,7 @@ class TestValidateVirtualMachineServices:
             service_base_costs={},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         with pytest.raises(AssertionError):
@@ -71,6 +75,7 @@ class TestServiceBaseCosts:
             service_base_costs={},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         with pytest.raises(AssertionError):
@@ -85,6 +90,7 @@ class TestServiceBaseCosts:
             service_base_costs={"s_0": 5},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         with pytest.raises(AssertionError):
@@ -101,6 +107,7 @@ class TestVirtualMachineDemand:
             service_base_costs={"s_0": 1},
             time=[0],
             virtual_machine_demand={},
+            max_service_instances={},
         )
 
         with pytest.raises(AssertionError):
@@ -115,6 +122,7 @@ class TestVirtualMachineDemand:
             service_base_costs={"s_0": 1},
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         with pytest.raises(AssertionError):
@@ -129,6 +137,7 @@ class TestVirtualMachineDemand:
             service_base_costs={"s_0": 1},
             time=[],
             virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
         )
 
         with pytest.raises(AssertionError):
@@ -143,6 +152,7 @@ class TestVirtualMachineDemand:
             service_base_costs={"s_0": 1},
             time=[0],
             virtual_machine_demand={("vm_0", 0): -1},
+            max_service_instances={},
         )
 
         with pytest.raises(AssertionError):
