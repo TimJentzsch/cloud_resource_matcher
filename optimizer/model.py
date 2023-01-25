@@ -199,7 +199,8 @@ class Model:
                         for v in service_virtual_machines[s]
                         if v in perf_data.virtual_machine_min_cpu_count.keys()
                     )
-                    <= perf_data.service_cpu_count[s] * self.service_instance_count[s, t],
+                    <= perf_data.service_cpu_count[s]
+                    * self.service_instance_count[s, t],
                     f"cpu_performance_limit({s},{t})",
                 )
 
