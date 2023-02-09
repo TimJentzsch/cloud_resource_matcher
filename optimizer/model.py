@@ -16,17 +16,17 @@ from pulp import (
     LpInteger,
 )
 
-from optimizer.data import (
+from optimizer.optimizer_toolbox_model import (
     VirtualMachine,
     Service,
     TimeUnit,
     Cost,
 )
-from optimizer.data.base_data import BaseData
-from optimizer.data.multi_cloud_data import MultiCloudData
-from optimizer.data.network_data import NetworkData, Location
-from optimizer.data.performance_data import PerformanceData
-from optimizer.data.validated import Validated
+from optimizer.optimizer_toolbox_model.base_data import BaseData
+from optimizer.optimizer_toolbox_model.multi_cloud_data import MultiCloudData
+from optimizer.optimizer_toolbox_model.network_data import NetworkData, Location
+from optimizer.optimizer_toolbox_model.performance_data import PerformanceData
+from optimizer.optimizer_toolbox_model.validated import Validated
 from optimizer.solver import Solver, get_pulp_solver
 
 VmServiceMatching = dict[tuple[VirtualMachine, Service, TimeUnit], int]

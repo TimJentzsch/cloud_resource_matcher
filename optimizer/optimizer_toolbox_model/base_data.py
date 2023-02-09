@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import List, Dict, Tuple, Self
 
-from optimizer.data import Service, VirtualMachine, Cost, TimeUnit
-from optimizer.data.validated import Validated
+from optimizer.optimizer_toolbox_model import Service, VirtualMachine, Cost, TimeUnit
+from optimizer.optimizer_toolbox_model.validated import Validated
 
 
 @dataclass

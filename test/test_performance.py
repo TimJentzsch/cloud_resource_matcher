@@ -1,7 +1,7 @@
 import pytest
 
-from optimizer.data.base_data import BaseData
-from optimizer.data.performance_data import PerformanceData
+from optimizer.optimizer_toolbox_model.base_data import BaseData
+from optimizer.optimizer_toolbox_model.performance_data import PerformanceData
 from optimizer.model import Model
 from test.framework import Expect
 

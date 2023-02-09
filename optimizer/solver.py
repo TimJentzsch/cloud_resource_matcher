@@ -4,7 +4,7 @@ from typing import Optional
 
 import pulp
 
-from optimizer.data import Cost
+from optimizer.optimizer_toolbox_model import Cost
 
 
 class Solver(Enum):

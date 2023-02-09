@@ -1,6 +1,6 @@
 import pytest
 
-from optimizer.data.base_data import BaseData
+from optimizer.optimizer_toolbox_model.base_data import BaseData
 
 
 def test_should_not_raise_error_for_valid_data():
