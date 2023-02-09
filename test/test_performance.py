@@ -2,7 +2,7 @@ import pytest
 
 from optimizer.optimizer_toolbox_model.data.base_data import BaseData
 from optimizer.optimizer_toolbox_model.data.performance_data import PerformanceData
-from optimizer.model import Model
+from optimizer.mixed_integer_program import Model
 from test.framework import Expect
 
 
