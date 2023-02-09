@@ -10,7 +10,8 @@ from optimizer.mixed_integer_program import (
     SolveSolution,
     SolveErrorReason,
     SolveError,
-    MixedIntegerProgram, BuiltMixedIntegerProgram,
+    MixedIntegerProgram,
+    BuiltMixedIntegerProgram,
 )
 
 
