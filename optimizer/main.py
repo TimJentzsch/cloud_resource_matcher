@@ -1,7 +1,7 @@
 from datetime import timedelta, datetime
 from typing import Optional
 
-from optimizer.optimizer_toolbox_model import Cost
+from optimizer.optimizer_toolbox_model.data import Cost
 from optimizer.optimizer_toolbox_model.data.base_data import BaseData
 from optimizer.optimizer_toolbox_model.data.network_data import NetworkData
 from optimizer.optimizer_toolbox_model.data.performance_data import PerformanceData

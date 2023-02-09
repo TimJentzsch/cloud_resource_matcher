@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from optimizer.optimizer_toolbox_model import VirtualMachine, Service
+from optimizer.optimizer_toolbox_model.data import Service, VirtualMachine
 from optimizer.optimizer_toolbox_model.data.base_data import BaseData
 
 Location = str

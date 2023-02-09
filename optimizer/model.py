@@ -16,12 +16,7 @@ from pulp import (
     LpInteger,
 )
 
-from optimizer.optimizer_toolbox_model import (
-    VirtualMachine,
-    Service,
-    TimeUnit,
-    Cost,
-)
+from optimizer.optimizer_toolbox_model.data import Service, VirtualMachine, Cost, TimeUnit
 from optimizer.optimizer_toolbox_model.data.base_data import BaseData
 from optimizer.optimizer_toolbox_model.data.multi_cloud_data import MultiCloudData
 from optimizer.optimizer_toolbox_model.data.network_data import NetworkData, Location
