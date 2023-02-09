@@ -4,8 +4,14 @@ from typing import Self, Optional, Dict, Set, List, Iterable
 import pytest
 from pulp import LpVariable
 
-from optimizer.mixed_integer_program import VmServiceMatching, ServiceInstanceCount, SolveSolution, SolveErrorReason, \
-    SolveError, MixedIntegerProgram
+from optimizer.mixed_integer_program import (
+    VmServiceMatching,
+    ServiceInstanceCount,
+    SolveSolution,
+    SolveErrorReason,
+    SolveError,
+    MixedIntegerProgram,
+)
 
 
 class Expect:
