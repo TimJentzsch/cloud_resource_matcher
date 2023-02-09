@@ -32,6 +32,10 @@ VmServiceMatching = dict[tuple[VirtualMachine, Service, TimeUnit], int]
 ServiceInstanceCount = dict[tuple[Service, TimeUnit], int]
 
 
+VarVmServiceMatching = dict[tuple[VirtualMachine, Service, TimeUnit], LpVariable]
+VarServiceInstanceCount = dict[tuple[Service, TimeUnit], LpVariable]
+
+
 @dataclass
 class SolveSolution:
     vm_service_matching: VmServiceMatching
@@ -64,12 +68,12 @@ class MixedIntegerProgram:
             validated_optimizer_toolbox_model.optimizer_toolbox_model
         )
 
+    @staticmethod
     def _build_performance(
-        self,
         optimizer_toolbox_model: OptimizerToolboxModel,
         problem: LpProblem,
-        vm_matching,
-        service_instance_count,
+        vm_matching: VarVmServiceMatching,
+        service_instance_count: VarServiceInstanceCount,
     ) -> None:
         """Add the performance data to the problem."""
         base_data = optimizer_toolbox_model.base_data
@@ -116,12 +120,12 @@ class MixedIntegerProgram:
                     f"cpu_performance_limit({s},{t})",
                 )
 
+    @staticmethod
     def _build_network(
-        self,
         optimizer_toolbox_model: OptimizerToolboxModel,
         problem: LpProblem,
         objective: LpAffineExpression,
-        vm_matching,
+        vm_matching: VarVmServiceMatching,
     ) -> None:
         base_data = optimizer_toolbox_model.base_data
         network_data = optimizer_toolbox_model.network_data
@@ -252,11 +256,11 @@ class MixedIntegerProgram:
             for t in base_data.time
         )
 
+    @staticmethod
     def _build_multi_cloud(
-        self,
         optimizer_toolbox_model: OptimizerToolboxModel,
         problem: LpProblem,
-        vm_matching,
+        vm_matching: VarVmServiceMatching,
     ):
         base_data = optimizer_toolbox_model.base_data
         multi_cloud_data = optimizer_toolbox_model.multi_cloud_data
@@ -323,7 +327,7 @@ class MixedIntegerProgram:
         }
 
         # Assign virtual machine v to cloud service s at time t?
-        vm_matching: dict[tuple[VirtualMachine, Service, TimeUnit], LpVariable] = {
+        vm_matching: VarVmServiceMatching = {
             (v, s, t): LpVariable(
                 f"vm_matching({v},{s},{t})", cat=LpInteger, lowBound=0
             )
@@ -333,7 +337,7 @@ class MixedIntegerProgram:
         }
 
         # Buy how many services instances for s at time t?
-        service_instance_count: dict[tuple[Service, TimeUnit], LpVariable] = {
+        service_instance_count: VarServiceInstanceCount = {
             (s, t): LpVariable(
                 f"service_instance_count({s},{t})", cat=LpInteger, lowBound=0
             )
@@ -429,9 +433,8 @@ class BuiltMixedIntegerProgram:
     mixed_integer_program: MixedIntegerProgram
     problem: LpProblem
 
-    # FIXME: Type this properly
-    vm_matching: dict
-    service_instance_count: dict
+    vm_matching: VarVmServiceMatching
+    service_instance_count: VarServiceInstanceCount
 
     def __init__(
         self,
