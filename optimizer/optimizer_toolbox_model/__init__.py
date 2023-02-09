@@ -21,14 +21,17 @@ class OptimizerToolboxModel:
     def with_performance_data(self, performance_data: PerformanceData) -> Self:
         """Add performance data to the model."""
         self.performance_data = performance_data
+        return self
 
     def with_network_data(self, network_data: NetworkData) -> Self:
         """Add network data to the model."""
         self.network_data = network_data
+        return self
 
     def with_multi_cloud_data(self, multi_cloud_data: MultiCloudData) -> Self:
         """Add multi cloud data to the model."""
         self.multi_cloud_data = multi_cloud_data
+        return self
 
     def validate(self) -> "ValidatedOptimizerToolboxModel":
         """

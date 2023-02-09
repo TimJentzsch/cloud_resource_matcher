@@ -1,6 +1,7 @@
 from datetime import timedelta, datetime
 from typing import Optional
 
+from optimizer.optimizer_toolbox_model import OptimizerToolboxModel
 from optimizer.optimizer_toolbox_model.data import Cost
 from optimizer.optimizer_toolbox_model.data.base_data import BaseData
 from optimizer.optimizer_toolbox_model.data.network_data import NetworkData
@@ -100,19 +101,21 @@ def solve_demo_model(
         virtual_machine_virtual_machine_traffic={},
     )
 
-    model = (
-        MixedIntegerProgram(base_data.validate()).with_performance(
-            perf_data.validate(base_data)
+    return (
+        MixedIntegerProgram(
+            OptimizerToolboxModel(base_data)
+            .with_performance_data(perf_data)
+            .with_network_data(network_data)
+            .with_multi_cloud_data(multi_data)
+            .validate()
         )
-        # .with_multi_cloud(multi_data.validate(base_data))
-        # .with_network(network_data.validate(base_data))
-    )
-
-    return model.solve(
-        solver=solver,
-        time_limit=time_limit,
-        cost_gap_abs=cost_gap_abs,
-        cost_gap_rel=cost_gap_rel,
+        .build()
+        .solve(
+            solver=solver,
+            time_limit=time_limit,
+            cost_gap_abs=cost_gap_abs,
+            cost_gap_rel=cost_gap_rel,
+        )
     )
 
 
