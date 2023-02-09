@@ -1,7 +1,12 @@
 from dataclasses import dataclass
 from typing import Self
 
-from optimizer.optimizer_toolbox_model import BaseData, PerformanceData, NetworkData, MultiCloudData
+from optimizer.optimizer_toolbox_model import (
+    BaseData,
+    PerformanceData,
+    NetworkData,
+    MultiCloudData,
+)
 
 
 @dataclass
@@ -28,14 +33,29 @@ class OptimizerToolboxModel:
         self.multi_cloud_data = multi_cloud_data
 
     def validate(self) -> "ValidatedOptimizerToolboxModel":
-        """Validate the model for integrity."""
-        # FIXME: Apply validation
+        """
+        Validate the model for integrity.
+
+        :raises AssertionError: When the given data is not valid.
+        """
+        self.base_data.validate()
+
+        if self.performance_data is not None:
+            self.performance_data.validate(self.base_data)
+        if self.network_data is not None:
+            self.network_data.validate(self.base_data)
+        if self.performance_data is not None:
+            self.performance_data.validate(self.base_data)
+        if self.multi_cloud_data is not None:
+            self.multi_cloud_data.validate(self.base_data)
+
         return ValidatedOptimizerToolboxModel(self)
 
 
 @dataclass
 class ValidatedOptimizerToolboxModel:
     """An optimizer toolbox model that has been validated for integrity."""
+
     optimizer_toolbox_model: OptimizerToolboxModel
 
     def __init__(self, optimizer_toolbox_model: OptimizerToolboxModel):

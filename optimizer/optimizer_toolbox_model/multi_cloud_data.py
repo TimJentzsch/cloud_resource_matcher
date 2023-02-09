@@ -1,9 +1,8 @@
 from dataclasses import dataclass
-from typing import List, Dict, Self
+from typing import List, Dict
 
 from optimizer.optimizer_toolbox_model import Service, CloudServiceProvider
 from optimizer.optimizer_toolbox_model.base_data import BaseData
-from optimizer.optimizer_toolbox_model.validated import Validated
 
 
 @dataclass
@@ -20,8 +19,12 @@ class MultiCloudData:
     # The maximum number of cloud service providers that can be used
     max_cloud_service_provider_count: int
 
-    def validate(self, base_data: BaseData) -> Validated[Self]:
-        """Validate the data for consistency."""
+    def validate(self, base_data: BaseData) -> None:
+        """
+        Validate the data for consistency.
+
+        :raises AssertionError: When the data is not valid.
+        """
         # Validate cloud_service_provider_services
         for csp in self.cloud_service_providers:
             assert (
@@ -59,5 +62,3 @@ class MultiCloudData:
             self.min_cloud_service_provider_count
             <= self.max_cloud_service_provider_count
         ), "min_cloud_service_provider_count must be smaller or equal than max_cloud_service_provider_count"
-
-        return Validated(self)
