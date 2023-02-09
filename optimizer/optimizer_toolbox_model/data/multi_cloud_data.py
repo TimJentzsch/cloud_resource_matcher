@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List, Dict
 
 from optimizer.optimizer_toolbox_model import Service, CloudServiceProvider
-from optimizer.optimizer_toolbox_model.base_data import BaseData
+from optimizer.optimizer_toolbox_model.data.base_data import BaseData
 
 
 @dataclass

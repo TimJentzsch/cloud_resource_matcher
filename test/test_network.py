@@ -1,5 +1,5 @@
-from optimizer.optimizer_toolbox_model.base_data import BaseData
-from optimizer.optimizer_toolbox_model.network_data import NetworkData
+from optimizer.optimizer_toolbox_model.data.base_data import BaseData
+from optimizer.optimizer_toolbox_model.data.network_data import NetworkData
 from optimizer.model import Model
 from test.framework import Expect
 

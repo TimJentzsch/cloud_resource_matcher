@@ -1,7 +1,7 @@
 import pytest
 
-from optimizer.optimizer_toolbox_model.base_data import BaseData
-from optimizer.optimizer_toolbox_model.network_data import NetworkData
+from optimizer.optimizer_toolbox_model.data.base_data import BaseData
+from optimizer.optimizer_toolbox_model.data.network_data import NetworkData
 
 
 def test_should_not_raise_error_for_valid_data():
