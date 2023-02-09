@@ -1,6 +1,6 @@
 from optimizer.optimizer_toolbox_model.data.base_data import BaseData
 from optimizer.optimizer_toolbox_model.data.multi_cloud_data import MultiCloudData
-from optimizer.mixed_integer_program import Model
+from optimizer.mixed_integer_program import MixedIntegerProgram
 from test.framework import Expect
 
 
@@ -18,7 +18,7 @@ def test_min_csp_count_constraint_matching():
         max_service_instances={},
     )
 
-    model = Model(base_data.validate()).with_multi_cloud(
+    model = MixedIntegerProgram(base_data.validate()).with_multi_cloud(
         MultiCloudData(
             cloud_service_providers=["csp_0", "csp_1"],
             cloud_service_provider_services={"csp_0": ["s_0", "s_1"], "csp_1": ["s_2"]},
@@ -46,7 +46,7 @@ def test_max_csp_count_constraint_matching():
         max_service_instances={},
     )
 
-    model = Model(base_data.validate()).with_multi_cloud(
+    model = MixedIntegerProgram(base_data.validate()).with_multi_cloud(
         MultiCloudData(
             cloud_service_providers=["csp_0", "csp_1"],
             cloud_service_provider_services={"csp_0": ["s_0", "s_1"], "csp_1": ["s_2"]},
@@ -72,7 +72,7 @@ def test_min_csp_count_constraint_infeasible():
         max_service_instances={},
     )
 
-    model = Model(base_data.validate()).with_multi_cloud(
+    model = MixedIntegerProgram(base_data.validate()).with_multi_cloud(
         MultiCloudData(
             cloud_service_providers=["csp_0"],
             cloud_service_provider_services={"csp_0": ["s_0"]},
@@ -96,7 +96,7 @@ def test_max_csp_count_constraint_infeasible():
         max_service_instances={},
     )
 
-    model = Model(base_data.validate()).with_multi_cloud(
+    model = MixedIntegerProgram(base_data.validate()).with_multi_cloud(
         MultiCloudData(
             cloud_service_providers=["csp_0", "csp_1"],
             cloud_service_provider_services={"csp_0": ["s_0"], "csp_1": ["s_1"]},
@@ -120,7 +120,7 @@ def test_with_multiple_time_points():
         max_service_instances={},
     )
 
-    model = Model(base_data.validate()).with_multi_cloud(
+    model = MixedIntegerProgram(base_data.validate()).with_multi_cloud(
         MultiCloudData(
             cloud_service_providers=["csp_0"],
             cloud_service_provider_services={"csp_0": ["s_0"]},

@@ -6,7 +6,7 @@ from optimizer.optimizer_toolbox_model.data.base_data import BaseData
 from optimizer.optimizer_toolbox_model.data.network_data import NetworkData
 from optimizer.optimizer_toolbox_model.data.performance_data import PerformanceData
 from optimizer.optimizer_toolbox_model.data.multi_cloud_data import MultiCloudData
-from optimizer.mixed_integer_program import SolveSolution, SolveError, Model
+from optimizer.mixed_integer_program import SolveSolution, SolveError, MixedIntegerProgram
 from optimizer.solver import Solver
 
 
@@ -97,7 +97,7 @@ def solve_demo_model(
     )
 
     model = (
-        Model(base_data.validate()).with_performance(perf_data.validate(base_data))
+        MixedIntegerProgram(base_data.validate()).with_performance(perf_data.validate(base_data))
         # .with_multi_cloud(multi_data.validate(base_data))
         # .with_network(network_data.validate(base_data))
     )

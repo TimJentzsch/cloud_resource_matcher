@@ -1,6 +1,6 @@
 from optimizer.optimizer_toolbox_model.data.base_data import BaseData
 from optimizer.optimizer_toolbox_model.data.network_data import NetworkData
-from optimizer.mixed_integer_program import Model
+from optimizer.mixed_integer_program import MixedIntegerProgram
 from test.framework import Expect
 
 
@@ -21,7 +21,7 @@ def test_computation_of_vm_locations():
 
     locations = {"loc_0", "loc_1"}
 
-    model = Model(base_data.validate()).with_network(
+    model = MixedIntegerProgram(base_data.validate()).with_network(
         NetworkData(
             locations=locations,
             location_latency={
@@ -69,7 +69,7 @@ def test_computation_of_vm_locations_split():
 
     locations = {"loc_0", "loc_1"}
 
-    model = Model(base_data.validate()).with_network(
+    model = MixedIntegerProgram(base_data.validate()).with_network(
         NetworkData(
             locations=locations,
             location_latency={
@@ -117,7 +117,7 @@ def test_should_pay_for_vm_location_costs():
         max_service_instances={},
     )
 
-    model = Model(base_data.validate()).with_network(
+    model = MixedIntegerProgram(base_data.validate()).with_network(
         NetworkData(
             locations={"loc_0"},
             location_latency={("loc_0", "loc_0"): 0},
@@ -149,7 +149,7 @@ def test_should_be_infeasible_if_max_latency_is_violated():
 
     locations = {"loc_0", "loc_1"}
 
-    model = Model(base_data.validate()).with_network(
+    model = MixedIntegerProgram(base_data.validate()).with_network(
         NetworkData(
             locations=locations,
             location_latency={
@@ -187,7 +187,7 @@ def test_should_choose_matching_that_respects_max_latency():
 
     locations = {"loc_0", "loc_1"}
 
-    model = Model(base_data.validate()).with_network(
+    model = MixedIntegerProgram(base_data.validate()).with_network(
         NetworkData(
             locations=locations,
             location_latency={
@@ -232,7 +232,7 @@ def test_should_calculate_connections_between_vms():
 
     locations = {"loc_0", "loc_1"}
 
-    model = Model(base_data.validate()).with_network(
+    model = MixedIntegerProgram(base_data.validate()).with_network(
         NetworkData(
             locations=locations,
             location_latency={
@@ -286,7 +286,7 @@ def test_should_consider_latency_for_vm_vm_connections():
 
     locations = {"loc_0", "loc_1"}
 
-    model = Model(base_data.validate()).with_network(
+    model = MixedIntegerProgram(base_data.validate()).with_network(
         NetworkData(
             locations=locations,
             location_latency={

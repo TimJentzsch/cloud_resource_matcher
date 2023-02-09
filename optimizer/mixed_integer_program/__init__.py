@@ -36,7 +36,7 @@ class SolveError(RuntimeError):
         self.reason = reason
 
 
-class Model:
+class MixedIntegerProgram:
     """The model for the cloud computing cost optimization problem."""
 
     prob: LpProblem

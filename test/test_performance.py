@@ -2,7 +2,7 @@ import pytest
 
 from optimizer.optimizer_toolbox_model.data.base_data import BaseData
 from optimizer.optimizer_toolbox_model.data.performance_data import PerformanceData
-from optimizer.mixed_integer_program import Model
+from optimizer.mixed_integer_program import MixedIntegerProgram
 from test.framework import Expect
 
 
@@ -18,7 +18,7 @@ def test_with_sufficient_resources():
         max_service_instances={},
     )
 
-    model = Model(base_data.validate()).with_performance(
+    model = MixedIntegerProgram(base_data.validate()).with_performance(
         PerformanceData(
             virtual_machine_min_ram={"vm_0": 8},
             virtual_machine_min_cpu_count={"vm_0": 3},
@@ -44,7 +44,7 @@ def test_with_insufficient_ram():
         max_service_instances={"s_0": 1},
     )
 
-    model = Model(base_data.validate()).with_performance(
+    model = MixedIntegerProgram(base_data.validate()).with_performance(
         PerformanceData(
             virtual_machine_min_ram={"vm_0": 3},
             virtual_machine_min_cpu_count={"vm_0": 0},
@@ -68,7 +68,7 @@ def test_with_insufficient_cpu_count():
         max_service_instances={"s_0": 1},
     )
 
-    model = Model(base_data.validate()).with_performance(
+    model = MixedIntegerProgram(base_data.validate()).with_performance(
         PerformanceData(
             virtual_machine_min_ram={"vm_0": 0},
             virtual_machine_min_cpu_count={"vm_0": 3},
@@ -102,7 +102,7 @@ def test_resource_matching():
         max_service_instances={f"s_{s}": 1 for s in range(count)},
     )
 
-    model = Model(base_data.validate()).with_performance(
+    model = MixedIntegerProgram(base_data.validate()).with_performance(
         PerformanceData(
             virtual_machine_min_ram={f"vm_{v}": v for v in range(count)},
             virtual_machine_min_cpu_count={
@@ -131,7 +131,7 @@ def test_cheap_insufficient_service():
         max_service_instances={"s_0": 1, "s_1": 1},
     )
 
-    model = Model(base_data.validate()).with_performance(
+    model = MixedIntegerProgram(base_data.validate()).with_performance(
         PerformanceData(
             virtual_machine_min_ram={"vm_0": 3},
             virtual_machine_min_cpu_count={"vm_0": 2},
@@ -157,7 +157,7 @@ def test_allowed_incomplete_data():
         max_service_instances={},
     )
 
-    model = Model(base_data.validate()).with_performance(
+    model = MixedIntegerProgram(base_data.validate()).with_performance(
         # Leave min requirements undefined
         PerformanceData(
             virtual_machine_min_ram={},
@@ -182,7 +182,7 @@ def test_should_work_with_higher_virtual_machine_demand():
         max_service_instances={},
     )
 
-    model = Model(base_data.validate()).with_performance(
+    model = MixedIntegerProgram(base_data.validate()).with_performance(
         PerformanceData(
             virtual_machine_min_ram={"vm_0": 1},
             virtual_machine_min_cpu_count={"vm_0": 1},
@@ -206,7 +206,7 @@ def test_should_buy_multiple_services_if_needed():
         max_service_instances={},
     )
 
-    model = Model(base_data.validate()).with_performance(
+    model = MixedIntegerProgram(base_data.validate()).with_performance(
         PerformanceData(
             virtual_machine_min_ram={"vm_0": 1},
             virtual_machine_min_cpu_count={"vm_0": 1},
@@ -234,7 +234,7 @@ def test_should_be_feasible_if_service_can_be_bought_enough_times_two_instances(
         max_service_instances={"s_0": 2},
     )
 
-    model = Model(base_data.validate()).with_performance(
+    model = MixedIntegerProgram(base_data.validate()).with_performance(
         PerformanceData(
             virtual_machine_min_ram={"vm_0": 1},
             virtual_machine_min_cpu_count={"vm_0": 1},
@@ -262,7 +262,7 @@ def test_should_be_feasible_if_service_can_be_bought_enough_times_two_vms():
         max_service_instances={"s_0": 2},
     )
 
-    model = Model(base_data.validate()).with_performance(
+    model = MixedIntegerProgram(base_data.validate()).with_performance(
         PerformanceData(
             virtual_machine_min_ram={"vm_0": 1, "vm_1": 1},
             virtual_machine_min_cpu_count={"vm_0": 1, "vm_1": 1},
@@ -295,7 +295,7 @@ def test_should_be_infeasible_if_vms_cant_be_split():
         max_service_instances={"s_0": 2},
     )
 
-    model = Model(base_data.validate()).with_performance(
+    model = MixedIntegerProgram(base_data.validate()).with_performance(
         PerformanceData(
             virtual_machine_min_ram={"vm_0": 2},
             virtual_machine_min_cpu_count={"vm_0": 2},
@@ -321,7 +321,7 @@ def test_should_be_infeasible_if_not_enough_service_instances_can_be_bought():
         max_service_instances={"s_0": 1},
     )
 
-    model = Model(base_data.validate()).with_performance(
+    model = MixedIntegerProgram(base_data.validate()).with_performance(
         PerformanceData(
             virtual_machine_min_ram={"vm_0": 1},
             virtual_machine_min_cpu_count={"vm_0": 1},

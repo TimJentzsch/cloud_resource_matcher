@@ -5,18 +5,18 @@ import pytest
 from pulp import LpVariable
 
 from optimizer.mixed_integer_program import VmServiceMatching, ServiceInstanceCount, SolveSolution, SolveErrorReason, \
-    SolveError, Model
+    SolveError, MixedIntegerProgram
 
 
 class Expect:
-    _model: Model
+    _model: MixedIntegerProgram
 
     _variables: Set[str]
     _variables_exclusive: bool = False
 
     _fixed_variable_values: Dict[str, float]
 
-    def __init__(self, model: Model):
+    def __init__(self, model: MixedIntegerProgram):
         self._model = model
         self._variables = set()
         self._fixed_variable_values = dict()
