@@ -64,103 +64,19 @@ class MixedIntegerProgram:
             validated_optimizer_toolbox_model.optimizer_toolbox_model
         )
 
-    def build(self) -> "BuiltMixedIntegerProgram":
-        """Build the mixed integer program from the given optimizer toolbox model."""
-        # Shortcuts to make the lines shorter
-        base_data = self.optimizer_toolbox_model.base_data
-        performance_data = self.optimizer_toolbox_model.performance_data
-        network_data = self.optimizer_toolbox_model.network_data
-        multi_cloud_data = self.optimizer_toolbox_model.multi_cloud_data
+    def _build_performance(
+        self,
+        optimizer_toolbox_model: OptimizerToolboxModel,
+        problem: LpProblem,
+        vm_matching,
+        service_instance_count,
+    ) -> None:
+        """Add the performance data to the problem."""
+        base_data = optimizer_toolbox_model.base_data
+        performance_data = optimizer_toolbox_model.performance_data
 
-        prob = LpProblem("cloud_cost_optimization", LpMinimize)
-
-        # The virtual machines that can use service s
-        service_virtual_machines: dict[Service, set[VirtualMachine]] = {
-            s: set(
-                vm
-                for vm in base_data.virtual_machines
-                if s in base_data.virtual_machine_services[vm]
-            )
-            for s in base_data.services
-        }
-
-        # Assign virtual machine v to cloud service s at time t?
-        vm_matching: dict[tuple[VirtualMachine, Service, TimeUnit], LpVariable] = {
-            (v, s, t): LpVariable(
-                f"vm_matching({v},{s},{t})", cat=LpInteger, lowBound=0
-            )
-            for v in base_data.virtual_machines
-            for s in base_data.virtual_machine_services[v]
-            for t in base_data.time
-        }
-
-        # Buy how many services instances for s at time t?
-        service_instance_count: dict[tuple[Service, TimeUnit], LpVariable] = {
-            (s, t): LpVariable(
-                f"service_instance_count({s},{t})", cat=LpInteger, lowBound=0
-            )
-            for s in base_data.services
-            for t in base_data.time
-        }
-
-        # Has service s been purchased at time t at all?
-        service_used = {
-            (s, t): LpVariable(f"service_used({s},{t})", cat=LpBinary)
-            for s in base_data.services
-            for t in base_data.time
-        }
-
-        # Enforce limits for service instance count
-        for s, max_instances in base_data.max_service_instances.items():
-            for t in base_data.time:
-                prob += (
-                    service_instance_count[s, t] <= max_instances,
-                    f"max_service_instances({s},{t})",
-                )
-
-        # Calculate service_used
-        for s in base_data.services:
-            for t in base_data.time:
-                prob += (
-                    service_used[s, t] <= service_instance_count[s, t],
-                    f"connect_service_instances_and_service_used({s},{t})",
-                )
-
-        # Satisfy virtual machine demand
-        for v in base_data.virtual_machines:
-            for t in base_data.time:
-                prob += (
-                    lpSum(
-                        vm_matching[v, s, t]
-                        for s in base_data.virtual_machine_services[v]
-                    )
-                    == base_data.virtual_machine_demand[v, t],
-                    f"virtual_machine_demand({v},{t})",
-                )
-
-        # Only assign VMs to services that have been bought
-        for s in base_data.services:
-            for t in base_data.time:
-                prob += (
-                    lpSum(vm_matching[vm, s, t] for vm in service_virtual_machines[s])
-                    <= service_used[s, t]
-                    * sum(
-                        base_data.virtual_machine_demand[vm, t]
-                        for vm in service_virtual_machines[s]
-                    ),
-                    f"vms_to_bought_service({s},{t})",
-                )
-
-        # Base costs for used services
-        objective = LpAffineExpression(
-            lpSum(
-                service_instance_count[s, t] * base_data.service_base_costs[s]
-                for s in base_data.services
-                for t in base_data.time
-            )
-        )
-
-        # === Performance Data ===
+        if performance_data is None:
+            return
 
         # Compute which services can host which virtual machines
         service_virtual_machines = {
@@ -176,7 +92,7 @@ class MixedIntegerProgram:
         for s in base_data.services:
             for t in base_data.time:
                 # RAM
-                prob += (
+                problem += (
                     lpSum(
                         vm_matching[v, s, t]
                         * performance_data.virtual_machine_min_ram[v]
@@ -188,7 +104,7 @@ class MixedIntegerProgram:
                 )
 
                 # vCPUs
-                prob.addConstraint(
+                problem.addConstraint(
                     lpSum(
                         vm_matching[v, s, t]
                         * performance_data.virtual_machine_min_cpu_count[v]
@@ -200,51 +116,18 @@ class MixedIntegerProgram:
                     f"cpu_performance_limit({s},{t})",
                 )
 
-        # === Multi Cloud Data ===
+    def _build_network(
+        self,
+        optimizer_toolbox_model: OptimizerToolboxModel,
+        problem: LpProblem,
+        objective: LpAffineExpression,
+        vm_matching,
+    ) -> None:
+        base_data = optimizer_toolbox_model.base_data
+        network_data = optimizer_toolbox_model.network_data
 
-        # Is cloud service provider k used at all?
-        csp_used = {
-            k: LpVariable(f"csp_used({k})", cat=LpBinary)
-            for k in multi_cloud_data.cloud_service_providers
-        }
-
-        # Calculate csp_used values
-        for k in multi_cloud_data.cloud_service_providers:
-            used_service_count = lpSum(
-                vm_matching[v, s, t]
-                for v in base_data.virtual_machines
-                for s in multi_cloud_data.cloud_service_provider_services[k]
-                if s in base_data.virtual_machine_services[v]
-                for t in base_data.time
-            )
-
-            prob += (
-                csp_used[k] - used_service_count <= 0,
-                f"csp_used({k})_enforce_0",
-            )
-            prob += (
-                (
-                    csp_used[k] * len(base_data.virtual_machines) * len(base_data.time)
-                    - used_service_count
-                )
-                >= 0,
-                f"csp_used({k})_enforce_1",
-            )
-
-        # Enforce minimum and maximum number of used CSPs
-        for k in multi_cloud_data.cloud_service_providers:
-            prob.addConstraint(
-                lpSum(csp_used[k] for k in multi_cloud_data.cloud_service_providers)
-                >= multi_cloud_data.min_cloud_service_provider_count,
-                f"min_cloud_service_provider_count({k})",
-            )
-            prob.addConstraint(
-                lpSum(csp_used[k] for k in multi_cloud_data.cloud_service_providers)
-                <= multi_cloud_data.max_cloud_service_provider_count,
-                f"max_cloud_service_provider_count({k})",
-            )
-
-        # === Network Data ===
+        if network_data is None:
+            return
 
         # How many VMs v are located at location loc at time t?
         vm_locations: dict[tuple[VirtualMachine, Location, TimeUnit], LpVariable] = {
@@ -259,7 +142,7 @@ class MixedIntegerProgram:
         # All VMs are placed at exactly one location
         for v in base_data.virtual_machines:
             for t in base_data.time:
-                prob += (
+                problem += (
                     lpSum(vm_locations[v, loc, t] for loc in network_data.locations)
                     == base_data.virtual_machine_demand[v, t]
                 )
@@ -270,7 +153,7 @@ class MixedIntegerProgram:
                 for t in base_data.time:
                     for s in base_data.virtual_machine_services[v]:
                         if loc in network_data.service_location[s]:
-                            prob += vm_locations[v, loc, t] >= vm_matching[v, s, t]
+                            problem += vm_locations[v, loc, t] >= vm_matching[v, s, t]
 
         # Pay for VM -> location traffic
         objective += lpSum(
@@ -314,7 +197,7 @@ class MixedIntegerProgram:
             ) in network_data.virtual_machine_virtual_machine_traffic.keys():
                 # Make enough outgoing connections from each location
                 for loc1 in network_data.locations:
-                    prob += vm_locations[vm1, loc1, t] == lpSum(
+                    problem += vm_locations[vm1, loc1, t] == lpSum(
                         vm_vm_locations[vm1, vm2, loc1, loc2, t]
                         for loc2 in network_data.locations
                     )
@@ -322,7 +205,7 @@ class MixedIntegerProgram:
                 # Have at least one VM at the incoming location
                 for loc1 in network_data.locations:
                     for loc2 in network_data.locations:
-                        prob += (
+                        problem += (
                             vm_locations[vm2, loc2, t]
                             * base_data.virtual_machine_demand[vm1, t]
                             >= vm_vm_locations[vm1, vm2, loc1, loc2, t]
@@ -341,7 +224,7 @@ class MixedIntegerProgram:
                             vm1,
                             loc2,
                         ) in network_data.virtual_machine_location_traffic.keys():
-                            prob += vm_locations[vm1, loc1, t] == 0
+                            problem += vm_locations[vm1, loc1, t] == 0
 
             # For VM -> VM traffic
             for (
@@ -353,7 +236,7 @@ class MixedIntegerProgram:
                 for loc1 in network_data.locations:
                     for loc2 in network_data.locations:
                         if network_data.location_latency[loc1, loc2] > max_latency:
-                            prob += vm_vm_locations[vm1, vm2, loc1, loc2, t] == 0
+                            problem += vm_vm_locations[vm1, vm2, loc1, loc2, t] == 0
 
         # Pay for VM -> location traffic caused by VM -> VM connections
         objective += lpSum(
@@ -369,12 +252,174 @@ class MixedIntegerProgram:
             for t in base_data.time
         )
 
+    def _build_multi_cloud(
+        self,
+        optimizer_toolbox_model: OptimizerToolboxModel,
+        problem: LpProblem,
+        vm_matching,
+    ):
+        base_data = optimizer_toolbox_model.base_data
+        multi_cloud_data = optimizer_toolbox_model.multi_cloud_data
+
+        if multi_cloud_data is None:
+            return
+
+        # Is cloud service provider k used at all?
+        csp_used = {
+            k: LpVariable(f"csp_used({k})", cat=LpBinary)
+            for k in multi_cloud_data.cloud_service_providers
+        }
+
+        # Calculate csp_used values
+        for k in multi_cloud_data.cloud_service_providers:
+            used_service_count = lpSum(
+                vm_matching[v, s, t]
+                for v in base_data.virtual_machines
+                for s in multi_cloud_data.cloud_service_provider_services[k]
+                if s in base_data.virtual_machine_services[v]
+                for t in base_data.time
+            )
+
+            problem += (
+                csp_used[k] - used_service_count <= 0,
+                f"csp_used({k})_enforce_0",
+            )
+            problem += (
+                (
+                    csp_used[k] * len(base_data.virtual_machines) * len(base_data.time)
+                    - used_service_count
+                )
+                >= 0,
+                f"csp_used({k})_enforce_1",
+            )
+
+        # Enforce minimum and maximum number of used CSPs
+        for k in multi_cloud_data.cloud_service_providers:
+            problem.addConstraint(
+                lpSum(csp_used[k] for k in multi_cloud_data.cloud_service_providers)
+                >= multi_cloud_data.min_cloud_service_provider_count,
+                f"min_cloud_service_provider_count({k})",
+            )
+            problem.addConstraint(
+                lpSum(csp_used[k] for k in multi_cloud_data.cloud_service_providers)
+                <= multi_cloud_data.max_cloud_service_provider_count,
+                f"max_cloud_service_provider_count({k})",
+            )
+
+    def build(self) -> "BuiltMixedIntegerProgram":
+        """Build the mixed integer program from the given optimizer toolbox model."""
+        base_data = self.optimizer_toolbox_model.base_data
+
+        problem = LpProblem("cloud_cost_optimization", LpMinimize)
+
+        # The virtual machines that can use service s
+        service_virtual_machines: dict[Service, set[VirtualMachine]] = {
+            s: set(
+                vm
+                for vm in base_data.virtual_machines
+                if s in base_data.virtual_machine_services[vm]
+            )
+            for s in base_data.services
+        }
+
+        # Assign virtual machine v to cloud service s at time t?
+        vm_matching: dict[tuple[VirtualMachine, Service, TimeUnit], LpVariable] = {
+            (v, s, t): LpVariable(
+                f"vm_matching({v},{s},{t})", cat=LpInteger, lowBound=0
+            )
+            for v in base_data.virtual_machines
+            for s in base_data.virtual_machine_services[v]
+            for t in base_data.time
+        }
+
+        # Buy how many services instances for s at time t?
+        service_instance_count: dict[tuple[Service, TimeUnit], LpVariable] = {
+            (s, t): LpVariable(
+                f"service_instance_count({s},{t})", cat=LpInteger, lowBound=0
+            )
+            for s in base_data.services
+            for t in base_data.time
+        }
+
+        # Has service s been purchased at time t at all?
+        service_used = {
+            (s, t): LpVariable(f"service_used({s},{t})", cat=LpBinary)
+            for s in base_data.services
+            for t in base_data.time
+        }
+
+        # Enforce limits for service instance count
+        for s, max_instances in base_data.max_service_instances.items():
+            for t in base_data.time:
+                problem += (
+                    service_instance_count[s, t] <= max_instances,
+                    f"max_service_instances({s},{t})",
+                )
+
+        # Calculate service_used
+        for s in base_data.services:
+            for t in base_data.time:
+                problem += (
+                    service_used[s, t] <= service_instance_count[s, t],
+                    f"connect_service_instances_and_service_used({s},{t})",
+                )
+
+        # Satisfy virtual machine demand
+        for v in base_data.virtual_machines:
+            for t in base_data.time:
+                problem += (
+                    lpSum(
+                        vm_matching[v, s, t]
+                        for s in base_data.virtual_machine_services[v]
+                    )
+                    == base_data.virtual_machine_demand[v, t],
+                    f"virtual_machine_demand({v},{t})",
+                )
+
+        # Only assign VMs to services that have been bought
+        for s in base_data.services:
+            for t in base_data.time:
+                problem += (
+                    lpSum(vm_matching[vm, s, t] for vm in service_virtual_machines[s])
+                    <= service_used[s, t]
+                    * sum(
+                        base_data.virtual_machine_demand[vm, t]
+                        for vm in service_virtual_machines[s]
+                    ),
+                    f"vms_to_bought_service({s},{t})",
+                )
+
+        # Base costs for used services
+        objective = LpAffineExpression(
+            lpSum(
+                service_instance_count[s, t] * base_data.service_base_costs[s]
+                for s in base_data.services
+                for t in base_data.time
+            )
+        )
+
+        # Add the optional parts of the model, if they are specified
+        self._build_performance(
+            self.optimizer_toolbox_model, problem, vm_matching, service_instance_count
+        )
+        self._build_network(
+            self.optimizer_toolbox_model,
+            problem,
+            objective,
+            vm_matching,
+        )
+        self._build_multi_cloud(
+            self.optimizer_toolbox_model,
+            problem,
+            vm_matching,
+        )
+
         # Set the objective function
-        prob.setObjective(objective)
+        problem.setObjective(objective)
 
         return BuiltMixedIntegerProgram(
             mixed_integer_program=self,
-            problem=prob,
+            problem=problem,
             vm_matching=vm_matching,
             service_instance_count=service_instance_count,
         )
