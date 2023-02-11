@@ -6,12 +6,19 @@ from enum import Enum
 import pulp
 from pulp import LpProblem, LpStatus
 
-from optimizer.mixed_integer_program import MixedIntegerProgram, VarVmServiceMatching, VarServiceInstanceCount
-from optimizer.optimizer_toolbox_model.data import VirtualMachine, Service, TimeUnit, Cost
+import optimizer
+from optimizer.mixed_integer_program.types import (
+    VarVmServiceMatching,
+    VarServiceInstanceCount,
+)
+from optimizer.mixed_integer_program.types import (
+    VmServiceMatching,
+    ServiceInstanceCount,
+)
+from optimizer.optimizer_toolbox_model.data import (
+    Cost,
+)
 from optimizer.solver import Solver, get_pulp_solver
-
-VmServiceMatching = dict[tuple[VirtualMachine, Service, TimeUnit], int]
-ServiceInstanceCount = dict[tuple[Service, TimeUnit], int]
 
 
 @dataclass
@@ -34,7 +41,7 @@ class SolveError(RuntimeError):
 
 
 class BuiltMixedIntegerProgram:
-    mixed_integer_program: MixedIntegerProgram
+    mixed_integer_program: "optimizer.mixed_integer_program.MixedIntegerProgram"
     problem: LpProblem
 
     vm_matching: VarVmServiceMatching
@@ -42,7 +49,7 @@ class BuiltMixedIntegerProgram:
 
     def __init__(
         self,
-        mixed_integer_program: MixedIntegerProgram,
+        mixed_integer_program: "optimizer.mixed_integer_program.MixedIntegerProgram",
         problem: LpProblem,
         vm_matching,
         service_instance_count,

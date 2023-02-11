@@ -8,7 +8,15 @@ from pulp import (
     lpSum,
 )
 
+from optimizer.mixed_integer_program.types import (
+    VarVmServiceMatching,
+    VarServiceInstanceCount,
+)
 from optimizer.mixed_integer_program.built import BuiltMixedIntegerProgram
+from optimizer.mixed_integer_program.types import (
+    VarVmServiceMatching,
+    VarServiceInstanceCount,
+)
 from optimizer.optimizer_toolbox_model import (
     ValidatedOptimizerToolboxModel,
     OptimizerToolboxModel,
@@ -19,9 +27,6 @@ from optimizer.optimizer_toolbox_model.data import (
     TimeUnit,
 )
 from optimizer.optimizer_toolbox_model.data.network_data import Location
-
-VarVmServiceMatching = dict[tuple[VirtualMachine, Service, TimeUnit], LpVariable]
-VarServiceInstanceCount = dict[tuple[Service, TimeUnit], LpVariable]
 
 
 class MixedIntegerProgram:
@@ -396,5 +401,3 @@ class MixedIntegerProgram:
             vm_matching=vm_matching,
             service_instance_count=service_instance_count,
         )
-
-
