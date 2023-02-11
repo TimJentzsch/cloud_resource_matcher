@@ -8,10 +8,9 @@ from optimizer.optimizer_toolbox_model.data.network_data import NetworkData
 from optimizer.optimizer_toolbox_model.data.performance_data import PerformanceData
 from optimizer.optimizer_toolbox_model.data.multi_cloud_data import MultiCloudData
 from optimizer.mixed_integer_program import (
-    SolveSolution,
-    SolveError,
     MixedIntegerProgram,
 )
+from optimizer.mixed_integer_program.built import SolveSolution, SolveError
 from optimizer.solver import Solver
 
 
