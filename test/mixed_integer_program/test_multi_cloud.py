@@ -9,7 +9,7 @@ def test_min_csp_count_constraint_matching():
     """There are two CSPs, one cheap and one expensive.
     To respect the min CSP count constraint, both CSPs have to be used.
     """
-    model = MixedIntegerProgram(
+    mip = MixedIntegerProgram(
         OptimizerToolboxModel(
             BaseData(
                 virtual_machines=["vm_0", "vm_1"],
@@ -35,7 +35,7 @@ def test_min_csp_count_constraint_matching():
         .validate()
     )
 
-    Expect(model).to_be_feasible().with_cost(11).with_vm_service_matching(
+    Expect(mip).to_be_feasible().with_cost(11).with_vm_service_matching(
         {("vm_0", "s_0", 0): 1, ("vm_1", "s_2", 0): 1}
     ).with_variable_values({"csp_used(csp_0)": 1, "csp_used(csp_1)": 1}).test()
 
@@ -44,7 +44,7 @@ def test_max_csp_count_constraint_matching():
     """There are two CSPs, it would be cheapest to use most of them.
     To respect the max CSP count constraint, only one CSP can be used.
     """
-    model = MixedIntegerProgram(
+    mip = MixedIntegerProgram(
         OptimizerToolboxModel(
             BaseData(
                 virtual_machines=["vm_0", "vm_1"],
@@ -70,14 +70,14 @@ def test_max_csp_count_constraint_matching():
         .validate()
     )
 
-    Expect(model).to_be_feasible().with_cost(20).with_vm_service_matching(
+    Expect(mip).to_be_feasible().with_cost(20).with_vm_service_matching(
         {("vm_0", "s_0", 0): 1, ("vm_1", "s_1", 0): 1}
     ).with_variable_values({"csp_used(csp_0)": 1, "csp_used(csp_1)": 0}).test()
 
 
 def test_min_csp_count_constraint_infeasible():
     """Two CSPs have to be used, but there is only one CSP."""
-    model = MixedIntegerProgram(
+    mip = MixedIntegerProgram(
         OptimizerToolboxModel(
             BaseData(
                 virtual_machines=["vm_0"],
@@ -100,12 +100,12 @@ def test_min_csp_count_constraint_infeasible():
         .validate()
     )
 
-    Expect(model).to_be_infeasible().test()
+    Expect(mip).to_be_infeasible().test()
 
 
 def test_max_csp_count_constraint_infeasible():
     """Only one CSP must be used, but it's only possible with two."""
-    model = MixedIntegerProgram(
+    mip = MixedIntegerProgram(
         OptimizerToolboxModel(
             BaseData(
                 virtual_machines=["vm_0", "vm_1"],
@@ -128,12 +128,12 @@ def test_max_csp_count_constraint_infeasible():
         .validate()
     )
 
-    Expect(model).to_be_infeasible().test()
+    Expect(mip).to_be_infeasible().test()
 
 
 def test_with_multiple_time_points():
     """Make sure that the CSP constraints also work for multiple time points."""
-    model = MixedIntegerProgram(
+    mip = MixedIntegerProgram(
         OptimizerToolboxModel(
             BaseData(
                 virtual_machines=["vm_0"],
@@ -156,6 +156,6 @@ def test_with_multiple_time_points():
         .validate()
     )
 
-    Expect(model).to_be_feasible().with_vm_service_matching(
+    Expect(mip).to_be_feasible().with_vm_service_matching(
         {("vm_0", "s_0", 0): 1, ("vm_0", "s_0", 1): 1}
     ).with_cost(20).test()
