@@ -10,7 +10,7 @@ from optimizer.optimizer_toolbox_model.data.multi_cloud_data import MultiCloudDa
 from optimizer.mixed_integer_program import (
     MixedIntegerProgram,
 )
-from optimizer.mixed_integer_program.built import SolveSolution, SolveError
+from optimizer.mixed_integer_program.solving import SolveSolution, SolveError
 from optimizer.solver import Solver
 
 
