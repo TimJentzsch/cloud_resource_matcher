@@ -9,15 +9,25 @@ from pulp import (
     LpMinimize,
     LpInteger,
     LpBinary,
-    lpSum, LpStatus,
+    lpSum,
+    LpStatus,
 )
-
-from optimizer.mixed_integer_program.types import VarVmServiceMatching, VarServiceInstanceCount
-from optimizer.mixed_integer_program.solving import SolveSolution, SolveError, SolveErrorReason
 
 from optimizer.mixed_integer_program.types import (
     VarVmServiceMatching,
-    VarServiceInstanceCount, VmServiceMatching, ServiceInstanceCount,
+    VarServiceInstanceCount,
+)
+from optimizer.mixed_integer_program.solving import (
+    SolveSolution,
+    SolveError,
+    SolveErrorReason,
+)
+
+from optimizer.mixed_integer_program.types import (
+    VarVmServiceMatching,
+    VarServiceInstanceCount,
+    VmServiceMatching,
+    ServiceInstanceCount,
 )
 from optimizer.mixed_integer_program.types import (
     VarVmServiceMatching,
@@ -30,7 +40,8 @@ from optimizer.optimizer_toolbox_model import (
 from optimizer.optimizer_toolbox_model.data import (
     VirtualMachine,
     Service,
-    TimeUnit, Cost,
+    TimeUnit,
+    Cost,
 )
 from optimizer.optimizer_toolbox_model.data.network_data import Location
 from optimizer.solver import Solver, get_pulp_solver

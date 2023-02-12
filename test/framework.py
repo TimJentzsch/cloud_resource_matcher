@@ -5,9 +5,14 @@ import pytest
 from pulp import LpVariable
 
 from optimizer.mixed_integer_program import (
-    MixedIntegerProgram, BuiltMixedIntegerProgram,
+    MixedIntegerProgram,
+    BuiltMixedIntegerProgram,
 )
-from optimizer.mixed_integer_program.solving import SolveSolution, SolveErrorReason, SolveError
+from optimizer.mixed_integer_program.solving import (
+    SolveSolution,
+    SolveErrorReason,
+    SolveError,
+)
 from optimizer.mixed_integer_program.types import (
     VmServiceMatching,
     ServiceInstanceCount,
