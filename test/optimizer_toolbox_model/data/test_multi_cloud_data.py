@@ -1,7 +1,7 @@
 import pytest
 
-from optimizer.data.base_data import BaseData
-from optimizer.data.multi_cloud_data import MultiCloudData
+from optimizer.optimizer_toolbox_model.data.base_data import BaseData
+from optimizer.optimizer_toolbox_model.data.multi_cloud_data import MultiCloudData
 
 
 def test_should_not_raise_error_for_valid_data():

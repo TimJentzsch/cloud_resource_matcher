@@ -1,8 +1,12 @@
 from dataclasses import dataclass
-from typing import List, Dict, Tuple, Self
+from typing import List, Dict, Tuple
 
-from optimizer.data import Service, VirtualMachine, Cost, TimeUnit
-from optimizer.data.validated import Validated
+from optimizer.optimizer_toolbox_model.data import (
+    Service,
+    VirtualMachine,
+    Cost,
+    TimeUnit,
+)
 
 
 @dataclass
@@ -28,8 +32,12 @@ class BaseData:
     # The maximum number of instances available for each service
     max_service_instances: Dict[Service, int]
 
-    def validate(self) -> Validated[Self]:
-        """Validate the data for consistency."""
+    def validate(self) -> None:
+        """
+        Validate the data for consistency.
+
+        :raises AssertionError: When the data is not valid.
+        """
         # Validate virtual_machine_services
         for v in self.virtual_machines:
             assert (
@@ -82,5 +90,3 @@ class BaseData:
             assert (
                 instances >= 0
             ), f"Negative max instance count {instances} for service {s}"
-
-        return Validated(self)

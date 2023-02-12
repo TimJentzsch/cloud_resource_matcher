@@ -1,9 +1,8 @@
 from dataclasses import dataclass
-from typing import Dict, Self
+from typing import Dict
 
-from optimizer.data import Service, VirtualMachine
-from optimizer.data.base_data import BaseData
-from optimizer.data.validated import Validated
+from optimizer.optimizer_toolbox_model.data import Service, VirtualMachine
+from optimizer.optimizer_toolbox_model.data.base_data import BaseData
 
 
 @dataclass
@@ -20,8 +19,12 @@ class PerformanceData:
     # The amount of vCPUs each service has
     service_cpu_count: Dict[Service, int]
 
-    def validate(self, base_data: BaseData) -> Validated[Self]:
-        """Validate the consistency of the data."""
+    def validate(self, base_data: BaseData) -> None:
+        """
+        Validate the data for consistency.
+
+        :raises AssertionError: When the data is not valid.
+        """
         # Validate virtual_machine_min_ram
         for v, min_ram in self.virtual_machine_min_ram.items():
             assert (
@@ -53,5 +56,3 @@ class PerformanceData:
         for s, cpu_count in self.service_cpu_count.items():
             assert s in base_data.services, f"{s} in service_ram is not a valid service"
             assert cpu_count >= 0, f"RAM for service {s} cannot be negative"
-
-        return Validated(self)

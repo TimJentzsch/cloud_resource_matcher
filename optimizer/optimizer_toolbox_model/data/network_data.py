@@ -1,9 +1,7 @@
 from dataclasses import dataclass
-from typing import Self
 
-from optimizer.data import VirtualMachine, Service
-from optimizer.data.base_data import BaseData
-from optimizer.data.validated import Validated
+from optimizer.optimizer_toolbox_model.data import Service, VirtualMachine
+from optimizer.optimizer_toolbox_model.data.base_data import BaseData
 
 Location = str
 Latency = int
@@ -48,7 +46,12 @@ class NetworkData:
     # This must be specified for every pair of locations
     location_traffic_cost: dict[tuple[Location, Location], float]
 
-    def validate(self, base_data: BaseData) -> Validated[Self]:
+    def validate(self, base_data: BaseData) -> None:
+        """
+        Validate the data for consistency.
+
+        :raises AssertionError: When the data is not valid.
+        """
         # Validate location_latency
         for (loc1, loc2), latency in self.location_latency.items():
             assert (
@@ -135,5 +138,3 @@ class NetworkData:
                 ) in self.location_traffic_cost.keys(), (
                     f"No network traffic costs specified for ({loc1}, {loc2})"
                 )
-
-        return Validated(self)

@@ -1,29 +1,34 @@
 import math
-from typing import Self, Optional, Dict, Set, List, Iterable
+from typing import Self, Optional, Dict, List, Iterable
 
 import pytest
 from pulp import LpVariable
 
-from optimizer.model import (
-    Model,
-    SolveError,
-    SolveErrorReason,
+from optimizer.mixed_integer_program import (
+    MixedIntegerProgram,
+    BuiltMixedIntegerProgram,
+)
+from optimizer.mixed_integer_program.solving import (
     SolveSolution,
+    SolveErrorReason,
+    SolveError,
+)
+from optimizer.mixed_integer_program.types import (
     VmServiceMatching,
     ServiceInstanceCount,
 )
 
 
 class Expect:
-    _model: Model
+    _model: BuiltMixedIntegerProgram
 
-    _variables: Set[str]
+    _variables: set[str]
     _variables_exclusive: bool = False
 
-    _fixed_variable_values: Dict[str, float]
+    _fixed_variable_values: dict[str, float]
 
-    def __init__(self, model: Model):
-        self._model = model
+    def __init__(self, model: MixedIntegerProgram):
+        self._model = model.build()
         self._variables = set()
         self._fixed_variable_values = dict()
 
@@ -95,7 +100,7 @@ class _ExpectResult:
         return self._expect._model.solve()
 
     def _fix_variable_values(self):
-        variables: List[LpVariable] = self._expect._model.prob.variables()
+        variables: List[LpVariable] = self._expect._model.problem.variables()
 
         for var_name, value in self._expect._fixed_variable_values.items():
             for var in variables:
@@ -105,7 +110,7 @@ class _ExpectResult:
                     break
 
     def _test_variables(self):
-        variables = [var.name for var in self._expect._model.prob.variables()]
+        variables = [var.name for var in self._expect._model.problem.variables()]
         missing_variables = [
             var for var in self._expect._variables if var not in variables
         ]
@@ -232,7 +237,7 @@ class _ExpectFeasible(_ExpectResult):
     def _test_variable_values(self):
         actual_values = {
             var.name: var.value()
-            for var in self._expect._model.prob.variables()
+            for var in self._expect._model.problem.variables()
             if var.name in self._variable_values.keys()
         }
         wrong_values = []
