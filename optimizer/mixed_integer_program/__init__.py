@@ -319,6 +319,7 @@ class MixedIntegerProgram:
         }
 
         # Assign virtual machine v to cloud service s at time t?
+        # ASSUMPTION: Each service instance can only be used by one VM instance
         vm_matching: VarVmServiceMatching = {
             (v, s, t): LpVariable(
                 f"vm_matching({v},{s},{t})", cat=LpInteger, lowBound=0
@@ -372,24 +373,24 @@ class MixedIntegerProgram:
                     f"virtual_machine_demand({v},{t})",
                 )
 
-        # Only assign VMs to services that have been bought
-        for s in base_data.services:
+        # Buy a service instance for every virtual machine instance
+        for vm in base_data.virtual_machines:
             for t in base_data.time:
                 problem += (
-                    lpSum(vm_matching[vm, s, t] for vm in service_virtual_machines[s])
-                    <= service_used[s, t]
-                    * sum(
-                        base_data.virtual_machine_demand[vm, t]
-                        for vm in service_virtual_machines[s]
+                    base_data.virtual_machine_demand[vm, t]
+                    == lpSum(
+                        vm_matching[vm, s, t]
+                        for s in base_data.virtual_machine_services[vm]
                     ),
-                    f"vms_to_bought_service({s},{t})",
+                    f"buy_services_for_vm_demand({vm},{t})",
                 )
 
         # Base costs for used services
         objective = LpAffineExpression(
             lpSum(
-                service_instance_count[s, t] * base_data.service_base_costs[s]
-                for s in base_data.services
+                vm_matching[vm, s, t] * base_data.service_base_costs[s]
+                for vm in base_data.virtual_machines
+                for s in base_data.virtual_machine_services[vm]
                 for t in base_data.time
             )
         )
