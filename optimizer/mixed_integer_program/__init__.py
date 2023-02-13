@@ -361,18 +361,6 @@ class MixedIntegerProgram:
                     f"connect_service_instances_and_service_used({s},{t})",
                 )
 
-        # Satisfy virtual machine demand
-        for v in base_data.virtual_machines:
-            for t in base_data.time:
-                problem += (
-                    lpSum(
-                        vm_matching[v, s, t]
-                        for s in base_data.virtual_machine_services[v]
-                    )
-                    == base_data.virtual_machine_demand[v, t],
-                    f"virtual_machine_demand({v},{t})",
-                )
-
         # Buy a service instance for every virtual machine instance
         for vm in base_data.virtual_machines:
             for t in base_data.time:
