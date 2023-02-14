@@ -64,9 +64,7 @@ def test_no_valid_systems_for_vm():
         ).validate()
     )
 
-    Expect(mip).to_be_infeasible().with_variables(
-        {"service_instance_count(s_0,0)", "service_used(s_0,0)"}, exclusive=True
-    ).test()
+    Expect(mip).to_be_infeasible().test()
 
 
 def test_one_vm_multiple_time_units():

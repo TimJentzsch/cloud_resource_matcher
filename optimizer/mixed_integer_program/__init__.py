@@ -41,6 +41,7 @@ from optimizer.optimizer_toolbox_model.data import (
     VirtualMachine,
     TimeUnit,
     Cost,
+    Service,
 )
 from optimizer.optimizer_toolbox_model.data.network_data import Location
 from optimizer.solver import Solver, get_pulp_solver
@@ -312,6 +313,16 @@ class MixedIntegerProgram:
 
         problem = LpProblem("cloud_cost_optimization", LpMinimize)
 
+        # Pre-compute which services can host which VMs
+        service_virtual_machines = {
+            s: set(
+                vm
+                for vm in base_data.virtual_machines
+                if s in base_data.virtual_machine_services[vm]
+            )
+            for s in base_data.services
+        }
+
         # Assign virtual machine v to cloud service s at time t?
         # ASSUMPTION: Each service instance can only be used by one VM instance
         vm_matching: VarVmServiceMatching = {
@@ -320,15 +331,6 @@ class MixedIntegerProgram:
             )
             for v in base_data.virtual_machines
             for s in base_data.virtual_machine_services[v]
-            for t in base_data.time
-        }
-
-        # Buy how many services instances for s at time t?
-        service_instance_count: VarServiceInstanceCount = {
-            (s, t): LpVariable(
-                f"service_instance_count({s},{t})", cat=LpInteger, lowBound=0
-            )
-            for s in base_data.services
             for t in base_data.time
         }
 
@@ -343,7 +345,8 @@ class MixedIntegerProgram:
         for s, max_instances in base_data.max_service_instances.items():
             for t in base_data.time:
                 problem += (
-                    service_instance_count[s, t] <= max_instances,
+                    lpSum(vm_matching[vm, s, t] for vm in service_virtual_machines[s])
+                    <= max_instances,
                     f"max_service_instances({s},{t})",
                 )
 
@@ -351,7 +354,10 @@ class MixedIntegerProgram:
         for s in base_data.services:
             for t in base_data.time:
                 problem += (
-                    service_used[s, t] <= service_instance_count[s, t],
+                    service_used[s, t]
+                    <= lpSum(
+                        vm_matching[vm, s, t] for vm in service_virtual_machines[s]
+                    ),
                     f"connect_service_instances_and_service_used({s},{t})",
                 )
 
@@ -398,7 +404,7 @@ class MixedIntegerProgram:
             mixed_integer_program=self,
             problem=problem,
             vm_matching=vm_matching,
-            service_instance_count=service_instance_count,
+            service_virtual_machines=service_virtual_machines,
         )
 
 
@@ -407,14 +413,14 @@ class BuiltMixedIntegerProgram:
     problem: LpProblem
 
     vm_matching: VarVmServiceMatching
-    service_instance_count: VarServiceInstanceCount
+    service_virtual_machines: dict[Service, VirtualMachine]
 
     def __init__(
         self,
         mixed_integer_program: MixedIntegerProgram,
         problem: LpProblem,
-        vm_matching,
-        service_instance_count,
+        vm_matching: VarVmServiceMatching,
+        service_virtual_machines: dict[Service, VirtualMachine],
     ):
         """
         Create a new built Mixed Integer Program.
@@ -424,7 +430,7 @@ class BuiltMixedIntegerProgram:
         self.mixed_integer_program = mixed_integer_program
         self.problem = problem
         self.vm_matching = vm_matching
-        self.service_instance_count = service_instance_count
+        self.service_virtual_machines = service_virtual_machines
 
     def solve(
         self,
@@ -472,7 +478,10 @@ class BuiltMixedIntegerProgram:
 
         for s in base_data.services:
             for t in base_data.time:
-                value = round(pulp.value(self.service_instance_count[s, t]))
+                value = sum(
+                    round(pulp.value(self.vm_matching[vm, s, t]))
+                    for vm in self.service_virtual_machines[s]
+                )
 
                 if value >= 1:
                     service_instance_count[s, t] = value
