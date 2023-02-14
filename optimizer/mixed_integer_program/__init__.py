@@ -39,7 +39,6 @@ from optimizer.optimizer_toolbox_model import (
 )
 from optimizer.optimizer_toolbox_model.data import (
     VirtualMachine,
-    Service,
     TimeUnit,
     Cost,
 )
@@ -65,7 +64,6 @@ class MixedIntegerProgram:
         optimizer_toolbox_model: OptimizerToolboxModel,
         problem: LpProblem,
         vm_matching: VarVmServiceMatching,
-        service_instance_count: VarServiceInstanceCount,
     ) -> None:
         """Add the performance data to the problem."""
         base_data = optimizer_toolbox_model.base_data
@@ -74,43 +72,49 @@ class MixedIntegerProgram:
         if performance_data is None:
             return
 
-        # Compute which services can host which virtual machines
-        service_virtual_machines = {
-            s: [
-                v
-                for v in base_data.virtual_machines
-                if s in base_data.virtual_machine_services[v]
-            ]
-            for s in base_data.services
+        # Is service s used for VM vm at time t at all?
+        var_vm_service_use = {
+            (vm, s, t): LpVariable(f"vm_service_use({vm},{s},{t})", cat=LpBinary)
+            for vm in base_data.virtual_machines
+            for s in base_data.virtual_machine_services[vm]
+            for t in base_data.time
         }
 
-        # Enforce performance limits for every service at every point in time
-        for s in base_data.services:
-            for t in base_data.time:
-                # RAM
-                problem += (
-                    lpSum(
-                        vm_matching[v, s, t]
-                        * performance_data.virtual_machine_min_ram[v]
-                        for v in service_virtual_machines[s]
-                        if v in performance_data.virtual_machine_min_ram.keys()
+        # Determine if VM vm is used for service s at time t
+        for vm in base_data.virtual_machines:
+            for s in base_data.virtual_machine_services[vm]:
+                for t in base_data.time:
+                    # var_vm_service_use == 0 => vm_matching == 0
+                    problem += (
+                        vm_matching[vm, s, t]
+                        <= var_vm_service_use[vm, s, t]
+                        * base_data.virtual_machine_demand[vm, t]
                     )
-                    <= performance_data.service_ram[s] * service_instance_count[s, t],
-                    f"ram_performance_limit({s},{t})",
-                )
 
-                # vCPUs
-                problem.addConstraint(
-                    lpSum(
-                        vm_matching[v, s, t]
-                        * performance_data.virtual_machine_min_cpu_count[v]
-                        for v in service_virtual_machines[s]
-                        if v in performance_data.virtual_machine_min_cpu_count.keys()
-                    )
-                    <= performance_data.service_cpu_count[s]
-                    * service_instance_count[s, t],
-                    f"cpu_performance_limit({s},{t})",
-                )
+                    # vm_matching == 0 => var_vm_service_use == 0
+                    problem += var_vm_service_use[vm, s, t] <= vm_matching[vm, s, t]
+
+        # Enforce performance limits for every service at every point in time
+        for vm in base_data.virtual_machines:
+            for s in base_data.virtual_machine_services[vm]:
+                for t in base_data.time:
+                    if vm in performance_data.virtual_machine_min_ram.keys():
+                        # RAM
+                        problem += (
+                            var_vm_service_use[vm, s, t]
+                            * performance_data.virtual_machine_min_ram[vm]
+                            <= performance_data.service_ram[s],
+                            f"ram_performance_limit({vm},{s},{t})",
+                        )
+
+                    if vm in performance_data.virtual_machine_min_cpu_count.keys():
+                        # vCPUs
+                        problem += (
+                            var_vm_service_use[vm, s, t]
+                            * performance_data.virtual_machine_min_cpu_count[vm]
+                            <= performance_data.service_cpu_count[s],
+                            f"cpu_performance_limit({vm},{s},{t})",
+                        )
 
     @staticmethod
     def _build_network(
@@ -308,16 +312,6 @@ class MixedIntegerProgram:
 
         problem = LpProblem("cloud_cost_optimization", LpMinimize)
 
-        # The virtual machines that can use service s
-        service_virtual_machines: dict[Service, set[VirtualMachine]] = {
-            s: set(
-                vm
-                for vm in base_data.virtual_machines
-                if s in base_data.virtual_machine_services[vm]
-            )
-            for s in base_data.services
-        }
-
         # Assign virtual machine v to cloud service s at time t?
         # ASSUMPTION: Each service instance can only be used by one VM instance
         vm_matching: VarVmServiceMatching = {
@@ -384,9 +378,7 @@ class MixedIntegerProgram:
         )
 
         # Add the optional parts of the model, if they are specified
-        self._build_performance(
-            self.optimizer_toolbox_model, problem, vm_matching, service_instance_count
-        )
+        self._build_performance(self.optimizer_toolbox_model, problem, vm_matching)
         self._build_network(
             self.optimizer_toolbox_model,
             problem,
