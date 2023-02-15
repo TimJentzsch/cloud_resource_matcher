@@ -7,7 +7,6 @@ from pulp import (
     LpAffineExpression,
     LpVariable,
     LpMinimize,
-    LpInteger,
     LpBinary,
     lpSum,
     LpStatus,
@@ -30,8 +29,8 @@ from optimizer.optimizer_toolbox_model import (
 )
 from optimizer.optimizer_toolbox_model.data import (
     VirtualMachine,
-    TimeUnit,
     Cost,
+    Service,
 )
 from optimizer.optimizer_toolbox_model.data.network_data import Location
 from optimizer.solver import Solver, get_pulp_solver
@@ -68,27 +67,28 @@ class MixedIntegerProgram:
 
         # Assign virtual machine v to cloud service s at time t?
         # ASSUMPTION: Each service instance can only be used by one VM instance
+        # ASSUMPTION: All instances of one VM have to be deployed
+        # on the same service type
         vm_matching: VarVmServiceMatching = {
-            (v, s, t): LpVariable(
-                f"vm_matching({v},{s},{t})", cat=LpInteger, lowBound=0
-            )
+            (v, s): LpVariable(f"vm_matching({v},{s})", cat=LpBinary)
             for v in base_data.virtual_machines
             for s in base_data.virtual_machine_services[v]
-            for t in base_data.time
         }
 
-        # Has service s been purchased at time t at all?
-        service_used = {
-            (s, t): LpVariable(f"service_used({s},{t})", cat=LpBinary)
+        # Has service s been purchased at all?
+        service_used: dict[Service, LpVariable] = {
+            s: LpVariable(f"service_used({s})", cat=LpBinary)
             for s in base_data.services
-            for t in base_data.time
         }
 
         # Enforce limits for service instance count
         for s, max_instances in base_data.max_service_instances.items():
             for t in base_data.time:
                 problem += (
-                    lpSum(vm_matching[vm, s, t] for vm in service_virtual_machines[s])
+                    lpSum(
+                        vm_matching[vm, s] * base_data.virtual_machine_demand[vm, t]
+                        for vm in service_virtual_machines[s]
+                    )
                     <= max_instances,
                     f"max_service_instances({s},{t})",
                 )
@@ -97,32 +97,17 @@ class MixedIntegerProgram:
         for s in base_data.services:
             for t in base_data.time:
                 problem += (
-                    service_used[s, t]
-                    <= lpSum(
-                        vm_matching[vm, s, t] for vm in service_virtual_machines[s]
-                    ),
+                    service_used[s]
+                    <= lpSum(vm_matching[vm, s] for vm in service_virtual_machines[s]),
                     f"connect_service_instances_and_service_used({s},{t})",
-                )
-
-        # Buy a service instance for every virtual machine instance
-        for vm in base_data.virtual_machines:
-            for t in base_data.time:
-                problem += (
-                    base_data.virtual_machine_demand[vm, t]
-                    == lpSum(
-                        vm_matching[vm, s, t]
-                        for s in base_data.virtual_machine_services[vm]
-                    ),
-                    f"buy_services_for_vm_demand({vm},{t})",
                 )
 
         # Base costs for used services
         objective = LpAffineExpression(
             lpSum(
-                vm_matching[vm, s, t] * base_data.service_base_costs[s]
+                vm_matching[vm, s] * base_data.service_base_costs[s]
                 for vm in base_data.virtual_machines
                 for s in base_data.virtual_machine_services[vm]
-                for t in base_data.time
             )
         )
 
@@ -163,49 +148,26 @@ class MixedIntegerProgram:
         if performance_data is None:
             return
 
-        # Is service s used for VM vm at time t at all?
-        var_vm_service_use = {
-            (vm, s, t): LpVariable(f"vm_service_use({vm},{s},{t})", cat=LpBinary)
-            for vm in base_data.virtual_machines
-            for s in base_data.virtual_machine_services[vm]
-            for t in base_data.time
-        }
-
-        # Determine if VM vm is used for service s at time t
+        # Enforce performance limits for every service
         for vm in base_data.virtual_machines:
             for s in base_data.virtual_machine_services[vm]:
-                for t in base_data.time:
-                    # var_vm_service_use == 0 => vm_matching == 0
+                if vm in performance_data.virtual_machine_min_ram.keys():
+                    # RAM
                     problem += (
-                        vm_matching[vm, s, t]
-                        <= var_vm_service_use[vm, s, t]
-                        * base_data.virtual_machine_demand[vm, t]
+                        vm_matching[vm, s]
+                        * performance_data.virtual_machine_min_ram[vm]
+                        <= performance_data.service_ram[s],
+                        f"ram_performance_limit({vm},{s})",
                     )
 
-                    # vm_matching == 0 => var_vm_service_use == 0
-                    problem += var_vm_service_use[vm, s, t] <= vm_matching[vm, s, t]
-
-        # Enforce performance limits for every service at every point in time
-        for vm in base_data.virtual_machines:
-            for s in base_data.virtual_machine_services[vm]:
-                for t in base_data.time:
-                    if vm in performance_data.virtual_machine_min_ram.keys():
-                        # RAM
-                        problem += (
-                            var_vm_service_use[vm, s, t]
-                            * performance_data.virtual_machine_min_ram[vm]
-                            <= performance_data.service_ram[s],
-                            f"ram_performance_limit({vm},{s},{t})",
-                        )
-
-                    if vm in performance_data.virtual_machine_min_cpu_count.keys():
-                        # vCPUs
-                        problem += (
-                            var_vm_service_use[vm, s, t]
-                            * performance_data.virtual_machine_min_cpu_count[vm]
-                            <= performance_data.service_cpu_count[s],
-                            f"cpu_performance_limit({vm},{s},{t})",
-                        )
+                if vm in performance_data.virtual_machine_min_cpu_count.keys():
+                    # vCPUs
+                    problem += (
+                        vm_matching[vm, s]
+                        * performance_data.virtual_machine_min_cpu_count[vm]
+                        <= performance_data.service_cpu_count[s],
+                        f"cpu_performance_limit({vm},{s})",
+                    )
 
     @staticmethod
     def _build_network(
@@ -220,35 +182,33 @@ class MixedIntegerProgram:
         if network_data is None:
             return
 
-        # How many VMs v are located at location loc at time t?
-        vm_locations: dict[tuple[VirtualMachine, Location, TimeUnit], LpVariable] = {
-            (v, loc, t): LpVariable(
-                f"vm_location({v},{loc},{t})", cat=LpInteger, lowBound=0
+        # Are the VMs v located at location loc?
+        vm_locations: dict[tuple[VirtualMachine, Location], LpVariable] = {
+            (v, loc): LpVariable(
+                f"vm_location({v},{loc})",
+                cat=LpBinary,
             )
             for v in base_data.virtual_machines
             for loc in network_data.locations
-            for t in base_data.time
         }
 
         # All VMs are placed at exactly one location
         for v in base_data.virtual_machines:
-            for t in base_data.time:
-                problem += (
-                    lpSum(vm_locations[v, loc, t] for loc in network_data.locations)
-                    == base_data.virtual_machine_demand[v, t]
-                )
+            problem += (
+                lpSum(vm_locations[v, loc] for loc in network_data.locations) == 1,
+                f"one_vm_location({v})",
+            )
 
         # The VMs location is the location of the service where it's placed
         for v in base_data.virtual_machines:
             for loc in network_data.locations:
-                for t in base_data.time:
-                    for s in base_data.virtual_machine_services[v]:
-                        if loc in network_data.service_location[s]:
-                            problem += vm_locations[v, loc, t] >= vm_matching[v, s, t]
+                for s in base_data.virtual_machine_services[v]:
+                    if loc in network_data.service_location[s]:
+                        problem += vm_locations[v, loc] >= vm_matching[v, s]
 
         # Pay for VM -> location traffic
         objective += lpSum(
-            vm_locations[vm, vm_loc, t]
+            vm_locations[vm, vm_loc]
             * traffic
             * network_data.location_traffic_cost[vm_loc, loc]
             for (
@@ -256,21 +216,19 @@ class MixedIntegerProgram:
                 loc,
             ), traffic in network_data.virtual_machine_location_traffic.items()
             for vm_loc in network_data.locations
-            for t in base_data.time
         )
 
         # === virtual_machine_virtual_machine_traffic ===
 
-        # The number of vm1 -> vm2 connections where vm1 is at loc1
-        # and vm2 is at loc2 (at time t)
+        # Is there a vm1 -> vm2 connection where vm1 is at loc1
+        # and vm2 is at loc2
         vm_vm_locations: dict[
-            tuple[VirtualMachine, VirtualMachine, Location, Location, TimeUnit],
+            tuple[VirtualMachine, VirtualMachine, Location, Location],
             LpVariable,
         ] = {
-            (vm1, vm2, loc1, loc2, t): LpVariable(
-                f"vm_vm_locations({vm1},{vm2},{loc1},{loc2},{t})",
-                cat=LpInteger,
-                lowBound=0,
+            (vm1, vm2, loc1, loc2): LpVariable(
+                f"vm_vm_locations({vm1},{vm2},{loc1},{loc2})",
+                cat=LpBinary,
             )
             for (
                 vm1,
@@ -278,61 +236,55 @@ class MixedIntegerProgram:
             ) in network_data.virtual_machine_virtual_machine_traffic.keys()
             for loc1 in network_data.locations
             for loc2 in network_data.locations
-            for t in base_data.time
         }
 
         # The connections must be at the locations where the VMs are actually placed
-        for t in base_data.time:
-            for (
-                vm1,
-                vm2,
-            ) in network_data.virtual_machine_virtual_machine_traffic.keys():
-                # Make enough outgoing connections from each location
-                for loc1 in network_data.locations:
-                    problem += vm_locations[vm1, loc1, t] == lpSum(
-                        vm_vm_locations[vm1, vm2, loc1, loc2, t]
-                        for loc2 in network_data.locations
+        for (
+            vm1,
+            vm2,
+        ) in network_data.virtual_machine_virtual_machine_traffic.keys():
+            # Make enough outgoing connections from each location
+            for loc1 in network_data.locations:
+                problem += vm_locations[vm1, loc1] == lpSum(
+                    vm_vm_locations[vm1, vm2, loc1, loc2]
+                    for loc2 in network_data.locations
+                )
+
+            # Have at least one VM at the incoming location
+            for loc1 in network_data.locations:
+                for loc2 in network_data.locations:
+                    problem += (
+                        vm_locations[vm2, loc2] >= vm_vm_locations[vm1, vm2, loc1, loc2]
                     )
 
-                # Have at least one VM at the incoming location
-                for loc1 in network_data.locations:
-                    for loc2 in network_data.locations:
-                        problem += (
-                            vm_locations[vm2, loc2, t]
-                            * base_data.virtual_machine_demand[vm1, t]
-                            >= vm_vm_locations[vm1, vm2, loc1, loc2, t]
-                        )
+        # Respect maximum latencies for VM -> location traffic
+        for (
+            vm1,
+            loc2,
+        ), max_latency in network_data.virtual_machine_location_max_latency.items():
+            for loc1 in network_data.locations:
+                if network_data.location_latency[loc1, loc2] > max_latency:
+                    if (
+                        vm1,
+                        loc2,
+                    ) in network_data.virtual_machine_location_traffic.keys():
+                        problem += vm_locations[vm1, loc1] == 0
 
-        # Respect maximum latencies
-        for t in base_data.time:
-            # For VM -> location traffic
-            for (
-                vm1,
-                loc2,
-            ), max_latency in network_data.virtual_machine_location_max_latency.items():
-                for loc1 in network_data.locations:
+        # Respect maximum latencies for VM -> VM traffic
+        for (
+            vm1,
+            vm2,
+        ), max_latency in (
+            network_data.virtual_machine_virtual_machine_max_latency.items()
+        ):
+            for loc1 in network_data.locations:
+                for loc2 in network_data.locations:
                     if network_data.location_latency[loc1, loc2] > max_latency:
-                        if (
-                            vm1,
-                            loc2,
-                        ) in network_data.virtual_machine_location_traffic.keys():
-                            problem += vm_locations[vm1, loc1, t] == 0
-
-            # For VM -> VM traffic
-            for (
-                vm1,
-                vm2,
-            ), max_latency in (
-                network_data.virtual_machine_virtual_machine_max_latency.items()
-            ):
-                for loc1 in network_data.locations:
-                    for loc2 in network_data.locations:
-                        if network_data.location_latency[loc1, loc2] > max_latency:
-                            problem += vm_vm_locations[vm1, vm2, loc1, loc2, t] == 0
+                        problem += vm_vm_locations[vm1, vm2, loc1, loc2] == 0
 
         # Pay for VM -> location traffic caused by VM -> VM connections
         objective += lpSum(
-            vm_vm_locations[vm1, vm2, loc1, loc2, t]
+            vm_vm_locations[vm1, vm2, loc1, loc2]
             * traffic
             * network_data.location_traffic_cost[loc1, loc2]
             for (
@@ -365,11 +317,10 @@ class MixedIntegerProgram:
         # Calculate csp_used values
         for k in multi_cloud_data.cloud_service_providers:
             used_service_count = lpSum(
-                vm_matching[v, s, t]
+                vm_matching[v, s]
                 for v in base_data.virtual_machines
                 for s in multi_cloud_data.cloud_service_provider_services[k]
                 if s in base_data.virtual_machine_services[v]
-                for t in base_data.time
             )
 
             problem += (
@@ -462,7 +413,10 @@ class BuiltMixedIntegerProgram:
         for v in base_data.virtual_machines:
             for s in base_data.virtual_machine_services[v]:
                 for t in base_data.time:
-                    value = round(pulp.value(self.vm_matching[v, s, t]))
+                    value = (
+                        round(pulp.value(self.vm_matching[v, s]))
+                        * base_data.virtual_machine_demand[v, t]
+                    )
 
                     if value >= 1:
                         vm_service_matching[v, s, t] = value
@@ -472,7 +426,8 @@ class BuiltMixedIntegerProgram:
         for s in base_data.services:
             for t in base_data.time:
                 value = sum(
-                    round(pulp.value(self.vm_matching[vm, s, t]))
+                    round(pulp.value(self.vm_matching[vm, s]))
+                    * base_data.virtual_machine_demand[vm, t]
                     for vm in self.service_virtual_machines[s]
                 )
 
