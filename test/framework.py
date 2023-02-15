@@ -38,7 +38,7 @@ class Expect:
         """Enforce that the model contains the given variables.
 
         :param variables: The variables that must be in the model.
-        :param exclusive: If set to true, the model must not contain any other variables.
+        :param exclusive: If true, the model must not contain any other variables.
         """
         self._variables = self._variables.union(variables)
         self._variables_exclusive = self._variables_exclusive or exclusive
@@ -91,7 +91,8 @@ class _ExpectResult:
         """Enforce that the model contains the given variables.
 
         :param variables: The variables that must be in the model.
-        :param exclusive: If set to true, the model must not contain any other variables.
+        :param exclusive: If set to true, the model must not contain
+        any other variables.
         """
         self._expect._with_variables(variables, exclusive=exclusive)
         return self
@@ -115,7 +116,7 @@ class _ExpectResult:
             var for var in self._expect._variables if var not in variables
         ]
         for var in missing_variables:
-            assert not var in variables
+            assert var not in variables
 
         if len(missing_variables) > 0:
             pytest.fail(f"Missing variables: {missing_variables}")
@@ -185,8 +186,9 @@ class _ExpectFeasible(_ExpectResult):
     ) -> Self:
         """Enforce that the given variables exist and have the given values.
 
-        :param variable_values: The variables that must be in the model and their values.
-        :param exclusive: If set to true, the model must not contain any other variables.
+        :param variable_values: The variables and their values that
+        must be in the model.
+        :param exclusive: If true, the model must not contain any other variables.
         """
         print("Variable values", variable_values)
         # The variables must be in the model

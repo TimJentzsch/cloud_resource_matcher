@@ -152,7 +152,8 @@ def main():
         "--location-count",
         type=int,
         default=5,
-        help="The number of locations in the demo data. This is used for the networking data.",
+        help="The number of locations in the demo data."
+        "This is used for the networking data.",
     )
     parser.add_argument(
         "--csp-count",

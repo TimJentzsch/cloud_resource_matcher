@@ -63,7 +63,8 @@ class ValidatedOptimizerToolboxModel:
         """
         Create a new validated optimizer toolbox model.
 
-        This should never be created directly, unless the data has been verified at another place.
+        This should never be created directly, unless the data has been verified at
+        another place.
         Instead, call the `.validate` function on the model.
         """
         self.optimizer_toolbox_model = optimizer_toolbox_model
@@ -72,7 +73,8 @@ class ValidatedOptimizerToolboxModel:
         """
         Optimize the model by applying pre-processing techniques.
 
-        If optimizations can be applied, this will result in faster solving times for the model.
+        If optimizations can be applied, this will result in faster solving times
+        for the model.
         """
         # FIXME: Apply optimizations
         return self

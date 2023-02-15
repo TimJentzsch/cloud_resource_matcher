@@ -118,7 +118,9 @@ def test_computation_of_vm_locations_split():
 
 
 def test_should_pay_for_vm_location_costs():
-    """Ensure that the cost of traffic between VMs and specific locations is paid for."""
+    """
+    Ensure that the cost of traffic between VMs and specific locations is paid for.
+    """
     mip = MixedIntegerProgram(
         OptimizerToolboxModel(
             BaseData(
@@ -152,7 +154,10 @@ def test_should_pay_for_vm_location_costs():
 
 
 def test_should_be_infeasible_if_max_latency_is_violated():
-    """The virtual machine can only be placed in a location where the max latency can't be respected."""
+    """
+    The virtual machine can only be placed in a location where the max latency
+    can't be respected.
+    """
     locations = {"loc_0", "loc_1"}
 
     mip = MixedIntegerProgram(

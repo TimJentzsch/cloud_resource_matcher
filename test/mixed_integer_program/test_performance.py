@@ -1,5 +1,3 @@
-import pytest
-
 from optimizer.optimizer_toolbox_model import OptimizerToolboxModel
 from optimizer.optimizer_toolbox_model.data.base_data import BaseData
 from optimizer.optimizer_toolbox_model.data.performance_data import PerformanceData
@@ -108,7 +106,7 @@ def test_resource_matching():
                 virtual_machine_services={
                     f"vm_{v}": [f"s_{s}" for s in range(count)] for v in range(count)
                 },
-                # Some arbitrary costs to make sure the constraints are actually enforced
+                # Arbitrary costs to make sure the constraints are actually enforced
                 service_base_costs={
                     f"s_{s}": (s + 4) % 7 + (s % 3) * (s % 10) for s in range(count)
                 },
@@ -143,7 +141,7 @@ def test_cheap_insufficient_service():
                 virtual_machines=["vm_0"],
                 services=["s_0", "s_1"],
                 virtual_machine_services={"vm_0": ["s_0", "s_1"]},
-                # Some arbitrary costs to make sure the constraints are actually enforced
+                # Arbitrary costs to make sure the constraints are actually enforced
                 service_base_costs={"s_0": 2, "s_1": 10},
                 time=[0],
                 virtual_machine_demand={("vm_0", 0): 1},
@@ -167,7 +165,9 @@ def test_cheap_insufficient_service():
 
 
 def test_allowed_incomplete_data():
-    """Make sure that the user is allowed to leave data undefined where it makes sense."""
+    """
+    Make sure that the user is allowed to leave data undefined where it makes sense.
+    """
     mip = MixedIntegerProgram(
         OptimizerToolboxModel(
             BaseData(

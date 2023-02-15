@@ -15,24 +15,14 @@ from pulp import (
 
 from optimizer.mixed_integer_program.types import (
     VarVmServiceMatching,
-    VarServiceInstanceCount,
     ServiceVirtualMachines,
+    VmServiceMatching,
+    ServiceInstanceCount,
 )
 from optimizer.mixed_integer_program.solving import (
     SolveSolution,
     SolveError,
     SolveErrorReason,
-)
-
-from optimizer.mixed_integer_program.types import (
-    VarVmServiceMatching,
-    VarServiceInstanceCount,
-    VmServiceMatching,
-    ServiceInstanceCount,
-)
-from optimizer.mixed_integer_program.types import (
-    VarVmServiceMatching,
-    VarServiceInstanceCount,
 )
 from optimizer.optimizer_toolbox_model import (
     ValidatedOptimizerToolboxModel,
@@ -42,7 +32,6 @@ from optimizer.optimizer_toolbox_model.data import (
     VirtualMachine,
     TimeUnit,
     Cost,
-    Service,
 )
 from optimizer.optimizer_toolbox_model.data.network_data import Location
 from optimizer.solver import Solver, get_pulp_solver
@@ -272,7 +261,8 @@ class MixedIntegerProgram:
 
         # === virtual_machine_virtual_machine_traffic ===
 
-        # The number of vm1 -> vm2 connections where vm1 is at loc1 and vm2 is at loc2 (at time t)
+        # The number of vm1 -> vm2 connections where vm1 is at loc1
+        # and vm2 is at loc2 (at time t)
         vm_vm_locations: dict[
             tuple[VirtualMachine, VirtualMachine, Location, Location, TimeUnit],
             LpVariable,
@@ -426,7 +416,8 @@ class BuiltMixedIntegerProgram:
         """
         Create a new built Mixed Integer Program.
 
-        This should not be constructed manually, instead use `MixedIntegerProgram.build()`.
+        This should not be constructed manually,
+        instead use `MixedIntegerProgram.build()`.
         """
         self.mixed_integer_program = mixed_integer_program
         self.problem = problem
@@ -443,10 +434,11 @@ class BuiltMixedIntegerProgram:
         """Solve the optimization problem.
 
         :param solver: The solver to use to solve the mixed-integer program.
-        :param time_limit: The maximum amount of time after which to stop the optimization.
+        :param time_limit: The maximum amount of time after which to
+        stop the optimization.
         :param cost_gap_abs: The absolute cost tolerance for the solver to stop.
-        :param cost_gap_rel: The relative cost tolerance for the solver to stop as a fraction.
-        Must be a value between 0.0 and 1.0.
+        :param cost_gap_rel: The relative cost tolerance for the solver to stop
+        as a fraction. Must be a value between 0.0 and 1.0.
         """
         pulp_solver = get_pulp_solver(
             solver=solver,

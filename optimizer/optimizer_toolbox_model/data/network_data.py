@@ -61,7 +61,7 @@ class NetworkData:
                 loc2 in self.locations
             ), f"{loc2} in location_latency is not a valid location"
 
-            assert latency >= 0, f"Latency must not be negative"
+            assert latency >= 0, "Latency must not be negative"
 
         for loc1 in self.locations:
             for loc2 in self.locations:
@@ -95,7 +95,7 @@ class NetworkData:
                 loc in self.locations
             ), f"{loc} in virtual_machine_max_latency is not a valid location"
 
-            assert latency >= 0, f"The maximum latency must not be negative"
+            assert latency >= 0, "The maximum latency must not be negative"
 
         # Validate virtual_machine_location_traffic
         for (v, loc), traffic in self.virtual_machine_location_traffic.items():
