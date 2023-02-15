@@ -25,6 +25,11 @@ Check types:
   script:
     - poetry run pyright
 
+Check lints:
+  stage: lint
+  script:
+    - poetry run ruff .
+
 Run unit tests:
   stage: test
   script:

@@ -164,7 +164,10 @@ class TestValidateCloudServiceProviderMinMaxCounts:
             multi_data.validate(base_data)
 
     def test_should_raise_error_on_max_smaller_min_count(self):
-        """The max_cloud_service_provider_count is smaller than max_cloud_service_provider_count."""
+        """
+        The max_cloud_service_provider_count is smaller than
+        max_cloud_service_provider_count.
+        """
 
         base_data = BaseData(
             virtual_machines=["vm_0"],
