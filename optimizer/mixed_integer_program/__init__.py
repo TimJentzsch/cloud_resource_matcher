@@ -60,6 +60,106 @@ class MixedIntegerProgram:
             validated_optimizer_toolbox_model.optimizer_toolbox_model
         )
 
+    def build(self) -> "BuiltMixedIntegerProgram":
+        """Build the mixed integer program from the given optimizer toolbox model."""
+        base_data = self.optimizer_toolbox_model.base_data
+
+        problem = LpProblem("cloud_cost_optimization", LpMinimize)
+
+        # Pre-compute which services can host which VMs
+        service_virtual_machines = {
+            s: set(
+                vm
+                for vm in base_data.virtual_machines
+                if s in base_data.virtual_machine_services[vm]
+            )
+            for s in base_data.services
+        }
+
+        # Assign virtual machine v to cloud service s at time t?
+        # ASSUMPTION: Each service instance can only be used by one VM instance
+        vm_matching: VarVmServiceMatching = {
+            (v, s, t): LpVariable(
+                f"vm_matching({v},{s},{t})", cat=LpInteger, lowBound=0
+            )
+            for v in base_data.virtual_machines
+            for s in base_data.virtual_machine_services[v]
+            for t in base_data.time
+        }
+
+        # Has service s been purchased at time t at all?
+        service_used = {
+            (s, t): LpVariable(f"service_used({s},{t})", cat=LpBinary)
+            for s in base_data.services
+            for t in base_data.time
+        }
+
+        # Enforce limits for service instance count
+        for s, max_instances in base_data.max_service_instances.items():
+            for t in base_data.time:
+                problem += (
+                    lpSum(vm_matching[vm, s, t] for vm in service_virtual_machines[s])
+                    <= max_instances,
+                    f"max_service_instances({s},{t})",
+                )
+
+        # Calculate service_used
+        for s in base_data.services:
+            for t in base_data.time:
+                problem += (
+                    service_used[s, t]
+                    <= lpSum(
+                        vm_matching[vm, s, t] for vm in service_virtual_machines[s]
+                    ),
+                    f"connect_service_instances_and_service_used({s},{t})",
+                )
+
+        # Buy a service instance for every virtual machine instance
+        for vm in base_data.virtual_machines:
+            for t in base_data.time:
+                problem += (
+                    base_data.virtual_machine_demand[vm, t]
+                    == lpSum(
+                        vm_matching[vm, s, t]
+                        for s in base_data.virtual_machine_services[vm]
+                    ),
+                    f"buy_services_for_vm_demand({vm},{t})",
+                )
+
+        # Base costs for used services
+        objective = LpAffineExpression(
+            lpSum(
+                vm_matching[vm, s, t] * base_data.service_base_costs[s]
+                for vm in base_data.virtual_machines
+                for s in base_data.virtual_machine_services[vm]
+                for t in base_data.time
+            )
+        )
+
+        # Add the optional parts of the model, if they are specified
+        self._build_performance(self.optimizer_toolbox_model, problem, vm_matching)
+        self._build_network(
+            self.optimizer_toolbox_model,
+            problem,
+            objective,
+            vm_matching,
+        )
+        self._build_multi_cloud(
+            self.optimizer_toolbox_model,
+            problem,
+            vm_matching,
+        )
+
+        # Set the objective function
+        problem.setObjective(objective)
+
+        return BuiltMixedIntegerProgram(
+            mixed_integer_program=self,
+            problem=problem,
+            vm_matching=vm_matching,
+            service_virtual_machines=service_virtual_machines,
+        )
+
     @staticmethod
     def _build_performance(
         optimizer_toolbox_model: OptimizerToolboxModel,
@@ -306,106 +406,6 @@ class MixedIntegerProgram:
                 <= multi_cloud_data.max_cloud_service_provider_count,
                 f"max_cloud_service_provider_count({k})",
             )
-
-    def build(self) -> "BuiltMixedIntegerProgram":
-        """Build the mixed integer program from the given optimizer toolbox model."""
-        base_data = self.optimizer_toolbox_model.base_data
-
-        problem = LpProblem("cloud_cost_optimization", LpMinimize)
-
-        # Pre-compute which services can host which VMs
-        service_virtual_machines = {
-            s: set(
-                vm
-                for vm in base_data.virtual_machines
-                if s in base_data.virtual_machine_services[vm]
-            )
-            for s in base_data.services
-        }
-
-        # Assign virtual machine v to cloud service s at time t?
-        # ASSUMPTION: Each service instance can only be used by one VM instance
-        vm_matching: VarVmServiceMatching = {
-            (v, s, t): LpVariable(
-                f"vm_matching({v},{s},{t})", cat=LpInteger, lowBound=0
-            )
-            for v in base_data.virtual_machines
-            for s in base_data.virtual_machine_services[v]
-            for t in base_data.time
-        }
-
-        # Has service s been purchased at time t at all?
-        service_used = {
-            (s, t): LpVariable(f"service_used({s},{t})", cat=LpBinary)
-            for s in base_data.services
-            for t in base_data.time
-        }
-
-        # Enforce limits for service instance count
-        for s, max_instances in base_data.max_service_instances.items():
-            for t in base_data.time:
-                problem += (
-                    lpSum(vm_matching[vm, s, t] for vm in service_virtual_machines[s])
-                    <= max_instances,
-                    f"max_service_instances({s},{t})",
-                )
-
-        # Calculate service_used
-        for s in base_data.services:
-            for t in base_data.time:
-                problem += (
-                    service_used[s, t]
-                    <= lpSum(
-                        vm_matching[vm, s, t] for vm in service_virtual_machines[s]
-                    ),
-                    f"connect_service_instances_and_service_used({s},{t})",
-                )
-
-        # Buy a service instance for every virtual machine instance
-        for vm in base_data.virtual_machines:
-            for t in base_data.time:
-                problem += (
-                    base_data.virtual_machine_demand[vm, t]
-                    == lpSum(
-                        vm_matching[vm, s, t]
-                        for s in base_data.virtual_machine_services[vm]
-                    ),
-                    f"buy_services_for_vm_demand({vm},{t})",
-                )
-
-        # Base costs for used services
-        objective = LpAffineExpression(
-            lpSum(
-                vm_matching[vm, s, t] * base_data.service_base_costs[s]
-                for vm in base_data.virtual_machines
-                for s in base_data.virtual_machine_services[vm]
-                for t in base_data.time
-            )
-        )
-
-        # Add the optional parts of the model, if they are specified
-        self._build_performance(self.optimizer_toolbox_model, problem, vm_matching)
-        self._build_network(
-            self.optimizer_toolbox_model,
-            problem,
-            objective,
-            vm_matching,
-        )
-        self._build_multi_cloud(
-            self.optimizer_toolbox_model,
-            problem,
-            vm_matching,
-        )
-
-        # Set the objective function
-        problem.setObjective(objective)
-
-        return BuiltMixedIntegerProgram(
-            mixed_integer_program=self,
-            problem=problem,
-            vm_matching=vm_matching,
-            service_virtual_machines=service_virtual_machines,
-        )
 
 
 class BuiltMixedIntegerProgram:
