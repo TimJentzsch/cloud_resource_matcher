@@ -17,6 +17,7 @@ from optimizer.mixed_integer_program.types import (
     VmServiceMatching,
     ServiceInstanceCount,
 )
+from optimizer.optimizer_toolbox_model.data import VirtualMachine, Service
 
 
 class Expect:
@@ -55,10 +56,12 @@ class Expect:
 
         return self
 
-    def with_fixed_vm_service_matching(self, matching: VmServiceMatching) -> Self:
+    def with_fixed_vm_service_matching(
+        self, matching: dict[tuple[VirtualMachine, Service], int]
+    ) -> Self:
         """Fix the values of the variables defined by the given VM-service matching."""
         self.with_fixed_variable_values(
-            {f"vm_matching({v},{s},{t})": val for (v, s, t), val in matching.items()}
+            {f"vm_matching({v},{s})": val for (v, s), val in matching.items()}
         )
         return self
 

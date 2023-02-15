@@ -46,73 +46,13 @@ def test_computation_of_vm_locations():
     )
 
     Expect(mip).with_fixed_vm_service_matching(
-        {("vm_0", "s_0", 0): 3, ("vm_1", "s_1", 0): 4}
+        {("vm_0", "s_0"): 1, ("vm_1", "s_1"): 1}
     ).to_be_feasible().with_variable_values(
         {
-            "vm_location(vm_0,loc_0,0)": 3,
-            "vm_location(vm_0,loc_1,0)": 0,
-            "vm_location(vm_1,loc_0,0)": 0,
-            "vm_location(vm_1,loc_1,0)": 4,
-        }
-    ).test()
-
-
-def test_computation_of_vm_locations_split():
-    """Ensure that the location of a VM corresponds to the service it's placed at.
-
-    The instances of the VMs are split among multiple locations.
-    """
-    locations = {"loc_0", "loc_1"}
-
-    mip = MixedIntegerProgram(
-        OptimizerToolboxModel(
-            BaseData(
-                virtual_machines=["vm_0", "vm_1"],
-                services=["s_0", "s_1"],
-                virtual_machine_services={
-                    "vm_0": ["s_0", "s_1"],
-                    "vm_1": ["s_0", "s_1"],
-                },
-                service_base_costs={"s_0": 5, "s_1": 5},
-                time=[0],
-                virtual_machine_demand={("vm_0", 0): 3, ("vm_1", 0): 4},
-                max_service_instances={},
-            )
-        )
-        .with_network_data(
-            NetworkData(
-                locations=locations,
-                location_latency={
-                    (loc1, loc2): 0 if loc1 == loc2 else 5
-                    for loc1 in locations
-                    for loc2 in locations
-                },
-                service_location={"s_0": "loc_0", "s_1": "loc_1"},
-                virtual_machine_location_max_latency={},
-                virtual_machine_virtual_machine_max_latency={},
-                virtual_machine_virtual_machine_traffic={},
-                virtual_machine_location_traffic={},
-                location_traffic_cost={
-                    (loc1, loc2): 0 for loc1 in locations for loc2 in locations
-                },
-            )
-        )
-        .validate()
-    )
-
-    Expect(mip).with_fixed_vm_service_matching(
-        {
-            ("vm_0", "s_0", 0): 1,
-            ("vm_0", "s_1", 0): 2,
-            ("vm_1", "s_0", 0): 2,
-            ("vm_1", "s_1", 0): 2,
-        }
-    ).to_be_feasible().with_variable_values(
-        {
-            "vm_location(vm_0,loc_0,0)": 1,
-            "vm_location(vm_0,loc_1,0)": 2,
-            "vm_location(vm_1,loc_0,0)": 2,
-            "vm_location(vm_1,loc_1,0)": 2,
+            "vm_location(vm_0,loc_0)": 1,
+            "vm_location(vm_0,loc_1)": 0,
+            "vm_location(vm_1,loc_0)": 0,
+            "vm_location(vm_1,loc_1)": 1,
         }
     ).test()
 
@@ -241,8 +181,8 @@ def test_should_choose_matching_that_respects_max_latency():
         {("vm_0", "s_0", 0): 1}
     ).with_variable_values(
         {
-            "vm_location(vm_0,loc_0,0)": 1,
-            "vm_location(vm_0,loc_1,0)": 0,
+            "vm_location(vm_0,loc_0)": 1,
+            "vm_location(vm_0,loc_1)": 0,
         }
     ).test()
 
@@ -293,14 +233,14 @@ def test_should_calculate_connections_between_vms():
         {("vm_0", "s_0", 0): 1, ("vm_1", "s_1", 0): 3}
     ).with_variable_values(
         {
-            "vm_vm_locations(vm_0,vm_1,loc_0,loc_0,0)": 0,
-            "vm_vm_locations(vm_0,vm_1,loc_0,loc_1,0)": 1,
-            "vm_vm_locations(vm_0,vm_1,loc_1,loc_0,0)": 0,
-            "vm_vm_locations(vm_0,vm_1,loc_1,loc_1,0)": 0,
-            "vm_vm_locations(vm_1,vm_0,loc_0,loc_0,0)": 0,
-            "vm_vm_locations(vm_1,vm_0,loc_0,loc_1,0)": 0,
-            "vm_vm_locations(vm_1,vm_0,loc_1,loc_0,0)": 3,
-            "vm_vm_locations(vm_1,vm_0,loc_1,loc_1,0)": 0,
+            "vm_vm_locations(vm_0,vm_1,loc_0,loc_0)": 0,
+            "vm_vm_locations(vm_0,vm_1,loc_0,loc_1)": 1,
+            "vm_vm_locations(vm_0,vm_1,loc_1,loc_0)": 0,
+            "vm_vm_locations(vm_0,vm_1,loc_1,loc_1)": 0,
+            "vm_vm_locations(vm_1,vm_0,loc_0,loc_0)": 0,
+            "vm_vm_locations(vm_1,vm_0,loc_0,loc_1)": 0,
+            "vm_vm_locations(vm_1,vm_0,loc_1,loc_0)": 1,
+            "vm_vm_locations(vm_1,vm_0,loc_1,loc_1)": 0,
         }
     ).test()
 

@@ -75,6 +75,16 @@ class MixedIntegerProgram:
             for s in base_data.virtual_machine_services[v]
         }
 
+        # Satisfy VM demands
+        for vm in base_data.virtual_machines:
+            problem += (
+                lpSum(
+                    vm_matching[vm, s] for s in base_data.virtual_machine_services[vm]
+                )
+                == 1,
+                f"vm_demand({vm})",
+            )
+
         # Has service s been purchased at all?
         service_used: dict[Service, LpVariable] = {
             s: LpVariable(f"service_used({s})", cat=LpBinary)
@@ -105,9 +115,12 @@ class MixedIntegerProgram:
         # Base costs for used services
         objective = LpAffineExpression(
             lpSum(
-                vm_matching[vm, s] * base_data.service_base_costs[s]
+                vm_matching[vm, s]
+                * base_data.virtual_machine_demand[vm, t]
+                * base_data.service_base_costs[s]
                 for vm in base_data.virtual_machines
                 for s in base_data.virtual_machine_services[vm]
+                for t in base_data.time
             )
         )
 
@@ -209,6 +222,7 @@ class MixedIntegerProgram:
         # Pay for VM -> location traffic
         objective += lpSum(
             vm_locations[vm, vm_loc]
+            * base_data.virtual_machine_demand[vm, t]
             * traffic
             * network_data.location_traffic_cost[vm_loc, loc]
             for (
@@ -216,6 +230,7 @@ class MixedIntegerProgram:
                 loc,
             ), traffic in network_data.virtual_machine_location_traffic.items()
             for vm_loc in network_data.locations
+            for t in base_data.time
         )
 
         # === virtual_machine_virtual_machine_traffic ===
@@ -285,6 +300,7 @@ class MixedIntegerProgram:
         # Pay for VM -> location traffic caused by VM -> VM connections
         objective += lpSum(
             vm_vm_locations[vm1, vm2, loc1, loc2]
+            * base_data.virtual_machine_demand[vm1, t]
             * traffic
             * network_data.location_traffic_cost[loc1, loc2]
             for (
