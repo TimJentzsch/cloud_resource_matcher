@@ -317,7 +317,6 @@ def test_should_be_feasible_if_service_can_be_bought_enough_times_two_vms():
     ).with_service_instance_count({("s_0", 0): 2}).test()
 
 
-@pytest.mark.skip("TODO: This needs to be enforced")
 def test_should_be_infeasible_if_vms_cant_be_split():
     """There is a service with performance 3 and max instance count of 2.
     There is a demand of VMs with performance 2 and demand 3.
