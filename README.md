@@ -21,9 +21,10 @@ See `poetry run start --help` for the available configuration options.
 
 ### Code Quality
 
-- Run `pytest` to run the test suit for the whole project.
-- Run `black .` to format all Python files.
-- Run `pyright` to check for typing errors.
+- Run `poetry run pytest` to run the test suit for the whole project.
+- Run `poetry run pyright` to check for typing errors.
+- Run `poetry run black .` to format all Python files.
+- Run `poetry run ruff .` to lint all Python files.
 
 ## Configuring a Solver
 
