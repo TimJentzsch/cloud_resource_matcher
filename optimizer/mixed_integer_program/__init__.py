@@ -16,6 +16,7 @@ from pulp import (
 from optimizer.mixed_integer_program.types import (
     VarVmServiceMatching,
     VarServiceInstanceCount,
+    ServiceVirtualMachines,
 )
 from optimizer.mixed_integer_program.solving import (
     SolveSolution,
@@ -67,7 +68,7 @@ class MixedIntegerProgram:
         problem = LpProblem("cloud_cost_optimization", LpMinimize)
 
         # Pre-compute which services can host which VMs
-        service_virtual_machines = {
+        service_virtual_machines: ServiceVirtualMachines = {
             s: set(
                 vm
                 for vm in base_data.virtual_machines
@@ -413,14 +414,14 @@ class BuiltMixedIntegerProgram:
     problem: LpProblem
 
     vm_matching: VarVmServiceMatching
-    service_virtual_machines: dict[Service, VirtualMachine]
+    service_virtual_machines: ServiceVirtualMachines
 
     def __init__(
         self,
         mixed_integer_program: MixedIntegerProgram,
         problem: LpProblem,
         vm_matching: VarVmServiceMatching,
-        service_virtual_machines: dict[Service, VirtualMachine],
+        service_virtual_machines: ServiceVirtualMachines,
     ):
         """
         Create a new built Mixed Integer Program.
