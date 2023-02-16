@@ -6,6 +6,8 @@ from pulp import LpVariable
 
 from optimizer.mixed_integer_program import (
     MixedIntegerProgram,
+)
+from optimizer.mixed_integer_program.built_mixed_integer_program import (
     BuiltMixedIntegerProgram,
 )
 from optimizer.mixed_integer_program.solving import (
