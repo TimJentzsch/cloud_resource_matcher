@@ -1,5 +1,7 @@
 from typing import Self, Any
 
+from optimizer.extensions.decorators import DependencyInfo
+
 
 class Scheduler:
     extensions: dict[str, Any]
@@ -19,20 +21,21 @@ class Scheduler:
         """Add the data for an extension with the given ID."""
         assert (
             e_id in self.extensions.keys()
-        ), f"Extension {e_id} is not registered yet, please use `.register_extension` first."
+        ), f"Extension {e_id} is not registered yet, use `.register_extension` first."
 
         self.data[e_id] = data
+        return self
 
     def validate(self):
-        validation_info = {
+        validation_info: dict[str, DependencyInfo] = {
             e_id: extension.validate() for e_id, extension in self.extensions.items()
         }
 
-        dependencies = {
+        dependencies: dict[str, set[str]] = {
             e_id: info.dependencies for e_id, info in validation_info.items()
         }
 
-        to_validate = {**dependencies}
+        to_validate: dict[str, set[str]] = {**dependencies}
 
         while len(to_validate.keys()) > 0:
             # If an extension has no outstanding dependencies it can be validated
@@ -49,9 +52,7 @@ class Scheduler:
                 info = validation_info[e_id]
                 dependency_data = {dep: self.data[dep] for dep in info.dependencies}
 
-                validation_info[e_id].validate_fn(
-                    data=self.data[e_id], **dependency_data
-                )
+                validation_info[e_id].action_fn(data=self.data[e_id], **dependency_data)
 
             # Update the extensions that need to be validated
             to_validate = {

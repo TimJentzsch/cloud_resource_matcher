@@ -1,5 +1,5 @@
 from optimizer.optimizer_toolbox_model import BaseData
-from optimizer.extensions.decorators import validate_dependencies
+from optimizer.extensions.decorators import dependencies
 from optimizer.optimizer_toolbox_model import NetworkData
 
 
@@ -8,7 +8,7 @@ class NetworkExtension:
     def identifier() -> str:
         return "network"
 
-    @validate_dependencies("base")
+    @dependencies("base")
     def validate(self, data: NetworkData, base: BaseData):
         data.validate(base)
 

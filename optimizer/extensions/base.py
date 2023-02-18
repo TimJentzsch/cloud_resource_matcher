@@ -1,4 +1,4 @@
-from optimizer.extensions.decorators import validate_dependencies
+from optimizer.extensions.decorators import dependencies
 from optimizer.optimizer_toolbox_model import BaseData
 
 
@@ -7,7 +7,7 @@ class BaseExtension:
     def identifier() -> str:
         return "base"
 
-    @validate_dependencies()
+    @dependencies()
     def validate(self, data: BaseData) -> None:
         data.validate()
 

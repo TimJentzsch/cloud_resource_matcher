@@ -1,26 +1,22 @@
 from dataclasses import dataclass
-from typing import Callable, Any
-
-
-ValidateFn = Callable[[...], Any]
+from typing import Callable
 
 
 @dataclass
-class ValidationInfo:
-    # The IDs of the extensions whose data is needed for validation
+class DependencyInfo:
+    # The IDs of the extensions whose data is needed for the action
     dependencies: set[str]
 
-    validate_fn: ValidateFn
+    # The action to execute, with the injected dependencies
+    action_fn: Callable
 
 
-def validate_dependencies(
-    *dependencies: str,
-) -> Callable[[Callable], Callable[[], ValidationInfo]]:
-    def decorator(validate_fn: Callable) -> Callable[[], ValidationInfo]:
+def dependencies(
+    *deps: str,
+) -> Callable[[Callable], Callable[[], DependencyInfo]]:
+    def decorator(action_fn: Callable) -> Callable[[], DependencyInfo]:
         def inner():
-            return ValidationInfo(
-                dependencies=set(*dependencies), validate_fn=validate_fn
-            )
+            return DependencyInfo(dependencies=set(*deps), action_fn=action_fn)
 
         return inner
 

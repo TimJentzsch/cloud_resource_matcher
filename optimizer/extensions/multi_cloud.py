@@ -1,5 +1,5 @@
 from optimizer.optimizer_toolbox_model import BaseData
-from optimizer.extensions.decorators import validate_dependencies
+from optimizer.extensions.decorators import dependencies
 from optimizer.optimizer_toolbox_model import MultiCloudData
 
 
@@ -8,7 +8,7 @@ class PerformanceExtension:
     def identifier() -> str:
         return "multi_cloud"
 
-    @validate_dependencies("base")
+    @dependencies("base")
     def validate(self, data: MultiCloudData, base: BaseData):
         data.validate(base)
 
