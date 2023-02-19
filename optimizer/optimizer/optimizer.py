@@ -1,9 +1,10 @@
 from typing import Self, Any
 
 from optimizer.extensions.decorators import DependencyInfo
+from optimizer.optimizer.validated_optimizer import ValidatedOptimizer
 
 
-class Scheduler:
+class Optimizer:
     extensions: dict[str, Any]
     data: dict[str, Any]
 
@@ -26,7 +27,7 @@ class Scheduler:
         self.data[e_id] = data
         return self
 
-    def validate(self):
+    def validate(self) -> ValidatedOptimizer:
         validation_info: dict[str, DependencyInfo] = {
             e_id: extension.validate() for e_id, extension in self.extensions.items()
         }
@@ -60,3 +61,5 @@ class Scheduler:
                 for e_id, deps in to_validate.items()
                 if e_id not in can_be_validated
             }
+
+        return ValidatedOptimizer(optimizer=self)
