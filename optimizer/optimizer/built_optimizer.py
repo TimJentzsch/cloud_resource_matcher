@@ -1,3 +1,4 @@
+from __future__ import annotations
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
@@ -81,7 +82,8 @@ class BuiltOptimizer:
         solution_data: dict[ExtensionId, Any] = dict()
 
         while len(to_extract.keys()) > 0:
-            # If an extension has no outstanding dependencies, its solution can be extracted
+            # If an extension has no outstanding dependencies,
+            # its solution can be extracted
             can_be_extracted = [
                 e_id for e_id, deps in to_extract.items() if len(deps) == 0
             ]

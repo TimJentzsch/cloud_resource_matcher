@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from optimizer.extensions.decorators import DependencyInfo
+from .decorators import DependencyInfo
 
 
 # A unique identifier for an extension

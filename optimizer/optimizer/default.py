@@ -32,6 +32,7 @@ class DefaultOptimizer:
     - NetworkExtension (location assignment, max latency requirements, network costs)
     - MultiCloudExtension (multi cloud scenario)
     """
+
     optimizer: Optimizer
 
     def __init__(self):

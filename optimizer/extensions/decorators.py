@@ -1,7 +1,10 @@
+from __future__ import annotations
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, TYPE_CHECKING
 
-from .extension import ExtensionId
+if TYPE_CHECKING:
+    # Avoid circular import errors
+    from .extension import ExtensionId
 
 
 @dataclass
