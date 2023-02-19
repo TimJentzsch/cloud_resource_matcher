@@ -7,7 +7,8 @@ from .extension import Extension
 from optimizer.mixed_integer_program.types import (
     ServiceVirtualMachines,
     VarVmServiceMatching,
-    VmServiceMatching, ServiceInstanceCount,
+    VmServiceMatching,
+    ServiceInstanceCount,
 )
 from optimizer.optimizer_toolbox_model import BaseData
 from optimizer.optimizer_toolbox_model.data import Service, Cost
@@ -114,7 +115,9 @@ class BaseExtension(Extension):
         )
 
     @dependencies()
-    def extract_solution(self, mip_data: BaseMipData, problem: LpProblem) -> BaseSolution:
+    def extract_solution(
+        self, mip_data: BaseMipData, problem: LpProblem
+    ) -> BaseSolution:
         base_data = mip_data.data
         vm_service_matching: VmServiceMatching = dict()
 
@@ -122,8 +125,8 @@ class BaseExtension(Extension):
             for s in base_data.virtual_machine_services[v]:
                 for t in base_data.time:
                     value = (
-                            round(pulp.value(mip_data.var_vm_matching[v, s]))
-                            * base_data.virtual_machine_demand[v, t]
+                        round(pulp.value(mip_data.var_vm_matching[v, s]))
+                        * base_data.virtual_machine_demand[v, t]
                     )
 
                     if value >= 1:
@@ -149,5 +152,5 @@ class BaseExtension(Extension):
             mip_data=mip_data,
             vm_service_matching=vm_service_matching,
             service_instance_count=service_instance_count,
-            cost=cost
+            cost=cost,
         )

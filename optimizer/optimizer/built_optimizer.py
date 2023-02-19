@@ -82,7 +82,9 @@ class BuiltOptimizer:
 
         while len(to_extract.keys()) > 0:
             # If an extension has no outstanding dependencies, its solution can be extracted
-            can_be_extracted = [e_id for e_id, deps in to_extract.items() if len(deps) == 0]
+            can_be_extracted = [
+                e_id for e_id, deps in to_extract.items() if len(deps) == 0
+            ]
 
             assert (
                 len(can_be_extracted) > 0

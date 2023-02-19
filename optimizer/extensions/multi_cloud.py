@@ -21,7 +21,7 @@ class MultiCloudSolution:
     mip_data: MultiCloudMipData
 
 
-class PerformanceExtension(Extension):
+class MultiCloudExtension(Extension):
     @staticmethod
     def identifier() -> ExtensionId:
         return "multi_cloud"
