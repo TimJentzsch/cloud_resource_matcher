@@ -1,16 +1,16 @@
 from dataclasses import dataclass
 
-from pulp import LpProblem, LpAffineExpression, LpVariable, LpBinary, lpSum
+from pulp import LpProblem, LpAffineExpression, LpVariable, LpBinary, lpSum, pulp
 
 from .decorators import dependencies
 from .extension import Extension
 from optimizer.mixed_integer_program.types import (
     ServiceVirtualMachines,
     VarVmServiceMatching,
-    VmServiceMatching,
+    VmServiceMatching, ServiceInstanceCount,
 )
 from optimizer.optimizer_toolbox_model import BaseData
-from optimizer.optimizer_toolbox_model.data import Service
+from optimizer.optimizer_toolbox_model.data import Service, Cost
 
 
 @dataclass
@@ -23,7 +23,9 @@ class BaseMipData:
 @dataclass
 class BaseSolution:
     mip_data: BaseMipData
-    vm_matching: VmServiceMatching
+    vm_service_matching: VmServiceMatching
+    service_instance_count: ServiceInstanceCount
+    cost: Cost
 
 
 class BaseExtension(Extension):
@@ -111,6 +113,41 @@ class BaseExtension(Extension):
             var_service_used=var_service_used,
         )
 
-    def extract_solution(self) -> BaseSolution:
-        # FIXME: Implement this
-        ...
+    @dependencies()
+    def extract_solution(self, mip_data: BaseMipData, problem: LpProblem) -> BaseSolution:
+        base_data = mip_data.data
+        vm_service_matching: VmServiceMatching = dict()
+
+        for v in base_data.virtual_machines:
+            for s in base_data.virtual_machine_services[v]:
+                for t in base_data.time:
+                    value = (
+                            round(pulp.value(mip_data.var_vm_matching[v, s]))
+                            * base_data.virtual_machine_demand[v, t]
+                    )
+
+                    if value >= 1:
+                        vm_service_matching[v, s, t] = value
+
+        service_instance_count: ServiceInstanceCount = {}
+
+        for s in base_data.services:
+            for t in base_data.time:
+                value = sum(
+                    round(pulp.value(mip_data.var_vm_matching[vm, s]))
+                    * base_data.virtual_machine_demand[vm, t]
+                    for vm in base_data.virtual_machines
+                    if s in base_data.virtual_machine_services[vm]
+                )
+
+                if value >= 1:
+                    service_instance_count[s, t] = value
+
+        cost = problem.objective.value()
+
+        return BaseSolution(
+            mip_data=mip_data,
+            vm_service_matching=vm_service_matching,
+            service_instance_count=service_instance_count,
+            cost=cost
+        )

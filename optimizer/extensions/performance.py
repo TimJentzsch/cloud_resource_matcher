@@ -58,7 +58,6 @@ class PerformanceExtension(Extension):
 
         return PerformanceMipData(data=data)
 
-    @dependencies("base")
-    def extract_solution(self) -> PerformanceSolutionData:
-        # FIXME: Implement this
-        ...
+    @dependencies()
+    def extract_solution(self, mip_data: PerformanceMipData) -> PerformanceSolutionData:
+        return PerformanceSolutionData(mip_data)

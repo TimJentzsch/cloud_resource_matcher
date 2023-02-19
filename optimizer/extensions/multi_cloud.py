@@ -83,7 +83,7 @@ class PerformanceExtension(Extension):
 
         return MultiCloudMipData(data=data, var_csp_used=var_csp_used)
 
-    @dependencies("base")
-    def extract_solution(self) -> MultiCloudMipData:
-        # FIXME: Implement this
-        ...
+    @dependencies()
+    def extract_solution(self, mip_data: MultiCloudMipData) -> MultiCloudSolution:
+        # TODO: Extract CSP solution
+        return MultiCloudSolution(mip_data=mip_data)

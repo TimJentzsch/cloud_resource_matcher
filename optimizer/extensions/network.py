@@ -166,7 +166,7 @@ class NetworkExtension(Extension):
             var_vm_vm_locations=var_vm_vm_locations,
         )
 
-    @dependencies("base")
-    def extract_solution(self) -> NetworkSolutionData:
-        # FIXME: Implement this
-        ...
+    @dependencies()
+    def extract_solution(self, mip_data: NetworkMipData) -> NetworkSolutionData:
+        # TODO: Extract location data
+        return NetworkSolutionData(mip_data=mip_data)
