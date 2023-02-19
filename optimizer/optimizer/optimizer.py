@@ -1,19 +1,20 @@
 from typing import Self, Any
 
 from optimizer.extensions.decorators import DependencyInfo
+from optimizer.extensions.extension import Extension
 from optimizer.optimizer.validated_optimizer import ValidatedOptimizer
 
 
 class Optimizer:
-    extensions: dict[str, Any]
+    extensions: dict[str, Extension]
     data: dict[str, Any]
 
     def __init__(self):
         self.extensions = dict()
 
-    def register_extension(self, extension) -> Self:
+    def register_extension(self, extension: Extension) -> Self:
         """Register a new extension."""
-        e_id = extension.get_identifier()
+        e_id = extension.identifier()
         self.extensions[e_id] = extension
 
         return self

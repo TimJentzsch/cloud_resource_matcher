@@ -1,7 +1,5 @@
 from typing import TYPE_CHECKING, Any
 
-from ..extensions.decorators import DependencyInfo
-
 if TYPE_CHECKING:
     # Avoid circular imports
     from .validated_optimizer import ValidatedOptimizer

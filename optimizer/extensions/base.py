@@ -2,7 +2,8 @@ from dataclasses import dataclass
 
 from pulp import LpProblem, LpAffineExpression, LpVariable, LpBinary, lpSum
 
-from optimizer.extensions.decorators import dependencies
+from .decorators import dependencies
+from .extension import Extension
 from optimizer.mixed_integer_program.types import (
     ServiceVirtualMachines,
     VarVmServiceMatching,
@@ -18,7 +19,7 @@ class BaseMipData:
     var_service_used: dict[Service, LpVariable]
 
 
-class BaseExtension:
+class BaseExtension(Extension):
     @staticmethod
     def identifier() -> str:
         return "base"
