@@ -20,8 +20,8 @@ def dependencies(
     *deps: str,
 ) -> Callable[[Callable], Callable[[], DependencyInfo]]:
     def decorator(action_fn: Callable) -> Callable[[], DependencyInfo]:
-        def inner():
-            return DependencyInfo(dependencies=set(*deps), action_fn=action_fn)
+        def inner(self):
+            return DependencyInfo(dependencies=set(deps), action_fn=lambda: action_fn(self))
 
         return inner
 

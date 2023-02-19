@@ -11,6 +11,7 @@ class Optimizer:
 
     def __init__(self):
         self.extensions = dict()
+        self.data = dict()
 
     def register_extension(self, extension: Extension) -> Self:
         """Register a new extension."""
@@ -47,14 +48,16 @@ class Optimizer:
 
             assert (
                 len(can_be_validated) > 0
-            ), "Extensions can't be scheduled, dependency cycle detected"
+            ), f"Extensions can't be scheduled, dependency cycle detected\n{dependencies}"
 
             # Validate the extensions and add them to the validated data
             for e_id in can_be_validated:
                 info = validation_info[e_id]
                 dependency_data = {dep: self.data[dep] for dep in info.dependencies}
 
-                validation_info[e_id].action_fn(data=self.data[e_id], **dependency_data)
+                validation_info[e_id].action_fn(
+                    self.extensions[e_id], data=self.data[e_id], **dependency_data
+                )
 
             # Update the extensions that need to be validated
             to_validate = {
