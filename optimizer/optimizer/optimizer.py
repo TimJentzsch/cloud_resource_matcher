@@ -1,12 +1,12 @@
 from typing import Self, Any
 
 from optimizer.extensions.decorators import DependencyInfo
-from optimizer.extensions.extension import Extension
+from optimizer.extensions.extension import Extension, ExtensionId
 from optimizer.optimizer.validated_optimizer import ValidatedOptimizer
 
 
 class Optimizer:
-    extensions: dict[str, Extension]
+    extensions: dict[ExtensionId, Extension]
     data: dict[str, Any]
 
     def __init__(self):
@@ -19,7 +19,7 @@ class Optimizer:
 
         return self
 
-    def add_data(self, e_id: str, data: Any) -> Self:
+    def add_data(self, e_id: ExtensionId, data: Any) -> Self:
         """Add the data for an extension with the given ID."""
         assert (
             e_id in self.extensions.keys()
@@ -29,15 +29,15 @@ class Optimizer:
         return self
 
     def validate(self) -> ValidatedOptimizer:
-        validation_info: dict[str, DependencyInfo] = {
+        validation_info: dict[ExtensionId, DependencyInfo] = {
             e_id: extension.validate() for e_id, extension in self.extensions.items()
         }
 
-        dependencies: dict[str, set[str]] = {
+        dependencies: dict[ExtensionId, set[ExtensionId]] = {
             e_id: info.dependencies for e_id, info in validation_info.items()
         }
 
-        to_validate: dict[str, set[str]] = {**dependencies}
+        to_validate: dict[ExtensionId, set[ExtensionId]] = {**dependencies}
 
         while len(to_validate.keys()) > 0:
             # If an extension has no outstanding dependencies it can be validated

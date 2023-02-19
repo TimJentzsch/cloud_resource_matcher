@@ -2,8 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from pulp import LpProblem, LpMinimize, LpAffineExpression
+
 from .built_optimizer import BuiltOptimizer
-from ..extensions.decorators import DependencyInfo
+from optimizer.extensions.decorators import DependencyInfo
+from optimizer.extensions.extension import ExtensionId
 
 if TYPE_CHECKING:
     # Avoid circular imports
@@ -17,18 +20,21 @@ class ValidatedOptimizer:
         self.optimizer = optimizer
 
     def build_mip(self):
-        mip_info: dict[str, DependencyInfo] = {
+        problem = LpProblem("cloud_cost_optimization", LpMinimize)
+        objective = LpAffineExpression()
+
+        mip_info: dict[ExtensionId, DependencyInfo] = {
             e_id: extension.extend_mip()
             for e_id, extension in self.optimizer.extensions.items()
         }
 
-        dependencies: dict[str, set[str]] = {
+        dependencies: dict[ExtensionId, set[ExtensionId]] = {
             e_id: info.dependencies for e_id, info in mip_info.items()
         }
 
-        to_build: dict[str, set[str]] = {**dependencies}
+        to_build: dict[ExtensionId, set[ExtensionId]] = {**dependencies}
 
-        build_data: dict[str, Any] = dict()
+        build_data: dict[ExtensionId, Any] = dict()
 
         while len(to_build.keys()) > 0:
             # If an extension has no outstanding dependencies it can be built
@@ -38,7 +44,7 @@ class ValidatedOptimizer:
                 len(can_be_built) > 0
             ), "Extensions can't be scheduled, dependency cycle detected"
 
-            # Validate the extensions and add them to the validated data
+            # Extend the MIP with extensions and add the result to the build data
             for e_id in can_be_built:
                 info = mip_info[e_id]
                 dependency_data = {
@@ -46,7 +52,10 @@ class ValidatedOptimizer:
                 }
 
                 build_data[e_id] = mip_info[e_id].action_fn(
-                    data=self.optimizer.data[e_id], **dependency_data
+                    problem=problem,
+                    objective=objective,
+                    data=self.optimizer.data[e_id],
+                    **dependency_data,
                 )
 
             # Update the extensions that need to be built
@@ -56,4 +65,9 @@ class ValidatedOptimizer:
                 if e_id not in can_be_built
             }
 
-        return BuiltOptimizer(validated_optimizer=self, build_data=build_data)
+        # Update the objective
+        problem.setObjective(objective)
+
+        return BuiltOptimizer(
+            validated_optimizer=self, problem=problem, build_data=build_data
+        )

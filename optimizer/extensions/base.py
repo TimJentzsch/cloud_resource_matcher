@@ -7,6 +7,7 @@ from .extension import Extension
 from optimizer.mixed_integer_program.types import (
     ServiceVirtualMachines,
     VarVmServiceMatching,
+    VmServiceMatching,
 )
 from optimizer.optimizer_toolbox_model import BaseData
 from optimizer.optimizer_toolbox_model.data import Service
@@ -17,6 +18,12 @@ class BaseMipData:
     data: BaseData
     var_vm_matching: VarVmServiceMatching
     var_service_used: dict[Service, LpVariable]
+
+
+@dataclass
+class BaseSolution:
+    mip_data: BaseMipData
+    vm_matching: VmServiceMatching
 
 
 class BaseExtension(Extension):
@@ -103,3 +110,7 @@ class BaseExtension(Extension):
             var_vm_matching=var_vm_matching,
             var_service_used=var_service_used,
         )
+
+    def extract_solution(self) -> BaseSolution:
+        # FIXME: Implement this
+        ...

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from pulp import LpProblem, LpAffineExpression, LpVariable, LpBinary, lpSum
 
 from .base import BaseMipData
-from .extension import Extension
+from .extension import Extension, ExtensionId
 from optimizer.optimizer_toolbox_model import BaseData
 from optimizer.extensions.decorators import dependencies
 from optimizer.optimizer_toolbox_model import NetworkData
@@ -21,9 +21,14 @@ class NetworkMipData:
     ]
 
 
+@dataclass
+class NetworkSolutionData:
+    mip_data: NetworkMipData
+
+
 class NetworkExtension(Extension):
     @staticmethod
-    def identifier() -> str:
+    def identifier() -> ExtensionId:
         return "network"
 
     @dependencies("base")
@@ -160,3 +165,8 @@ class NetworkExtension(Extension):
             var_vm_locations=var_vm_locations,
             var_vm_vm_locations=var_vm_vm_locations,
         )
+
+    @dependencies("base")
+    def extract_solution(self) -> NetworkSolutionData:
+        # FIXME: Implement this
+        ...

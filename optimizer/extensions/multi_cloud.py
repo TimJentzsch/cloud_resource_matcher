@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from pulp import LpVariable, LpBinary, LpAffineExpression, LpProblem, lpSum
 
 from .base import BaseMipData
-from .extension import Extension
+from .extension import Extension, ExtensionId
 from optimizer.optimizer_toolbox_model import BaseData
 from optimizer.extensions.decorators import dependencies
 from optimizer.optimizer_toolbox_model import MultiCloudData
@@ -16,9 +16,14 @@ class MultiCloudMipData:
     var_csp_used: dict[CloudServiceProvider, LpVariable]
 
 
+@dataclass
+class MultiCloudSolution:
+    mip_data: MultiCloudMipData
+
+
 class PerformanceExtension(Extension):
     @staticmethod
-    def identifier() -> str:
+    def identifier() -> ExtensionId:
         return "multi_cloud"
 
     @dependencies("base")
@@ -77,3 +82,8 @@ class PerformanceExtension(Extension):
             )
 
         return MultiCloudMipData(data=data, var_csp_used=var_csp_used)
+
+    @dependencies("base")
+    def extract_solution(self) -> MultiCloudMipData:
+        # FIXME: Implement this
+        ...

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from pulp import LpProblem, LpAffineExpression
 
 from .base import BaseMipData
-from .extension import Extension
+from .extension import Extension, ExtensionId
 from optimizer.optimizer_toolbox_model import BaseData
 from optimizer.extensions.decorators import dependencies
 from optimizer.optimizer_toolbox_model import PerformanceData
@@ -14,9 +14,14 @@ class PerformanceMipData:
     data: PerformanceData
 
 
+@dataclass
+class PerformanceSolutionData:
+    mip_data: PerformanceMipData
+
+
 class PerformanceExtension(Extension):
     @staticmethod
-    def identifier() -> str:
+    def identifier() -> ExtensionId:
         return "performance"
 
     @dependencies("base")
@@ -52,3 +57,8 @@ class PerformanceExtension(Extension):
                     )
 
         return PerformanceMipData(data=data)
+
+    @dependencies("base")
+    def extract_solution(self) -> PerformanceSolutionData:
+        # FIXME: Implement this
+        ...

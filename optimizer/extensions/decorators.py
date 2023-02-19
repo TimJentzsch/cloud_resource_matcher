@@ -1,11 +1,13 @@
 from dataclasses import dataclass
 from typing import Callable
 
+from .extension import ExtensionId
+
 
 @dataclass
 class DependencyInfo:
     # The IDs of the extensions whose data is needed for the action
-    dependencies: set[str]
+    dependencies: set[ExtensionId]
 
     # The action to execute, with the injected dependencies
     action_fn: Callable
