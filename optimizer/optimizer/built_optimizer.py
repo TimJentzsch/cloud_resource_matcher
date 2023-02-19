@@ -21,17 +21,17 @@ if TYPE_CHECKING:
 class BuiltOptimizer:
     validated_optimizer: ValidatedOptimizer
     problem: LpProblem
-    build_data: dict[ExtensionId, Any]
+    mip_data: dict[ExtensionId, Any]
 
     def __init__(
         self,
         validated_optimizer: ValidatedOptimizer,
         problem: LpProblem,
-        build_data: dict[ExtensionId, Any],
+        mip_data: dict[ExtensionId, Any],
     ):
         self.validated_optimizer = validated_optimizer
         self.problem = problem
-        self.build_data = build_data
+        self.mip_data = mip_data
 
     def optimizer(self) -> Optimizer:
         return self.validated_optimizer.optimizer
@@ -96,7 +96,7 @@ class BuiltOptimizer:
                 }
 
                 solution_data[e_id] = solution_info[e_id].action_fn(
-                    data=self.optimizer().data[e_id],
+                    mip_data=self.mip_data[e_id],
                     **dependency_data,
                 )
 

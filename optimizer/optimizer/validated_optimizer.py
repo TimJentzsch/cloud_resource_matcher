@@ -69,5 +69,5 @@ class ValidatedOptimizer:
         problem.setObjective(objective)
 
         return BuiltOptimizer(
-            validated_optimizer=self, problem=problem, build_data=build_data
+            validated_optimizer=self, problem=problem, mip_data=build_data
         )
