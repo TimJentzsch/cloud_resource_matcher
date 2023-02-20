@@ -34,13 +34,15 @@ class BaseExtension(Extension):
     def identifier() -> str:
         return "base"
 
+    @staticmethod
     @dependencies()
-    def validate(self, data: BaseData) -> None:
+    def validate( data: BaseData) -> None:
         data.validate()
 
+    @staticmethod
     @dependencies()
     def extend_mip(
-        self, data: BaseData, problem: LpProblem, objective: LpAffineExpression
+        data: BaseData, problem: LpProblem, objective: LpAffineExpression
     ) -> BaseMipData:
         # Pre-compute which services can host which VMs
         service_virtual_machines: ServiceVirtualMachines = {
@@ -114,9 +116,10 @@ class BaseExtension(Extension):
             var_service_used=var_service_used,
         )
 
+    @staticmethod
     @dependencies()
     def extract_solution(
-        self, mip_data: BaseMipData, problem: LpProblem
+        mip_data: BaseMipData, problem: LpProblem
     ) -> BaseSolution:
         base_data = mip_data.data
         vm_service_matching: VmServiceMatching = dict()

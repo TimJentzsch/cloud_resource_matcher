@@ -26,13 +26,15 @@ class MultiCloudExtension(Extension):
     def identifier() -> ExtensionId:
         return "multi_cloud"
 
+    @staticmethod
     @dependencies("base")
-    def validate(self, data: MultiCloudData, base: BaseData):
+    def validate(cls, data: MultiCloudData, base: BaseData):
         data.validate(base)
 
+    @staticmethod
     @dependencies("base")
     def extend_mip(
-        self,
+        cls,
         data: MultiCloudData,
         problem: LpProblem,
         objective: LpAffineExpression,
@@ -83,7 +85,8 @@ class MultiCloudExtension(Extension):
 
         return MultiCloudMipData(data=data, var_csp_used=var_csp_used)
 
+    @staticmethod
     @dependencies()
-    def extract_solution(self, mip_data: MultiCloudMipData) -> MultiCloudSolution:
+    def extract_solution(cls, mip_data: MultiCloudMipData) -> MultiCloudSolution:
         # TODO: Extract CSP solution
         return MultiCloudSolution(mip_data=mip_data)

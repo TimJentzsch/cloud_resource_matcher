@@ -31,13 +31,14 @@ class NetworkExtension(Extension):
     def identifier() -> ExtensionId:
         return "network"
 
+    @staticmethod
     @dependencies("base")
-    def validate(self, data: NetworkData, base: BaseData):
+    def validate(data: NetworkData, base: BaseData):
         data.validate(base)
 
+    @staticmethod
     @dependencies("base")
     def extend_mip(
-        self,
         data: NetworkData,
         problem: LpProblem,
         objective: LpAffineExpression,
@@ -166,7 +167,8 @@ class NetworkExtension(Extension):
             var_vm_vm_locations=var_vm_vm_locations,
         )
 
+    @staticmethod
     @dependencies()
-    def extract_solution(self, mip_data: NetworkMipData) -> NetworkSolutionData:
+    def extract_solution(mip_data: NetworkMipData) -> NetworkSolutionData:
         # TODO: Extract location data
         return NetworkSolutionData(mip_data=mip_data)

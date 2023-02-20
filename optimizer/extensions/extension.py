@@ -13,14 +13,17 @@ class Extension(ABC):
     def identifier() -> ExtensionId:
         pass
 
+    @staticmethod
     @abstractmethod
-    def validate(self) -> DependencyInfo:
+    def validate() -> DependencyInfo:
         pass
 
+    @staticmethod
     @abstractmethod
-    def extend_mip(self) -> DependencyInfo:
+    def extend_mip() -> DependencyInfo:
         pass
 
+    @staticmethod
     @abstractmethod
-    def extract_solution(self) -> DependencyInfo:
+    def extract_solution() -> DependencyInfo:
         pass

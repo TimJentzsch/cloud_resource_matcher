@@ -24,13 +24,14 @@ class PerformanceExtension(Extension):
     def identifier() -> ExtensionId:
         return "performance"
 
+    @staticmethod
     @dependencies("base")
-    def validate(self, data: PerformanceData, base: BaseData):
+    def validate(data: PerformanceData, base: BaseData):
         data.validate(base)
 
+    @staticmethod
     @dependencies("base")
     def extend_mip(
-        self,
         data: PerformanceData,
         problem: LpProblem,
         objective: LpAffineExpression,
@@ -58,6 +59,7 @@ class PerformanceExtension(Extension):
 
         return PerformanceMipData(data=data)
 
+    @staticmethod
     @dependencies()
-    def extract_solution(self, mip_data: PerformanceMipData) -> PerformanceSolutionData:
+    def extract_solution(mip_data: PerformanceMipData) -> PerformanceSolutionData:
         return PerformanceSolutionData(mip_data)
