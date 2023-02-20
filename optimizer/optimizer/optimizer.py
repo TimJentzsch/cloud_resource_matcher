@@ -56,7 +56,7 @@ class Optimizer:
                 dependency_data = {dep: self.data[dep] for dep in info.dependencies}
 
                 validation_info[e_id].action_fn(
-                    self.extensions[e_id], data=self.data[e_id], **dependency_data
+                    data=self.data[e_id], **dependency_data
                 )
 
             # Update the extensions that need to be validated

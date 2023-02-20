@@ -61,5 +61,5 @@ class PerformanceExtension(Extension):
 
     @staticmethod
     @dependencies()
-    def extract_solution(mip_data: PerformanceMipData) -> PerformanceSolutionData:
+    def extract_solution(mip_data: PerformanceMipData, problem: LpProblem) -> PerformanceSolutionData:
         return PerformanceSolutionData(mip_data)

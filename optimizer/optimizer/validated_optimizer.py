@@ -34,7 +34,7 @@ class ValidatedOptimizer:
 
         to_build: dict[ExtensionId, set[ExtensionId]] = {**dependencies}
 
-        build_data: dict[ExtensionId, Any] = dict()
+        mip_data: dict[ExtensionId, Any] = dict()
 
         while len(to_build.keys()) > 0:
             # If an extension has no outstanding dependencies it can be built
@@ -48,10 +48,10 @@ class ValidatedOptimizer:
             for e_id in can_be_built:
                 info = mip_info[e_id]
                 dependency_data = {
-                    dep: self.optimizer.data[dep] for dep in info.dependencies
+                    dep: mip_data[dep] for dep in info.dependencies
                 }
 
-                build_data[e_id] = mip_info[e_id].action_fn(
+                mip_data[e_id] = mip_info[e_id].action_fn(
                     problem=problem,
                     objective=objective,
                     data=self.optimizer.data[e_id],
@@ -69,5 +69,5 @@ class ValidatedOptimizer:
         problem.setObjective(objective)
 
         return BuiltOptimizer(
-            validated_optimizer=self, problem=problem, mip_data=build_data
+            validated_optimizer=self, problem=problem, mip_data=mip_data
         )

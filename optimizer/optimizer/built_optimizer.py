@@ -100,6 +100,7 @@ class BuiltOptimizer:
                 }
 
                 solution_data[e_id] = solution_info[e_id].action_fn(
+                    problem=self.problem,
                     mip_data=self.mip_data[e_id],
                     **dependency_data,
                 )
