@@ -26,6 +26,11 @@ class NetworkSolutionData:
 
 
 class NetworkExtension(Extension):
+    """
+    An extension to specify requirements related to networking.
+
+    It allows you to model network costs and maximum latency requirements.
+    """
     @staticmethod
     def identifier() -> ExtensionId:
         return "network"

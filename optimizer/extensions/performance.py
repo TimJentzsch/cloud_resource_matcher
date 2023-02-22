@@ -19,6 +19,12 @@ class PerformanceSolutionData:
 
 
 class PerformanceExtension(Extension):
+    """
+    An extension to specify performance requirements.
+
+    It allows you to define how much performance every VM needs
+    and how much performance the cloud services provide.
+    """
     @staticmethod
     def identifier() -> ExtensionId:
         return "performance"
