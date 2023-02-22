@@ -7,7 +7,7 @@ from .extension import Extension, ExtensionId
 from optimizer.optimizer_toolbox_model import BaseData
 from optimizer.extensions.decorators import dependencies
 from optimizer.optimizer_toolbox_model import MultiCloudData
-from optimizer.optimizer_toolbox_model.data import CloudServiceProvider
+from optimizer.extensions.data import CloudServiceProvider
 
 
 @dataclass

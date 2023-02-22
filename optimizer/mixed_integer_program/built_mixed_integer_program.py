@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import pulp
 from pulp import LpProblem, LpStatus
 
-from optimizer.optimizer_toolbox_model.data import Cost
+from optimizer.extensions.data import Cost
 from optimizer.solver import Solver, get_pulp_solver
 from .solving import SolveSolution, SolveError, SolveErrorReason
 

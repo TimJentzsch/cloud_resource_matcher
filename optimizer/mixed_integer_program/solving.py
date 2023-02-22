@@ -5,7 +5,7 @@ from optimizer.mixed_integer_program.types import (
     VmServiceMatching,
     ServiceInstanceCount,
 )
-from optimizer.optimizer_toolbox_model.data import Cost
+from optimizer.extensions.data import Cost
 
 
 @dataclass

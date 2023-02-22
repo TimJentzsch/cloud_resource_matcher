@@ -7,8 +7,8 @@ from .extension import Extension, ExtensionId
 from optimizer.optimizer_toolbox_model import BaseData
 from optimizer.extensions.decorators import dependencies
 from optimizer.optimizer_toolbox_model import NetworkData
-from optimizer.optimizer_toolbox_model.data import VirtualMachine
-from optimizer.optimizer_toolbox_model.data.network_data import Location
+from optimizer.extensions.data import VirtualMachine
+from optimizer.extensions.data.network_data import Location
 
 
 @dataclass

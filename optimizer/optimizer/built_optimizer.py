@@ -9,7 +9,7 @@ from optimizer.mixed_integer_program.solving import (
     SolveErrorReason,
     SolveError,
 )
-from optimizer.optimizer_toolbox_model.data import Cost
+from optimizer.extensions.data import Cost
 from optimizer.solver import Solver, get_pulp_solver
 from ..extensions.decorators import DependencyInfo
 

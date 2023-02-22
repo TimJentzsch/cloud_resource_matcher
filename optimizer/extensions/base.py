@@ -11,7 +11,7 @@ from optimizer.mixed_integer_program.types import (
     ServiceInstanceCount,
 )
 from optimizer.optimizer_toolbox_model import BaseData
-from optimizer.optimizer_toolbox_model.data import Service, Cost
+from optimizer.extensions.data import Service, Cost
 
 
 @dataclass

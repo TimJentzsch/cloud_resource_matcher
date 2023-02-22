@@ -1,6 +1,6 @@
 from optimizer.optimizer_toolbox_model import OptimizerToolboxModel
-from optimizer.optimizer_toolbox_model.data.base_data import BaseData
-from optimizer.optimizer_toolbox_model.data.performance_data import PerformanceData
+from optimizer.extensions.data.base_data import BaseData
+from optimizer.extensions.data.performance_data import PerformanceData
 from optimizer.mixed_integer_program import MixedIntegerProgram
 from test.framework import Expect
 

@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Dict
 
-from optimizer.optimizer_toolbox_model.data import Service, VirtualMachine
-from optimizer.optimizer_toolbox_model.data.base_data import BaseData
+from optimizer.extensions.data import Service, VirtualMachine
+from optimizer.extensions.data.base_data import BaseData
 
 
 @dataclass

@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import List, Dict
 
-from optimizer.optimizer_toolbox_model.data import Service, CloudServiceProvider
-from optimizer.optimizer_toolbox_model.data.base_data import BaseData
+from optimizer.extensions.data import Service, CloudServiceProvider
+from optimizer.extensions.data.base_data import BaseData
 
 
 @dataclass

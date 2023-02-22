@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from typing import Self
 
-from optimizer.optimizer_toolbox_model.data.base_data import BaseData
-from optimizer.optimizer_toolbox_model.data.multi_cloud_data import MultiCloudData
-from optimizer.optimizer_toolbox_model.data.network_data import NetworkData
-from optimizer.optimizer_toolbox_model.data.performance_data import PerformanceData
+from optimizer.extensions.data.base_data import BaseData
+from optimizer.extensions.data.multi_cloud_data import MultiCloudData
+from optimizer.extensions.data.network_data import NetworkData
+from optimizer.extensions.data.performance_data import PerformanceData
 
 
 @dataclass

@@ -8,8 +8,8 @@ from optimizer.optimizer_toolbox_model import (
     OptimizerToolboxModel,
     ValidatedOptimizerToolboxModel,
 )
-from optimizer.optimizer_toolbox_model.data import Service, VirtualMachine
-from optimizer.optimizer_toolbox_model.data.network_data import Location
+from optimizer.extensions.data import Service, VirtualMachine
+from optimizer.extensions.data.network_data import Location
 
 
 class MixedIntegerProgram:

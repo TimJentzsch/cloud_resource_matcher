@@ -1,6 +1,6 @@
 from pulp import LpVariable
 
-from optimizer.optimizer_toolbox_model.data import VirtualMachine, Service, TimeUnit
+from optimizer.extensions.data import VirtualMachine, Service, TimeUnit
 
 VarVmServiceMatching = dict[tuple[VirtualMachine, Service], LpVariable]
 
