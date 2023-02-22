@@ -17,19 +17,36 @@ ServiceVirtualMachines = dict[Service, set[VirtualMachine]]
 @dataclass
 class BaseMipData:
     data: BaseData
+    # Which VM should be deployed on which service?
     var_vm_matching: VarVmServiceMatching
+    # Which services are used at all?
     var_service_used: dict[Service, LpVariable]
 
 
 @dataclass
 class BaseSolution:
+    """
+    The most important parts of the solution, including the assignment
+    of VMs to services and the total cost of the deployment.
+    """
     mip_data: BaseMipData
+    # Which VM should be deployed on which service?
     vm_service_matching: VmServiceMatching
+    # How many instances of each service should be bought?
     service_instance_count: ServiceInstanceCount
+    # What is the total cost of the deployment?
+    # This also includes cost factors of other extensions.
     cost: Cost
 
 
 class BaseExtension(Extension):
+    """
+    An extension providing basic aspects of cloud cost optimization.
+    This will be needed for almost all optimization problems.
+
+    It provides means to define the available VMs and services
+    and the basic logic needed to match them together.
+    """
     @staticmethod
     def identifier() -> str:
         return "base"
