@@ -5,11 +5,11 @@ from typing import TYPE_CHECKING, Any
 from pulp import LpStatus, LpProblem
 
 from optimizer.extensions.extension import ExtensionId
-from optimizer.mixed_integer_program.solving import (
+from optimizer.solving import (
     SolveErrorReason,
     SolveError,
 )
-from optimizer.extensions.data import Cost
+from ..extensions.data.types import Cost
 from optimizer.solver import Solver, get_pulp_solver
 from ..extensions.decorators import DependencyInfo
 

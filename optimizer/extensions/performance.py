@@ -4,9 +4,8 @@ from pulp import LpProblem, LpAffineExpression
 
 from .base import BaseMipData
 from .extension import Extension, ExtensionId
-from optimizer.optimizer_toolbox_model import BaseData
+from .data import BaseData, PerformanceData
 from optimizer.extensions.decorators import dependencies
-from optimizer.optimizer_toolbox_model import PerformanceData
 
 
 @dataclass

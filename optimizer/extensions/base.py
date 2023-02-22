@@ -4,14 +4,14 @@ from pulp import LpProblem, LpAffineExpression, LpVariable, LpBinary, lpSum, pul
 
 from .decorators import dependencies
 from .extension import Extension
-from optimizer.mixed_integer_program.types import (
+from optimizer.types import (
     ServiceVirtualMachines,
     VarVmServiceMatching,
     VmServiceMatching,
     ServiceInstanceCount,
 )
-from optimizer.optimizer_toolbox_model import BaseData
-from optimizer.extensions.data import Service, Cost
+from .data.base_data import BaseData
+from .data.types import Service, Cost
 
 
 @dataclass

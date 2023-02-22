@@ -4,10 +4,9 @@ from pulp import LpVariable, LpBinary, LpAffineExpression, LpProblem, lpSum
 
 from .base import BaseMipData
 from .extension import Extension, ExtensionId
-from optimizer.optimizer_toolbox_model import BaseData
+from .data import BaseData, MultiCloudData
 from optimizer.extensions.decorators import dependencies
-from optimizer.optimizer_toolbox_model import MultiCloudData
-from optimizer.extensions.data import CloudServiceProvider
+from .data.types import CloudServiceProvider
 
 
 @dataclass

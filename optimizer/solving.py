@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from enum import Enum
 
-from optimizer.mixed_integer_program.types import (
+from optimizer.types import (
     VmServiceMatching,
     ServiceInstanceCount,
 )
-from optimizer.extensions.data import Cost
+from optimizer.extensions.data.types import Cost
 
 
 @dataclass

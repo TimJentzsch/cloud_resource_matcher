@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Dict, Tuple
 
-from optimizer.extensions.data import (
+from .types import (
     Service,
     VirtualMachine,
     Cost,

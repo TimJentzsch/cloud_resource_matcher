@@ -3,12 +3,12 @@ from typing import Optional
 
 from optimizer.extensions.base import BaseSolution
 from optimizer.optimizer.default import DefaultOptimizer
-from optimizer.extensions.data import Cost
+from optimizer.extensions.data.types import Cost
 from optimizer.extensions.data.base_data import BaseData
 from optimizer.extensions.data.network_data import NetworkData
 from optimizer.extensions.data.performance_data import PerformanceData
 from optimizer.extensions.data.multi_cloud_data import MultiCloudData
-from optimizer.mixed_integer_program.solving import SolveError
+from optimizer.solving import SolveError
 from optimizer.solver import Solver
 
 

@@ -10,16 +10,16 @@ from optimizer.mixed_integer_program import (
 from optimizer.mixed_integer_program.built_mixed_integer_program import (
     BuiltMixedIntegerProgram,
 )
-from optimizer.mixed_integer_program.solving import (
+from optimizer.solving import (
     SolveSolution,
     SolveErrorReason,
     SolveError,
 )
-from optimizer.mixed_integer_program.types import (
+from optimizer.types import (
     VmServiceMatching,
     ServiceInstanceCount,
 )
-from optimizer.extensions.data import VirtualMachine, Service
+from optimizer.extensions.data.types import Service, VirtualMachine
 
 
 class Expect:

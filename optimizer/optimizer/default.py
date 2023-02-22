@@ -13,13 +13,13 @@ from optimizer.extensions.base import BaseSolution
 from optimizer.optimizer.built_optimizer import BuiltOptimizer
 from optimizer.optimizer.optimizer import Optimizer
 from optimizer.optimizer.validated_optimizer import ValidatedOptimizer
-from optimizer.optimizer_toolbox_model import (
+from optimizer.extensions.data import (
     BaseData,
     PerformanceData,
     NetworkData,
     MultiCloudData,
 )
-from optimizer.extensions.data import Cost
+from optimizer.extensions.data.types import Cost
 from optimizer.solver import Solver
 
 
