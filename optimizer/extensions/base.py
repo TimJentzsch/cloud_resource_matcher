@@ -36,7 +36,7 @@ class BaseExtension(Extension):
 
     @staticmethod
     @dependencies()
-    def validate( data: BaseData) -> None:
+    def validate(data: BaseData) -> None:
         data.validate()
 
     @staticmethod
@@ -118,9 +118,7 @@ class BaseExtension(Extension):
 
     @staticmethod
     @dependencies()
-    def extract_solution(
-        mip_data: BaseMipData, problem: LpProblem
-    ) -> BaseSolution:
+    def extract_solution(mip_data: BaseMipData, problem: LpProblem) -> BaseSolution:
         base_data = mip_data.data
         vm_service_matching: VmServiceMatching = dict()
 

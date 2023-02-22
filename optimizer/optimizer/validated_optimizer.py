@@ -47,9 +47,7 @@ class ValidatedOptimizer:
             # Extend the MIP with extensions and add the result to the build data
             for e_id in can_be_built:
                 info = mip_info[e_id]
-                dependency_data = {
-                    dep: mip_data[dep] for dep in info.dependencies
-                }
+                dependency_data = {dep: mip_data[dep] for dep in info.dependencies}
 
                 mip_data[e_id] = mip_info[e_id].action_fn(
                     problem=problem,

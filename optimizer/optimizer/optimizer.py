@@ -46,18 +46,17 @@ class Optimizer:
                 e_id for e_id, deps in to_validate.items() if len(deps) == 0
             ]
 
-            assert (
-                len(can_be_validated) > 0
-            ), f"Extensions can't be scheduled, dependency cycle detected\n{dependencies}"
+            assert len(can_be_validated) > 0, (
+                "Extensions can't be scheduled,"
+                f"dependency cycle detected\n{dependencies}"
+            )
 
             # Validate the extensions and add them to the validated data
             for e_id in can_be_validated:
                 info = validation_info[e_id]
                 dependency_data = {dep: self.data[dep] for dep in info.dependencies}
 
-                validation_info[e_id].action_fn(
-                    data=self.data[e_id], **dependency_data
-                )
+                validation_info[e_id].action_fn(data=self.data[e_id], **dependency_data)
 
             # Update the extensions that need to be validated
             to_validate = {

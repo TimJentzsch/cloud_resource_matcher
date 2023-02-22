@@ -85,6 +85,8 @@ class MultiCloudExtension(Extension):
 
     @staticmethod
     @dependencies()
-    def extract_solution(mip_data: MultiCloudMipData, problem: LpProblem) -> MultiCloudSolution:
+    def extract_solution(
+        mip_data: MultiCloudMipData, problem: LpProblem
+    ) -> MultiCloudSolution:
         # TODO: Extract CSP solution
         return MultiCloudSolution(mip_data=mip_data)

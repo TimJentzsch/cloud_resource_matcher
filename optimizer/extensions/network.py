@@ -168,6 +168,8 @@ class NetworkExtension(Extension):
 
     @staticmethod
     @dependencies()
-    def extract_solution(mip_data: NetworkMipData, problem: LpProblem) -> NetworkSolutionData:
+    def extract_solution(
+        mip_data: NetworkMipData, problem: LpProblem
+    ) -> NetworkSolutionData:
         # TODO: Extract location data
         return NetworkSolutionData(mip_data=mip_data)
