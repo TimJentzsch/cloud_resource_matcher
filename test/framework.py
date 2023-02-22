@@ -15,10 +15,7 @@ from optimizer.solving import (
     SolveErrorReason,
     SolveError,
 )
-from optimizer.types import (
-    VmServiceMatching,
-    ServiceInstanceCount,
-)
+from optimizer.extensions.base import VmServiceMatching, ServiceInstanceCount
 from optimizer.extensions.data.types import Service, VirtualMachine
 
 

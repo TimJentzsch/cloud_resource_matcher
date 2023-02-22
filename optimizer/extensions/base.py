@@ -4,14 +4,14 @@ from pulp import LpProblem, LpAffineExpression, LpVariable, LpBinary, lpSum, pul
 
 from .decorators import dependencies
 from .extension import Extension
-from optimizer.types import (
-    ServiceVirtualMachines,
-    VarVmServiceMatching,
-    VmServiceMatching,
-    ServiceInstanceCount,
-)
 from .data.base_data import BaseData
-from .data.types import Service, Cost
+from .data.types import Service, Cost, VirtualMachine, TimeUnit
+
+
+VarVmServiceMatching = dict[tuple[VirtualMachine, Service], LpVariable]
+VmServiceMatching = dict[tuple[VirtualMachine, Service, TimeUnit], int]
+ServiceInstanceCount = dict[tuple[Service, TimeUnit], int]
+ServiceVirtualMachines = dict[Service, set[VirtualMachine]]
 
 
 @dataclass

@@ -1,10 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 
-from optimizer.types import (
-    VmServiceMatching,
-    ServiceInstanceCount,
-)
+from optimizer.extensions.base import VmServiceMatching, ServiceInstanceCount
 from optimizer.extensions.data.types import Cost
 
 
