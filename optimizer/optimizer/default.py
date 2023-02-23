@@ -39,24 +39,25 @@ class DefaultOptimizer:
 
     def __init__(self, base_data: BaseData):
         self.optimizer = (
-            Optimizer()
-            .register_extension(BaseExtension())
-            .register_extension(PerformanceExtension)
-            .register_extension(NetworkExtension)
-            .register_extension(MultiCloudExtension)
-            .add_data("base", base_data)
+            Optimizer().register_extension(BaseExtension()).add_data("base", base_data)
         )
 
     def with_performance_data(self, performance_data: PerformanceData) -> Self:
-        self.optimizer.add_data("performance", performance_data)
+        self.optimizer.register_extension(PerformanceExtension()).add_data(
+            "performance", performance_data
+        )
         return self
 
     def with_network_data(self, network_data: NetworkData) -> Self:
-        self.optimizer.add_data("network", network_data)
+        self.optimizer.register_extension(NetworkExtension()).add_data(
+            "network", network_data
+        )
         return self
 
     def with_multi_cloud_data(self, multi_cloud_data: MultiCloudData) -> Self:
-        self.optimizer.add_data("multi_cloud", multi_cloud_data)
+        self.optimizer.register_extension(MultiCloudExtension()).add_data(
+            "multi_cloud", multi_cloud_data
+        )
         return self
 
     def validate(self) -> _ValidatedDefaultOptimizer:
