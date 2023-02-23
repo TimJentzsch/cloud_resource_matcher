@@ -1,17 +1,15 @@
 from dataclasses import dataclass
 from enum import Enum
 
-from optimizer.mixed_integer_program.types import (
-    VmServiceMatching,
-    ServiceInstanceCount,
-)
+from optimizer.extensions.base import VmServiceMatching, ServiceInstanceCount
+from optimizer.extensions.data.types import Cost
 
 
 @dataclass
 class SolveSolution:
     vm_service_matching: VmServiceMatching
     service_instance_count: ServiceInstanceCount
-    cost: float
+    cost: Cost
 
 
 class SolveErrorReason(Enum):

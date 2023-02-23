@@ -1,39 +1,43 @@
+from __future__ import annotations
+
 import math
 from typing import Self, Optional, Dict, List, Iterable
 
 import pytest
-from pulp import LpVariable
+from pulp import LpVariable, LpProblem
 
-from optimizer.mixed_integer_program import (
-    MixedIntegerProgram,
-)
-from optimizer.mixed_integer_program.built_mixed_integer_program import (
-    BuiltMixedIntegerProgram,
-)
-from optimizer.mixed_integer_program.solving import (
-    SolveSolution,
+from optimizer.optimizer.default import DefaultOptimizer, _BuiltDefaultOptimizer
+from optimizer.solving import (
     SolveErrorReason,
     SolveError,
 )
-from optimizer.mixed_integer_program.types import (
+from optimizer.extensions.base import (
     VmServiceMatching,
     ServiceInstanceCount,
+    BaseSolution,
 )
-from optimizer.optimizer_toolbox_model.data import VirtualMachine, Service
+from optimizer.extensions.data.types import Service, VirtualMachine
+
+
+# TODO: This will be changed in the future
+SolveSolution = BaseSolution
 
 
 class Expect:
-    _model: BuiltMixedIntegerProgram
+    _optimizer: _BuiltDefaultOptimizer
 
     _variables: set[str]
     _variables_exclusive: bool = False
 
     _fixed_variable_values: dict[str, float]
 
-    def __init__(self, model: MixedIntegerProgram):
-        self._model = model.build()
+    def __init__(self, optimizer: DefaultOptimizer):
+        self._optimizer = optimizer.validate().build_mip()
         self._variables = set()
         self._fixed_variable_values = dict()
+
+    def _problem(self) -> LpProblem:
+        return self._optimizer.problem()
 
     def _with_variables(
         self, variables: Iterable[str], *, exclusive: bool = False
@@ -67,11 +71,11 @@ class Expect:
         )
         return self
 
-    def to_be_infeasible(self) -> "_ExpectInfeasible":
+    def to_be_infeasible(self) -> _ExpectInfeasible:
         """The given problem is unsolvable."""
         return _ExpectInfeasible(self)
 
-    def to_be_feasible(self) -> "_ExpectFeasible":
+    def to_be_feasible(self) -> _ExpectFeasible:
         """The given problem has a solution."""
         return _ExpectFeasible(self)
 
@@ -102,11 +106,15 @@ class _ExpectResult:
         self._expect._with_variables(variables, exclusive=exclusive)
         return self
 
+    def _problem(self) -> LpProblem:
+        return self._expect._problem()
+
     def _solve(self) -> SolveSolution:
-        return self._expect._model.solve()
+        return self._expect._optimizer.solve()
 
     def _fix_variable_values(self):
-        variables: List[LpVariable] = self._expect._model.problem.variables()
+        # The warning here is invalid, the type is incorrectly specified in PuLP
+        variables: List[LpVariable] = self._problem().variables()
 
         for var_name, value in self._expect._fixed_variable_values.items():
             for var in variables:
@@ -116,7 +124,7 @@ class _ExpectResult:
                     break
 
     def _test_variables(self):
-        variables = [var.name for var in self._expect._model.problem.variables()]
+        variables = [var.name for var in self._problem().variables()]
         missing_variables = [
             var for var in self._expect._variables if var not in variables
         ]
@@ -244,7 +252,7 @@ class _ExpectFeasible(_ExpectResult):
     def _test_variable_values(self):
         actual_values = {
             var.name: var.value()
-            for var in self._expect._model.problem.variables()
+            for var in self._problem().variables()
             if var.name in self._variable_values.keys()
         }
         wrong_values = []
@@ -262,4 +270,6 @@ class _ExpectFeasible(_ExpectResult):
 
     def _print_model(self, line_limit: int = 100):
         """Print out the LP model to debug infeasible problems."""
-        print(self._expect._model.get_lp_string(line_limit=line_limit))
+        print(
+            self._expect._optimizer.built_optimizer.get_lp_string(line_limit=line_limit)
+        )
