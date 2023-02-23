@@ -29,6 +29,7 @@ class BaseSolution:
     The most important parts of the solution, including the assignment
     of VMs to services and the total cost of the deployment.
     """
+
     mip_data: BaseMipData
     # Which VM should be deployed on which service?
     vm_service_matching: VmServiceMatching
@@ -47,6 +48,7 @@ class BaseExtension(Extension):
     It provides means to define the available VMs and services
     and the basic logic needed to match them together.
     """
+
     @staticmethod
     def identifier() -> str:
         return "base"

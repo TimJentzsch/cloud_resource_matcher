@@ -1,7 +1,6 @@
-from optimizer.optimizer_toolbox_model import OptimizerToolboxModel
 from optimizer.extensions.data.base_data import BaseData
 from optimizer.extensions.data.network_data import NetworkData
-from optimizer.mixed_integer_program import MixedIntegerProgram
+from optimizer.optimizer.default import DefaultOptimizer
 from test.framework import Expect
 
 
@@ -12,8 +11,8 @@ def test_computation_of_vm_locations():
     """
     locations = {"loc_0", "loc_1"}
 
-    mip = MixedIntegerProgram(
-        OptimizerToolboxModel(
+    optimizer = (
+        DefaultOptimizer(
             BaseData(
                 virtual_machines=["vm_0", "vm_1"],
                 services=["s_0", "s_1"],
@@ -45,7 +44,7 @@ def test_computation_of_vm_locations():
         .validate()
     )
 
-    Expect(mip).with_fixed_vm_service_matching(
+    Expect(optimizer).with_fixed_vm_service_matching(
         {("vm_0", "s_0"): 1, ("vm_1", "s_1"): 1}
     ).to_be_feasible().with_variable_values(
         {
@@ -61,8 +60,8 @@ def test_should_pay_for_vm_location_costs():
     """
     Ensure that the cost of traffic between VMs and specific locations is paid for.
     """
-    mip = MixedIntegerProgram(
-        OptimizerToolboxModel(
+    optimizer = (
+        DefaultOptimizer(
             BaseData(
                 virtual_machines=["vm_0"],
                 services=["s_0"],
@@ -90,7 +89,7 @@ def test_should_pay_for_vm_location_costs():
 
     # Make sure the network costs are included in the total costs
     # demand * service base cost + demand * traffic * traffic cost
-    Expect(mip).to_be_feasible().with_cost(3 * 5 + 3 * 3 * 2).test()
+    Expect(optimizer).to_be_feasible().with_cost(3 * 5 + 3 * 3 * 2).test()
 
 
 def test_should_be_infeasible_if_max_latency_is_violated():
@@ -100,8 +99,8 @@ def test_should_be_infeasible_if_max_latency_is_violated():
     """
     locations = {"loc_0", "loc_1"}
 
-    mip = MixedIntegerProgram(
-        OptimizerToolboxModel(
+    optimizer = (
+        DefaultOptimizer(
             BaseData(
                 virtual_machines=["vm_0"],
                 services=["s_0"],
@@ -135,15 +134,15 @@ def test_should_be_infeasible_if_max_latency_is_violated():
         .validate()
     )
 
-    Expect(mip).to_be_infeasible().test()
+    Expect(optimizer).to_be_infeasible().test()
 
 
 def test_should_choose_matching_that_respects_max_latency():
     """The VM can be placed in two locations, but only one has low enough latency."""
     locations = {"loc_0", "loc_1"}
 
-    mip = MixedIntegerProgram(
-        OptimizerToolboxModel(
+    optimizer = (
+        DefaultOptimizer(
             BaseData(
                 virtual_machines=["vm_0"],
                 services=["s_0", "s_1"],
@@ -177,7 +176,7 @@ def test_should_choose_matching_that_respects_max_latency():
         .validate()
     )
 
-    Expect(mip).to_be_feasible().with_vm_service_matching(
+    Expect(optimizer).to_be_feasible().with_vm_service_matching(
         {("vm_0", "s_0", 0): 1}
     ).with_variable_values(
         {
@@ -191,8 +190,8 @@ def test_should_calculate_connections_between_vms():
     """Two VMs are connected and need to be placed in two different locations."""
     locations = {"loc_0", "loc_1"}
 
-    mip = MixedIntegerProgram(
-        OptimizerToolboxModel(
+    optimizer = (
+        DefaultOptimizer(
             BaseData(
                 virtual_machines=["vm_0", "vm_1"],
                 services=["s_0", "s_1"],
@@ -229,7 +228,7 @@ def test_should_calculate_connections_between_vms():
         .validate()
     )
 
-    Expect(mip).to_be_feasible().with_vm_service_matching(
+    Expect(optimizer).to_be_feasible().with_vm_service_matching(
         {("vm_0", "s_0", 0): 1, ("vm_1", "s_1", 0): 3}
     ).with_variable_values(
         {
@@ -249,8 +248,8 @@ def test_should_consider_latency_for_vm_vm_connections():
     """One of the connections between two VMs violates the maximum latency."""
     locations = {"loc_0", "loc_1"}
 
-    mip = MixedIntegerProgram(
-        OptimizerToolboxModel(
+    optimizer = (
+        DefaultOptimizer(
             BaseData(
                 virtual_machines=["vm_0", "vm_1"],
                 services=["s_0", "s_1"],
@@ -286,4 +285,4 @@ def test_should_consider_latency_for_vm_vm_connections():
         .validate()
     )
 
-    Expect(mip).to_be_infeasible().test()
+    Expect(optimizer).to_be_infeasible().test()

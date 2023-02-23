@@ -99,8 +99,7 @@ def solve_demo_model(
     )
 
     return (
-        DefaultOptimizer()
-        .with_base_data(base_data)
+        DefaultOptimizer(base_data)
         .with_performance_data(perf_data)
         .with_network_data(network_data)
         .with_multi_cloud_data(multi_data)

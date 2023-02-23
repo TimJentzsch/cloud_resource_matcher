@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import tempfile
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
@@ -113,3 +115,10 @@ class BuiltOptimizer:
             }
 
         return solution_data
+
+    def get_lp_string(self, line_limit: int = 100) -> str:
+        with tempfile.NamedTemporaryFile(
+            mode="w+", encoding="utf-8", suffix=".lp"
+        ) as file:
+            self.problem.writeLP(filename=file.name)
+            return "".join(file.readlines()[:line_limit])

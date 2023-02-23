@@ -31,6 +31,7 @@ class NetworkExtension(Extension):
 
     It allows you to model network costs and maximum latency requirements.
     """
+
     @staticmethod
     def identifier() -> ExtensionId:
         return "network"

@@ -3,6 +3,8 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import Self
 
+from pulp import LpProblem
+
 from optimizer.extensions import (
     BaseExtension,
     PerformanceExtension,
@@ -35,18 +37,15 @@ class DefaultOptimizer:
 
     optimizer: Optimizer
 
-    def __init__(self):
+    def __init__(self, base_data: BaseData):
         self.optimizer = (
             Optimizer()
             .register_extension(BaseExtension())
             .register_extension(PerformanceExtension)
             .register_extension(NetworkExtension)
             .register_extension(MultiCloudExtension)
+            .add_data("base", base_data)
         )
-
-    def with_base_data(self, base_data: BaseData) -> Self:
-        self.optimizer.add_data("base", base_data)
-        return self
 
     def with_performance_data(self, performance_data: PerformanceData) -> Self:
         self.optimizer.add_data("performance", performance_data)
@@ -79,6 +78,9 @@ class _BuiltDefaultOptimizer:
 
     def __init__(self, built_optimizer: BuiltOptimizer):
         self.built_optimizer = built_optimizer
+
+    def problem(self) -> LpProblem:
+        return self.built_optimizer.problem
 
     def solve(
         self,

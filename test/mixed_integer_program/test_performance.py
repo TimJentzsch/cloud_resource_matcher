@@ -1,14 +1,13 @@
-from optimizer.optimizer_toolbox_model import OptimizerToolboxModel
 from optimizer.extensions.data.base_data import BaseData
 from optimizer.extensions.data.performance_data import PerformanceData
-from optimizer.mixed_integer_program import MixedIntegerProgram
+from optimizer.optimizer.default import DefaultOptimizer
 from test.framework import Expect
 
 
 def test_with_sufficient_resources():
     """The service has enough resources to host the VM."""
-    mip = MixedIntegerProgram(
-        OptimizerToolboxModel(
+    optimizer = (
+        DefaultOptimizer(
             BaseData(
                 virtual_machines=["vm_0"],
                 services=["s_0"],
@@ -30,15 +29,15 @@ def test_with_sufficient_resources():
         .validate()
     )
 
-    Expect(mip).to_be_feasible().with_cost(5).with_service_instance_count(
+    Expect(optimizer).to_be_feasible().with_cost(5).with_service_instance_count(
         {("s_0", 0): 1}
     ).test()
 
 
 def test_with_insufficient_ram():
     """The only service does not have enough RAM for the VM."""
-    mip = MixedIntegerProgram(
-        OptimizerToolboxModel(
+    optimizer = (
+        DefaultOptimizer(
             BaseData(
                 virtual_machines=["vm_0"],
                 services=["s_0"],
@@ -60,13 +59,13 @@ def test_with_insufficient_ram():
         .validate()
     )
 
-    Expect(mip).to_be_infeasible().test()
+    Expect(optimizer).to_be_infeasible().test()
 
 
 def test_with_insufficient_cpu_count():
     """The only service does not have enough vCPUs for the VM."""
-    mip = MixedIntegerProgram(
-        OptimizerToolboxModel(
+    optimizer = (
+        DefaultOptimizer(
             BaseData(
                 virtual_machines=["vm_0"],
                 services=["s_0"],
@@ -88,7 +87,7 @@ def test_with_insufficient_cpu_count():
         .validate()
     )
 
-    Expect(mip).to_be_infeasible().test()
+    Expect(optimizer).to_be_infeasible().test()
 
 
 def test_resource_matching():
@@ -98,8 +97,8 @@ def test_resource_matching():
     """
     count = 100
 
-    mip = MixedIntegerProgram(
-        OptimizerToolboxModel(
+    optimizer = (
+        DefaultOptimizer(
             BaseData(
                 virtual_machines=[f"vm_{v}" for v in range(count)],
                 services=[f"s_{s}" for s in range(count)],
@@ -128,15 +127,15 @@ def test_resource_matching():
         .validate()
     )
 
-    Expect(mip).to_be_feasible().with_vm_service_matching(
+    Expect(optimizer).to_be_feasible().with_vm_service_matching(
         {(f"vm_{i}", f"s_{i}", 0): 1 for i in range(count)}
     ).test()
 
 
 def test_cheap_insufficient_service():
     """There are two services, but the cheaper one has insufficient resources."""
-    mip = MixedIntegerProgram(
-        OptimizerToolboxModel(
+    optimizer = (
+        DefaultOptimizer(
             BaseData(
                 virtual_machines=["vm_0"],
                 services=["s_0", "s_1"],
@@ -159,7 +158,7 @@ def test_cheap_insufficient_service():
         .validate()
     )
 
-    Expect(mip).to_be_feasible().with_vm_service_matching(
+    Expect(optimizer).to_be_feasible().with_vm_service_matching(
         {("vm_0", "s_1", 0): 1}
     ).with_cost(10).test()
 
@@ -168,8 +167,8 @@ def test_allowed_incomplete_data():
     """
     Make sure that the user is allowed to leave data undefined where it makes sense.
     """
-    mip = MixedIntegerProgram(
-        OptimizerToolboxModel(
+    optimizer = (
+        DefaultOptimizer(
             BaseData(
                 virtual_machines=["vm_0"],
                 services=["s_0"],
@@ -192,13 +191,13 @@ def test_allowed_incomplete_data():
         .validate()
     )
 
-    Expect(mip).to_be_feasible()
+    Expect(optimizer).to_be_feasible()
 
 
 def test_should_work_with_higher_virtual_machine_demand():
     """Some virtual machines have a demand higher than 1."""
-    mip = MixedIntegerProgram(
-        OptimizerToolboxModel(
+    optimizer = (
+        DefaultOptimizer(
             BaseData(
                 virtual_machines=["vm_0"],
                 services=["s_0"],
@@ -220,13 +219,13 @@ def test_should_work_with_higher_virtual_machine_demand():
         .validate()
     )
 
-    Expect(mip).to_be_feasible().with_vm_service_matching({("vm_0", "s_0", 0): 2})
+    Expect(optimizer).to_be_feasible().with_vm_service_matching({("vm_0", "s_0", 0): 2})
 
 
 def test_should_buy_multiple_services_if_needed():
     """There are two virtual machines and one service instance can only host one VM."""
-    mip = MixedIntegerProgram(
-        OptimizerToolboxModel(
+    optimizer = (
+        DefaultOptimizer(
             BaseData(
                 virtual_machines=["vm_0", "vm_1"],
                 services=["s_0"],
@@ -248,7 +247,7 @@ def test_should_buy_multiple_services_if_needed():
         .validate()
     )
 
-    Expect(mip).to_be_feasible().with_vm_service_matching(
+    Expect(optimizer).to_be_feasible().with_vm_service_matching(
         {("vm_0", "s_0", 0): 1, ("vm_1", "s_0", 0): 1}
     ).with_service_instance_count({("s_0", 0): 2}).with_cost(2)
 
@@ -257,8 +256,8 @@ def test_should_be_feasible_if_service_can_be_bought_enough_times_two_instances(
     """There is demand for two VM instances, which each occupy the service fully.
     Two service instances can be bought to cover this demand.
     """
-    mip = MixedIntegerProgram(
-        OptimizerToolboxModel(
+    optimizer = (
+        DefaultOptimizer(
             BaseData(
                 virtual_machines=["vm_0"],
                 services=["s_0"],
@@ -280,7 +279,7 @@ def test_should_be_feasible_if_service_can_be_bought_enough_times_two_instances(
         .validate()
     )
 
-    Expect(mip).to_be_feasible().with_cost(2).with_vm_service_matching(
+    Expect(optimizer).to_be_feasible().with_cost(2).with_vm_service_matching(
         {("vm_0", "s_0", 0): 2}
     ).with_service_instance_count({("s_0", 0): 2}).test()
 
@@ -289,8 +288,8 @@ def test_should_be_feasible_if_service_can_be_bought_enough_times_two_vms():
     """There is demand for two VMs, which each occupy the service fully.
     Two service instances can be bought to cover this demand.
     """
-    mip = MixedIntegerProgram(
-        OptimizerToolboxModel(
+    optimizer = (
+        DefaultOptimizer(
             BaseData(
                 virtual_machines=["vm_0", "vm_1"],
                 services=["s_0"],
@@ -312,7 +311,7 @@ def test_should_be_feasible_if_service_can_be_bought_enough_times_two_vms():
         .validate()
     )
 
-    Expect(mip).to_be_feasible().with_cost(2).with_vm_service_matching(
+    Expect(optimizer).to_be_feasible().with_cost(2).with_vm_service_matching(
         {("vm_0", "s_0", 0): 1, ("vm_1", "s_0", 0): 1}
     ).with_service_instance_count({("s_0", 0): 2}).test()
 
@@ -325,8 +324,8 @@ def test_should_be_infeasible_if_vms_cant_be_split():
     But this would require to "split" one VM between the two service instances,
     which is not possible.
     """
-    mip = MixedIntegerProgram(
-        OptimizerToolboxModel(
+    optimizer = (
+        DefaultOptimizer(
             BaseData(
                 virtual_machines=["vm_0"],
                 services=["s_0"],
@@ -348,15 +347,15 @@ def test_should_be_infeasible_if_vms_cant_be_split():
         .validate()
     )
 
-    Expect(mip).to_be_infeasible().test()
+    Expect(optimizer).to_be_infeasible().test()
 
 
 def test_should_be_infeasible_if_not_enough_service_instances_can_be_bought():
     """There is demand for two VMs, which each occupy the service fully.
     But only one instance of the service may be bought.
     """
-    mip = MixedIntegerProgram(
-        OptimizerToolboxModel(
+    optimizer = (
+        DefaultOptimizer(
             BaseData(
                 virtual_machines=["vm_0"],
                 services=["s_0"],
@@ -378,4 +377,4 @@ def test_should_be_infeasible_if_not_enough_service_instances_can_be_bought():
         .validate()
     )
 
-    Expect(mip).to_be_infeasible().test()
+    Expect(optimizer).to_be_infeasible().test()
