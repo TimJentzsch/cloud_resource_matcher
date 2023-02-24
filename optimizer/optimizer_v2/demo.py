@@ -38,3 +38,4 @@ class SecondExt(Extension[SecondData]):
 # TODO: Remove this
 def main():
     step = Step().register_extension(FirstExt).register_extension(SecondExt)
+    step.execute()
