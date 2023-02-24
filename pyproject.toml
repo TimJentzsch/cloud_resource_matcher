@@ -6,6 +6,7 @@ authors = ["Tim Jentzsch <tim.jentzsch@rwth-aachen.de>"]
 
 [tool.poetry.scripts]
 start = "optimizer.main:main"
+demo = "optimizer.optimizer_v2.demo:main"
 
 [tool.poetry.dependencies]
 python = "^3.11"
