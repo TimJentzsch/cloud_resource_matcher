@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import inspect
 from dataclasses import dataclass
 from typing import Self, Type, Any
@@ -21,6 +23,11 @@ class ExtDependency:
     annotation: Any
 
 
+# Data which can be injected into an extension.
+# The keys should be class objects which define the type of the data.
+StepData = dict[Any, Any]
+
+
 class Step:
     extensions: list[Type[Extension]]
 
@@ -37,7 +44,22 @@ class Step:
         self.extensions.append(extension)
         return self
 
-    def execute(self):
+    def initialize(self, step_data: StepData) -> InitializedStep:
+        return InitializedStep(self, step_data)
+
+
+class InitializedStep:
+    step: Step
+    step_data: StepData
+
+    def __init__(self, step: Step, step_data: StepData):
+        self.step = step
+        self.step_data = step_data
+
+    def extensions(self) -> list[Type[Extension]]:
+        return self.step.extensions
+
+    def execute(self) -> StepData:
         """
         Execute the step by executing the action of all extensions within it.
 
@@ -46,12 +68,11 @@ class Step:
         :raises InjectionError: If the `__init__` or `action` methods are missing type annotations.
         This is necessary to inject the dependencies automatically.
         :raises ScheduleError: If the extensions can't be scheduled, e.g. due to circular dependencies.
-        :return:
+        :return: The step data, including the one generated during this step.
         """
         dependencies = self._extension_dependencies()
 
-        ext_to_execute = [ext for ext in self.extensions]
-        data: dict[Any, Any] = dict()
+        ext_to_execute = [ext for ext in self.extensions()]
 
         while len(ext_to_execute) > 0:
             has_executed = False
@@ -60,13 +81,14 @@ class Step:
                 missing_dependencies = [
                     dep
                     for dep in dependencies[ext]
-                    if dep.annotation not in data.keys()
+                    if dep.annotation not in self.step_data.keys()
                 ]
 
                 if len(missing_dependencies) == 0:
                     # Create the data parameters to instantiate the extension
                     dep_data = {
-                        dep.param: data[dep.annotation] for dep in dependencies[ext]
+                        dep.param: self.step_data[dep.annotation]
+                        for dep in dependencies[ext]
                     }
                     # Determine what type of data is created by the extension
                     data_annotation = inspect.signature(ext.action).return_annotation
@@ -80,7 +102,7 @@ class Step:
                     # Instantiate the extension, using the data it requires
                     ext_obj = ext(**dep_data)
                     # Execute the action of the extension and save the returned data
-                    data[data_annotation] = ext_obj.action()
+                    self.step_data[data_annotation] = ext_obj.action()
 
                     has_executed = True
                     ext_to_execute = [ext2 for ext2 in ext_to_execute if ext != ext2]
@@ -92,6 +114,8 @@ class Step:
                     f"{ext_to_execute} have unfulfilled dependencies"
                 )
 
+        return self.step_data
+
     def _extension_dependencies(self) -> dict[Type[Extension], list[ExtDependency]]:
         """
         Determine which extension depends on which type of data.
@@ -101,7 +125,7 @@ class Step:
         dependencies: dict[Type[Extension], list[ExtDependency]] = dict()
 
         # Collect the dependencies for each extension
-        for ext in self.extensions:
+        for ext in self.extensions():
             init_params = inspect.signature(ext.__init__).parameters
 
             ext_dependencies: list[ExtDependency] = []
