@@ -5,6 +5,16 @@ from typing import Self, Type, Any
 from .extension import Extension
 
 
+class InjectionError(RuntimeError):
+    def __init__(self, msg: str):
+        super(msg)
+
+
+class ScheduleError(RuntimeError):
+    def __init__(self, msg: str):
+        super(msg)
+
+
 @dataclass
 class ExtDependency:
     param: str
@@ -18,40 +28,27 @@ class Step:
         self.extensions = []
 
     def register_extension(self, extension: Type[Extension]) -> Self:
-        self.extensions.append(extension)
+        """
+        Register an extension to use in this step.
 
-        print(inspect.signature(extension.action))
-        print("Signature", inspect.signature(extension))
+        :param extension: The extension to register.
+        :return: The same step, to use for function chaining.
+        """
+        self.extensions.append(extension)
         return self
 
     def execute(self):
+        """
+        Execute the step by executing the action of all extensions within it.
 
-        dependencies: dict[Type[Extension], list[ExtDependency]] = dict()
+        The dependencies of each extension are injected automatically.
 
-        # Collect the dependencies for each extension
-        for ext in self.extensions:
-            init_params = inspect.signature(ext.__init__).parameters
-
-            ext_dependencies: list[ExtDependency] = []
-
-            for param, signature in init_params.items():
-                if param == "self":
-                    continue
-
-                annotation = signature.annotation
-
-                if annotation is None:
-                    raise RuntimeError(
-                        f"The __init__ method of extension {ext} "
-                        "needs type annotation on its parameters. "
-                        "This is needed to properly inject the dependencies."
-                    )
-
-                ext_dependencies.append(
-                    ExtDependency(param=param, annotation=annotation)
-                )
-
-            dependencies[ext] = ext_dependencies
+        :raises InjectionError: If the `__init__` or `action` methods are missing type annotations.
+        This is necessary to inject the dependencies automatically.
+        :raises ScheduleError: If the extensions can't be scheduled, e.g. due to circular dependencies.
+        :return:
+        """
+        dependencies = self._extension_dependencies()
 
         ext_to_execute = [ext for ext in self.extensions]
         data: dict[Any, Any] = dict()
@@ -67,18 +64,22 @@ class Step:
                 ]
 
                 if len(missing_dependencies) == 0:
+                    # Create the data parameters to instantiate the extension
                     dep_data = {
                         dep.param: data[dep.annotation] for dep in dependencies[ext]
                     }
+                    # Determine what type of data is created by the extension
                     data_annotation = inspect.signature(ext.action).return_annotation
 
                     if data_annotation is None:
-                        raise RuntimeError(
+                        raise InjectionError(
                             f"Extension {ext} is missing the return type "
                             "annotation for the .action method"
                         )
 
+                    # Instantiate the extension, using the data it requires
                     ext_obj = ext(**dep_data)
+                    # Execute the action of the extension and save the returned data
                     data[data_annotation] = ext_obj.action()
 
                     has_executed = True
@@ -86,7 +87,43 @@ class Step:
 
             # Protection against infinite loops in case of circular dependencies
             if not has_executed:
-                raise RuntimeError(
+                raise ScheduleError(
                     "The extensions could not be scheduled, "
                     f"{ext_to_execute} have unfulfilled dependencies"
                 )
+
+    def _extension_dependencies(self) -> dict[Type[Extension], list[ExtDependency]]:
+        """
+        Determine which extension depends on which type of data.
+
+        :return: For each extension, a list of its dependencies.
+        """
+        dependencies: dict[Type[Extension], list[ExtDependency]] = dict()
+
+        # Collect the dependencies for each extension
+        for ext in self.extensions:
+            init_params = inspect.signature(ext.__init__).parameters
+
+            ext_dependencies: list[ExtDependency] = []
+
+            for param, signature in init_params.items():
+                # We don't need to inject the `self` parameter, skip it
+                if param == "self":
+                    continue
+
+                annotation = signature.annotation
+
+                if annotation is None:
+                    raise InjectionError(
+                        f"The __init__ method of extension {ext} "
+                        "needs type annotation on its parameters. "
+                        "This is needed to properly inject the dependencies."
+                    )
+
+                ext_dependencies.append(
+                    ExtDependency(param=param, annotation=annotation)
+                )
+
+            dependencies[ext] = ext_dependencies
+
+        return dependencies
