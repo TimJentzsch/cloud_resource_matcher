@@ -1,4 +1,4 @@
-from optimizer.extensions.data import MultiCloudData, BaseData
+from optimizer.data import MultiCloudData, BaseData
 from optimizer.optimizer_v2.extension import Extension
 
 

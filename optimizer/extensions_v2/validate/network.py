@@ -1,4 +1,4 @@
-from optimizer.extensions.data import NetworkData, BaseData
+from optimizer.data import NetworkData, BaseData
 from optimizer.optimizer_v2.extension import Extension
 
 

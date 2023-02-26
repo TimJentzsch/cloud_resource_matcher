@@ -1,4 +1,4 @@
-from optimizer.extensions.data import PerformanceData, BaseData
+from optimizer.data import PerformanceData, BaseData
 from optimizer.optimizer_v2.extension import Extension
 
 
