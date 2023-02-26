@@ -3,13 +3,11 @@ from dataclasses import dataclass
 from pulp import LpVariable, LpProblem, LpAffineExpression, LpBinary, lpSum
 
 from optimizer.data import BaseData
-from optimizer.data.types import VirtualMachine, Service, TimeUnit
+from optimizer.data.types import VirtualMachine, Service
 from optimizer.optimizer_v2.extension import Extension
 
 
 VarVmServiceMatching = dict[tuple[VirtualMachine, Service], LpVariable]
-VmServiceMatching = dict[tuple[VirtualMachine, Service, TimeUnit], int]
-ServiceInstanceCount = dict[tuple[Service, TimeUnit], int]
 ServiceVirtualMachines = dict[Service, set[VirtualMachine]]
 
 
