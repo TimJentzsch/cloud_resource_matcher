@@ -18,24 +18,30 @@ from optimizer.extensions_v2.validate import (
 from optimizer.optimizer_v2.step import Step
 
 
-def step_validate() -> Step:
-    return (
-        Step()
-        .register_extension(ValidateBaseExt)
-        .register_extension(ValidatePerformanceExt)
-        .register_extension(ValidateNetworkExt)
-        .register_extension(ValidateMultiCloudExt)
-    )
+def step_validate(performance: bool, network: bool, multi_cloud: bool) -> Step:
+    step = Step().register_extension(ValidateBaseExt)
+
+    if performance:
+        step.register_extension(ValidatePerformanceExt)
+    if network:
+        step.register_extension(ValidateNetworkExt)
+    if multi_cloud:
+        step.register_extension(ValidateMultiCloudExt)
+
+    return step
 
 
-def step_build_mip() -> Step:
-    return (
-        Step()
-        .register_extension(BuildMipBaseExt)
-        .register_extension(BuildMipPerformanceExt)
-        .register_extension(BuildMipNetworkExt)
-        .register_extension(BuildMipMultiCloudExt)
-    )
+def step_build_mip(performance: bool, network: bool, multi_cloud: bool) -> Step:
+    step = Step().register_extension(BuildMipBaseExt)
+
+    if performance:
+        step.register_extension(BuildMipPerformanceExt)
+    if network:
+        step.register_extension(BuildMipNetworkExt)
+    if multi_cloud:
+        step.register_extension(BuildMipMultiCloudExt)
+
+    return step
 
 
 def step_solve() -> Step:
