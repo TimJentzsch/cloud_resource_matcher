@@ -1,10 +1,15 @@
 from __future__ import annotations
 
 import inspect
+import logging
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Self, Type, Any
 
 from .extension import Extension
+
+
+logger = logging.getLogger(__name__)
 
 
 class InjectionError(RuntimeError):
@@ -33,9 +38,11 @@ StepData = dict[Any, Any]
 
 
 class Step:
+    name: str
     extensions: list[Type[Extension]]
 
-    def __init__(self):
+    def __init__(self, name: str):
+        self.name = name
         self.extensions = []
 
     def register_extension(self, extension: Type[Extension]) -> Self:
@@ -60,6 +67,9 @@ class InitializedStep:
         self.step = step
         self.step_data = step_data
 
+    def name(self) -> str:
+        return self.step.name
+
     def extensions(self) -> list[Type[Extension]]:
         return self.step.extensions
 
@@ -75,6 +85,9 @@ class InitializedStep:
         e.g. due to circular dependencies.
         :return: The step data, including the one generated during this step.
         """
+        start_time = datetime.now()
+        logger.info(f"Executing step {self.name()}...")
+
         dependencies = self._extension_dependencies()
 
         ext_to_execute = [ext for ext in self.extensions()]
@@ -120,6 +133,10 @@ class InitializedStep:
                     f"{ext_strs} have unfulfilled dependencies:\n"
                     f"{missing_deps_strs}"
                 )
+
+        duration = datetime.now() - start_time
+
+        logger.info(f"Finished step {self.name()} in {duration.total_seconds():.2f}s.")
 
         return self.step_data
 

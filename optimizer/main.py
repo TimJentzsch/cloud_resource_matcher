@@ -101,7 +101,12 @@ def solve_demo_model(
 
 
 def main():
+    import logging
     import argparse
+
+    logging.basicConfig(
+        encoding="utf-8", level=logging.DEBUG, format="%(asctime)s [%(levelname)s] %(message)s"
+    )
 
     parser = argparse.ArgumentParser(
         description="Optimize the costs for cloud computing applications."

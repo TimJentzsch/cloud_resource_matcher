@@ -21,7 +21,7 @@ from optimizer.optimizer_v2.step import Step
 
 
 def step_validate(performance: bool, network: bool, multi_cloud: bool) -> Step:
-    step = Step().register_extension(ValidateBaseExt)
+    step = Step("validate").register_extension(ValidateBaseExt)
 
     if performance:
         step.register_extension(ValidatePerformanceExt)
@@ -35,7 +35,7 @@ def step_validate(performance: bool, network: bool, multi_cloud: bool) -> Step:
 
 def step_build_mip(performance: bool, network: bool, multi_cloud: bool) -> Step:
     step = (
-        Step()
+        Step("build_mip")
         .register_extension(CreateMipExt)
         .register_extension(CreateObjectiveExt)
         .register_extension(BuildMipBaseExt)
@@ -52,10 +52,12 @@ def step_build_mip(performance: bool, network: bool, multi_cloud: bool) -> Step:
 
 
 def step_solve() -> Step:
-    return Step().register_extension(SolveExt)
+    return Step("solve").register_extension(SolveExt)
 
 
 def step_extract_solution() -> Step:
     return (
-        Step().register_extension(ExtractSolutionCostExt).register_extension(ExtractSolutionBaseExt)
+        Step("extract_solution")
+        .register_extension(ExtractSolutionCostExt)
+        .register_extension(ExtractSolutionBaseExt)
     )
