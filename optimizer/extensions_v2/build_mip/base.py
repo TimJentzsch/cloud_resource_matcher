@@ -24,9 +24,7 @@ class BuildMipBaseExt(Extension[BaseMipData]):
     problem: LpProblem
     objective: LpAffineExpression
 
-    def __init__(
-        self, base_data: BaseData, problem: LpProblem, objective: LpAffineExpression
-    ):
+    def __init__(self, base_data: BaseData, problem: LpProblem, objective: LpAffineExpression):
         self.base_data = base_data
         self.problem = problem
         self.objective = objective
@@ -55,18 +53,14 @@ class BuildMipBaseExt(Extension[BaseMipData]):
         # Satisfy VM demands
         for vm in self.base_data.virtual_machines:
             self.problem += (
-                lpSum(
-                    var_vm_matching[vm, s]
-                    for s in self.base_data.virtual_machine_services[vm]
-                )
+                lpSum(var_vm_matching[vm, s] for s in self.base_data.virtual_machine_services[vm])
                 == 1,
                 f"vm_demand({vm})",
             )
 
         # Has service s been purchased at all?
         var_service_used: dict[Service, LpVariable] = {
-            s: LpVariable(f"service_used({s})", cat=LpBinary)
-            for s in self.base_data.services
+            s: LpVariable(f"service_used({s})", cat=LpBinary) for s in self.base_data.services
         }
 
         # Enforce limits for service instance count
@@ -74,8 +68,7 @@ class BuildMipBaseExt(Extension[BaseMipData]):
             for t in self.base_data.time:
                 self.problem += (
                     lpSum(
-                        var_vm_matching[vm, s]
-                        * self.base_data.virtual_machine_demand[vm, t]
+                        var_vm_matching[vm, s] * self.base_data.virtual_machine_demand[vm, t]
                         for vm in service_virtual_machines[s]
                     )
                     <= max_instances,
@@ -87,9 +80,7 @@ class BuildMipBaseExt(Extension[BaseMipData]):
             for t in self.base_data.time:
                 self.problem += (
                     var_service_used[s]
-                    <= lpSum(
-                        var_vm_matching[vm, s] for vm in service_virtual_machines[s]
-                    ),
+                    <= lpSum(var_vm_matching[vm, s] for vm in service_virtual_machines[s]),
                     f"connect_service_instances_and_service_used({s},{t})",
                 )
 

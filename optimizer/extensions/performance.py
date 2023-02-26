@@ -57,8 +57,7 @@ class PerformanceExtension(Extension):
                 if vm in data.virtual_machine_min_cpu_count.keys():
                     # vCPUs
                     problem += (
-                        base.var_vm_matching[vm, s]
-                        * data.virtual_machine_min_cpu_count[vm]
+                        base.var_vm_matching[vm, s] * data.virtual_machine_min_cpu_count[vm]
                         <= data.service_cpu_count[s],
                         f"cpu_performance_limit({vm},{s})",
                     )

@@ -44,7 +44,5 @@ def step_solve() -> Step:
 
 def step_extract_solution() -> Step:
     return (
-        Step()
-        .register_extension(ExtractSolutionCostExt)
-        .register_extension(ExtractSolutionBaseExt)
+        Step().register_extension(ExtractSolutionCostExt).register_extension(ExtractSolutionBaseExt)
     )

@@ -24,8 +24,7 @@ class ValidatedOptimizer:
         objective = LpAffineExpression()
 
         mip_info: dict[ExtensionId, DependencyInfo] = {
-            e_id: extension.extend_mip()
-            for e_id, extension in self.optimizer.extensions.items()
+            e_id: extension.extend_mip() for e_id, extension in self.optimizer.extensions.items()
         }
 
         dependencies: dict[ExtensionId, set[ExtensionId]] = {
@@ -40,9 +39,7 @@ class ValidatedOptimizer:
             # If an extension has no outstanding dependencies it can be built
             can_be_built = [e_id for e_id, deps in to_build.items() if len(deps) == 0]
 
-            assert (
-                len(can_be_built) > 0
-            ), "Extensions can't be scheduled, dependency cycle detected"
+            assert len(can_be_built) > 0, "Extensions can't be scheduled, dependency cycle detected"
 
             # Extend the MIP with extensions and add the result to the build data
             for e_id in can_be_built:
@@ -66,6 +63,4 @@ class ValidatedOptimizer:
         # Update the objective
         problem.setObjective(objective)
 
-        return BuiltOptimizer(
-            validated_optimizer=self, problem=problem, mip_data=mip_data
-        )
+        return BuiltOptimizer(validated_optimizer=self, problem=problem, mip_data=mip_data)

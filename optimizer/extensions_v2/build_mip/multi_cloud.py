@@ -68,18 +68,12 @@ class BuildMipMultiCloudExt(Extension[MultiCloudMipData]):
         # Enforce minimum and maximum number of used CSPs
         for k in self.multi_cloud_data.cloud_service_providers:
             self.problem.addConstraint(
-                lpSum(
-                    var_csp_used[k]
-                    for k in self.multi_cloud_data.cloud_service_providers
-                )
+                lpSum(var_csp_used[k] for k in self.multi_cloud_data.cloud_service_providers)
                 >= self.multi_cloud_data.min_cloud_service_provider_count,
                 f"min_cloud_service_provider_count({k})",
             )
             self.problem.addConstraint(
-                lpSum(
-                    var_csp_used[k]
-                    for k in self.multi_cloud_data.cloud_service_providers
-                )
+                lpSum(var_csp_used[k] for k in self.multi_cloud_data.cloud_service_providers)
                 <= self.multi_cloud_data.max_cloud_service_provider_count,
                 f"max_cloud_service_provider_count({k})",
             )

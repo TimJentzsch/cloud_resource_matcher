@@ -71,9 +71,7 @@ class NetworkExtension(Extension):
             for loc in data.locations:
                 for s in base.data.virtual_machine_services[v]:
                     if loc in data.service_location[s]:
-                        problem += (
-                            var_vm_locations[v, loc] >= base.var_vm_matching[v, s]
-                        )
+                        problem += var_vm_locations[v, loc] >= base.var_vm_matching[v, s]
 
         # Pay for VM -> location traffic
         objective += lpSum(
@@ -124,8 +122,7 @@ class NetworkExtension(Extension):
             for loc1 in data.locations:
                 for loc2 in data.locations:
                     problem += (
-                        var_vm_locations[vm2, loc2]
-                        >= var_vm_vm_locations[vm1, vm2, loc1, loc2]
+                        var_vm_locations[vm2, loc2] >= var_vm_vm_locations[vm1, vm2, loc1, loc2]
                     )
 
         # Respect maximum latencies for VM -> location traffic
@@ -174,8 +171,6 @@ class NetworkExtension(Extension):
 
     @staticmethod
     @dependencies()
-    def extract_solution(
-        mip_data: NetworkMipData, problem: LpProblem
-    ) -> NetworkSolutionData:
+    def extract_solution(mip_data: NetworkMipData, problem: LpProblem) -> NetworkSolutionData:
         # TODO: Extract location data
         return NetworkSolutionData(mip_data=mip_data)

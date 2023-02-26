@@ -86,9 +86,7 @@ class BuiltOptimizer:
         while len(to_extract.keys()) > 0:
             # If an extension has no outstanding dependencies,
             # its solution can be extracted
-            can_be_extracted = [
-                e_id for e_id, deps in to_extract.items() if len(deps) == 0
-            ]
+            can_be_extracted = [e_id for e_id, deps in to_extract.items() if len(deps) == 0]
 
             assert (
                 len(can_be_extracted) > 0
@@ -97,9 +95,7 @@ class BuiltOptimizer:
             # Extract the solutions of each extension
             for e_id in can_be_extracted:
                 info = solution_info[e_id]
-                dependency_data = {
-                    dep: self.optimizer().data[dep] for dep in info.dependencies
-                }
+                dependency_data = {dep: self.optimizer().data[dep] for dep in info.dependencies}
 
                 solution_data[e_id] = solution_info[e_id].action_fn(
                     problem=self.problem,
@@ -117,8 +113,6 @@ class BuiltOptimizer:
         return solution_data
 
     def get_lp_string(self, line_limit: int = 100) -> str:
-        with tempfile.NamedTemporaryFile(
-            mode="w+", encoding="utf-8", suffix=".lp"
-        ) as file:
+        with tempfile.NamedTemporaryFile(mode="w+", encoding="utf-8", suffix=".lp") as file:
             self.problem.writeLP(filename=file.name)
             return "".join(file.readlines()[:line_limit])

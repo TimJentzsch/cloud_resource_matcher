@@ -28,13 +28,10 @@ def solve_demo_model(
         virtual_machines=[f"vm_{v}" for v in range(vm_count)],
         services=[f"service_{s}" for s in range(service_count)],
         service_base_costs={
-            f"service_{s}": s % 100 + (s % 20) * (s % 5) + 10
-            for s in range(service_count)
+            f"service_{s}": s % 100 + (s % 20) * (s % 5) + 10 for s in range(service_count)
         },
         virtual_machine_services={
-            f"vm_{v}": [
-                f"service_{s}" for s in range(service_count) if ((v + s) % 4) == 0
-            ]
+            f"vm_{v}": [f"service_{s}" for s in range(service_count) if ((v + s) % 4) == 0]
             for v in range(vm_count)
         },
         time=list(range(time_count)),
@@ -48,9 +45,7 @@ def solve_demo_model(
 
     perf_data = PerformanceData(
         virtual_machine_min_ram={f"vm_{v}": v % 4 + 1 for v in range(vm_count)},
-        virtual_machine_min_cpu_count={
-            f"vm_{v}": (v + 2) % 3 + 1 for v in range(vm_count)
-        },
+        virtual_machine_min_cpu_count={f"vm_{v}": (v + 2) % 3 + 1 for v in range(vm_count)},
         service_ram={f"service_{s}": (s + 4) % 30 + 5 for s in range(service_count)},
         service_cpu_count={f"service_{s}": s % 23 + 1 for s in range(service_count)},
     )
@@ -58,9 +53,7 @@ def solve_demo_model(
     multi_data = MultiCloudData(
         cloud_service_providers=[f"csp_{k}" for k in range(csp_count)],
         cloud_service_provider_services={
-            f"csp_{k}": [
-                f"service_{s}" for s in range(service_count) if s % csp_count == k
-            ]
+            f"csp_{k}": [f"service_{s}" for s in range(service_count) if s % csp_count == k]
             for k in range(csp_count)
         },
         min_cloud_service_provider_count=2,
@@ -78,9 +71,7 @@ def solve_demo_model(
             for loc2 in range(location_count)
         },
         location_traffic_cost={
-            (f"loc_{loc1}", f"loc_{loc2}"): 0
-            if loc1 == loc2
-            else (loc1 + loc2 * 2) % 20 + 5
+            (f"loc_{loc1}", f"loc_{loc2}"): 0 if loc1 == loc2 else (loc1 + loc2 * 2) % 20 + 5
             for loc1 in range(location_count)
             for loc2 in range(location_count)
         },
@@ -148,8 +139,7 @@ def main():
         "--location-count",
         type=int,
         default=5,
-        help="The number of locations in the demo data."
-        "This is used for the networking data.",
+        help="The number of locations in the demo data." "This is used for the networking data.",
     )
     parser.add_argument(
         "--csp-count",

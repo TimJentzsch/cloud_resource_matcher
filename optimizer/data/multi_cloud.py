@@ -58,10 +58,7 @@ class MultiCloudData:
         assert (
             self.max_cloud_service_provider_count >= 0
         ), "max_cloud_service_provider_count is negative"
-        assert (
-            self.min_cloud_service_provider_count
-            <= self.max_cloud_service_provider_count
-        ), (
+        assert self.min_cloud_service_provider_count <= self.max_cloud_service_provider_count, (
             "min_cloud_service_provider_count must be smaller or equal"
             "than max_cloud_service_provider_count"
         )

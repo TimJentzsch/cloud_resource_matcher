@@ -39,9 +39,7 @@ class Expect:
     def _problem(self) -> LpProblem:
         return self._optimizer.problem()
 
-    def _with_variables(
-        self, variables: Iterable[str], *, exclusive: bool = False
-    ) -> Self:
+    def _with_variables(self, variables: Iterable[str], *, exclusive: bool = False) -> Self:
         """Enforce that the model contains the given variables.
 
         :param variables: The variables that must be in the model.
@@ -94,9 +92,7 @@ class _ExpectResult:
         # Then test stuff
         self._test_variables()
 
-    def with_variables(
-        self, variables: Iterable[str], *, exclusive: bool = False
-    ) -> Self:
+    def with_variables(self, variables: Iterable[str], *, exclusive: bool = False) -> Self:
         """Enforce that the model contains the given variables.
 
         :param variables: The variables that must be in the model.
@@ -125,9 +121,7 @@ class _ExpectResult:
 
     def _test_variables(self):
         variables = [var.name for var in self._problem().variables()]
-        missing_variables = [
-            var for var in self._expect._variables if var not in variables
-        ]
+        missing_variables = [var for var in self._expect._variables if var not in variables]
         for var in missing_variables:
             assert var not in variables
 
@@ -135,9 +129,7 @@ class _ExpectResult:
             pytest.fail(f"Missing variables: {missing_variables}")
 
         if self._expect._variables_exclusive:
-            extra_variables = [
-                var for var in variables if var not in self._expect._variables
-            ]
+            extra_variables = [var for var in variables if var not in self._expect._variables]
 
             if len(extra_variables) > 0:
                 pytest.fail(f"Extra (too many) variables: {extra_variables}")
@@ -186,9 +178,7 @@ class _ExpectFeasible(_ExpectResult):
 
         return self
 
-    def with_service_instance_count(
-        self, service_instance_count: ServiceInstanceCount
-    ) -> Self:
+    def with_service_instance_count(self, service_instance_count: ServiceInstanceCount) -> Self:
         """Enforce that the right amount of instances are bought for each service."""
         self._service_instance_count = service_instance_count
 
@@ -261,15 +251,11 @@ class _ExpectFeasible(_ExpectResult):
             actual = actual_values[var]
 
             if actual != expected:
-                wrong_values.append(
-                    {"var": var, "expected": expected, "actual": actual}
-                )
+                wrong_values.append({"var": var, "expected": expected, "actual": actual})
 
         if len(wrong_values) > 0:
             pytest.fail(f"Wrong variable values: {wrong_values}")
 
     def _print_model(self, line_limit: int = 100):
         """Print out the LP model to debug infeasible problems."""
-        print(
-            self._expect._optimizer.built_optimizer.get_lp_string(line_limit=line_limit)
-        )
+        print(self._expect._optimizer.built_optimizer.get_lp_string(line_limit=line_limit))

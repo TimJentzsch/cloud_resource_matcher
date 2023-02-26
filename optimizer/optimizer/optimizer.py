@@ -42,13 +42,10 @@ class Optimizer:
 
         while len(to_validate.keys()) > 0:
             # If an extension has no outstanding dependencies it can be validated
-            can_be_validated = [
-                e_id for e_id, deps in to_validate.items() if len(deps) == 0
-            ]
+            can_be_validated = [e_id for e_id, deps in to_validate.items() if len(deps) == 0]
 
             assert len(can_be_validated) > 0, (
-                "Extensions can't be scheduled,"
-                f"dependency cycle detected\n{dependencies}"
+                "Extensions can't be scheduled," f"dependency cycle detected\n{dependencies}"
             )
 
             # Validate the extensions and add them to the validated data

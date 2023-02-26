@@ -25,18 +25,14 @@ def test_computation_of_vm_locations():
         NetworkData(
             locations=locations,
             location_latency={
-                (loc1, loc2): 0 if loc1 == loc2 else 5
-                for loc1 in locations
-                for loc2 in locations
+                (loc1, loc2): 0 if loc1 == loc2 else 5 for loc1 in locations for loc2 in locations
             },
             service_location={"s_0": "loc_0", "s_1": "loc_1"},
             virtual_machine_location_max_latency={},
             virtual_machine_virtual_machine_max_latency={},
             virtual_machine_virtual_machine_traffic={},
             virtual_machine_location_traffic={},
-            location_traffic_cost={
-                (loc1, loc2): 0 for loc1 in locations for loc2 in locations
-            },
+            location_traffic_cost={(loc1, loc2): 0 for loc1 in locations for loc2 in locations},
         )
     )
 
@@ -105,9 +101,7 @@ def test_should_be_infeasible_if_max_latency_is_violated():
         NetworkData(
             locations=locations,
             location_latency={
-                (loc1, loc2): 0 if loc1 == loc2 else 10
-                for loc1 in locations
-                for loc2 in locations
+                (loc1, loc2): 0 if loc1 == loc2 else 10 for loc1 in locations for loc2 in locations
             },
             service_location={"s_0": "loc_0"},
             virtual_machine_location_max_latency={("vm_0", "loc_1"): 5},
@@ -115,9 +109,7 @@ def test_should_be_infeasible_if_max_latency_is_violated():
             virtual_machine_virtual_machine_traffic={},
             virtual_machine_location_traffic={("vm_0", "loc_1"): 1},
             location_traffic_cost={
-                (loc1, loc2): 0 if loc1 == loc2 else 10
-                for loc1 in locations
-                for loc2 in locations
+                (loc1, loc2): 0 if loc1 == loc2 else 10 for loc1 in locations for loc2 in locations
             },
         )
     )
@@ -143,9 +135,7 @@ def test_should_choose_matching_that_respects_max_latency():
         NetworkData(
             locations=locations,
             location_latency={
-                (loc1, loc2): 0 if loc1 == loc2 else 10
-                for loc1 in locations
-                for loc2 in locations
+                (loc1, loc2): 0 if loc1 == loc2 else 10 for loc1 in locations for loc2 in locations
             },
             service_location={"s_0": "loc_0", "s_1": "loc_1"},
             virtual_machine_location_max_latency={("vm_0", "loc_0"): 5},
@@ -153,9 +143,7 @@ def test_should_choose_matching_that_respects_max_latency():
             virtual_machine_virtual_machine_traffic={},
             virtual_machine_location_traffic={("vm_0", "loc_0"): 1},
             location_traffic_cost={
-                (loc1, loc2): 0 if loc1 == loc2 else 10
-                for loc1 in locations
-                for loc2 in locations
+                (loc1, loc2): 0 if loc1 == loc2 else 10 for loc1 in locations for loc2 in locations
             },
         )
     )
@@ -188,9 +176,7 @@ def test_should_calculate_connections_between_vms():
         NetworkData(
             locations=locations,
             location_latency={
-                (loc1, loc2): 0 if loc1 == loc2 else 5
-                for loc1 in locations
-                for loc2 in locations
+                (loc1, loc2): 0 if loc1 == loc2 else 5 for loc1 in locations for loc2 in locations
             },
             service_location={"s_0": "loc_0", "s_1": "loc_1"},
             virtual_machine_location_max_latency={},
@@ -201,9 +187,7 @@ def test_should_calculate_connections_between_vms():
             },
             virtual_machine_location_traffic={},
             location_traffic_cost={
-                (loc1, loc2): 0 if loc1 == loc2 else 10
-                for loc1 in locations
-                for loc2 in locations
+                (loc1, loc2): 0 if loc1 == loc2 else 10 for loc1 in locations for loc2 in locations
             },
         )
     )
@@ -242,9 +226,7 @@ def test_should_consider_latency_for_vm_vm_connections():
         NetworkData(
             locations=locations,
             location_latency={
-                (loc1, loc2): 0 if loc1 == loc2 else 10
-                for loc1 in locations
-                for loc2 in locations
+                (loc1, loc2): 0 if loc1 == loc2 else 10 for loc1 in locations for loc2 in locations
             },
             service_location={"s_0": "loc_0", "s_1": "loc_1"},
             virtual_machine_location_max_latency={},
@@ -254,9 +236,7 @@ def test_should_consider_latency_for_vm_vm_connections():
             },
             virtual_machine_location_traffic={},
             location_traffic_cost={
-                (loc1, loc2): 0 if loc1 == loc2 else 10
-                for loc1 in locations
-                for loc2 in locations
+                (loc1, loc2): 0 if loc1 == loc2 else 10 for loc1 in locations for loc2 in locations
             },
         )
     )

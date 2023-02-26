@@ -35,9 +35,7 @@ def get_pulp_solver(
     """Get the corresponding pulp solver for the solver type."""
     time_limit_sec = None if time_limit is None else time_limit.total_seconds()
 
-    base_params = dict(
-        timeLimit=time_limit_sec, gapAbs=cost_gap_abs, gapRel=cost_gap_rel
-    )
+    base_params = dict(timeLimit=time_limit_sec, gapAbs=cost_gap_abs, gapRel=cost_gap_rel)
 
     if solver == Solver.CBC:
         return pulp.PULP_CBC_CMD(**base_params)

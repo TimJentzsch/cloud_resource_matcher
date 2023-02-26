@@ -40,8 +40,7 @@ class MultiCloudExtension(Extension):
     ) -> MultiCloudMipData:
         # Is cloud service provider k used at all?
         var_csp_used: dict[CloudServiceProvider, LpVariable] = {
-            k: LpVariable(f"csp_used({k})", cat=LpBinary)
-            for k in data.cloud_service_providers
+            k: LpVariable(f"csp_used({k})", cat=LpBinary) for k in data.cloud_service_providers
         }
 
         # Calculate csp_used values
@@ -59,9 +58,7 @@ class MultiCloudExtension(Extension):
             )
             problem += (
                 (
-                    var_csp_used[k]
-                    * len(base.data.virtual_machines)
-                    * len(base.data.time)
+                    var_csp_used[k] * len(base.data.virtual_machines) * len(base.data.time)
                     - used_service_count
                 )
                 >= 0,
@@ -85,8 +82,6 @@ class MultiCloudExtension(Extension):
 
     @staticmethod
     @dependencies()
-    def extract_solution(
-        mip_data: MultiCloudMipData, problem: LpProblem
-    ) -> MultiCloudSolution:
+    def extract_solution(mip_data: MultiCloudMipData, problem: LpProblem) -> MultiCloudSolution:
         # TODO: Extract CSP solution
         return MultiCloudSolution(mip_data=mip_data)

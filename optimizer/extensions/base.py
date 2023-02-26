@@ -65,11 +65,7 @@ class BaseExtension(Extension):
     ) -> BaseMipData:
         # Pre-compute which services can host which VMs
         service_virtual_machines: ServiceVirtualMachines = {
-            s: set(
-                vm
-                for vm in data.virtual_machines
-                if s in data.virtual_machine_services[vm]
-            )
+            s: set(vm for vm in data.virtual_machines if s in data.virtual_machine_services[vm])
             for s in data.services
         }
 
@@ -86,8 +82,7 @@ class BaseExtension(Extension):
         # Satisfy VM demands
         for vm in data.virtual_machines:
             problem += (
-                lpSum(var_vm_matching[vm, s] for s in data.virtual_machine_services[vm])
-                == 1,
+                lpSum(var_vm_matching[vm, s] for s in data.virtual_machine_services[vm]) == 1,
                 f"vm_demand({vm})",
             )
 
@@ -113,17 +108,13 @@ class BaseExtension(Extension):
             for t in data.time:
                 problem += (
                     var_service_used[s]
-                    <= lpSum(
-                        var_vm_matching[vm, s] for vm in service_virtual_machines[s]
-                    ),
+                    <= lpSum(var_vm_matching[vm, s] for vm in service_virtual_machines[s]),
                     f"connect_service_instances_and_service_used({s},{t})",
                 )
 
         # Base costs for used services
         objective += lpSum(
-            var_vm_matching[vm, s]
-            * data.virtual_machine_demand[vm, t]
-            * data.service_base_costs[s]
+            var_vm_matching[vm, s] * data.virtual_machine_demand[vm, t] * data.service_base_costs[s]
             for vm in data.virtual_machines
             for s in data.virtual_machine_services[vm]
             for t in data.time

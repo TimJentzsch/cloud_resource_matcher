@@ -1,4 +1,4 @@
-from pulp import LpProblem, LpAffineExpression
+from pulp import LpProblem
 
 from optimizer.data import BaseData, PerformanceData
 from .base import BaseMipData

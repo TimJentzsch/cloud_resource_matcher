@@ -67,7 +67,8 @@ class InitializedStep:
 
         :raises InjectionError: If the `__init__` or `action` methods are missing type annotations.
         This is necessary to inject the dependencies automatically.
-        :raises ScheduleError: If the extensions can't be scheduled, e.g. due to circular dependencies.
+        :raises ScheduleError: If the extensions can't be scheduled,
+        e.g. due to circular dependencies.
         :return: The step data, including the one generated during this step.
         """
         dependencies = self._extension_dependencies()
@@ -79,16 +80,13 @@ class InitializedStep:
 
             for ext in ext_to_execute:
                 missing_dependencies = [
-                    dep
-                    for dep in dependencies[ext]
-                    if dep.annotation not in self.step_data.keys()
+                    dep for dep in dependencies[ext] if dep.annotation not in self.step_data.keys()
                 ]
 
                 if len(missing_dependencies) == 0:
                     # Create the data parameters to instantiate the extension
                     dep_data = {
-                        dep.param: self.step_data[dep.annotation]
-                        for dep in dependencies[ext]
+                        dep.param: self.step_data[dep.annotation] for dep in dependencies[ext]
                     }
                     # Determine what type of data is created by the extension
                     data_annotation = inspect.signature(ext.action).return_annotation
@@ -144,9 +142,7 @@ class InitializedStep:
                         "This is needed to properly inject the dependencies."
                     )
 
-                ext_dependencies.append(
-                    ExtDependency(param=param, annotation=annotation)
-                )
+                ext_dependencies.append(ExtDependency(param=param, annotation=annotation))
 
             dependencies[ext] = ext_dependencies
 

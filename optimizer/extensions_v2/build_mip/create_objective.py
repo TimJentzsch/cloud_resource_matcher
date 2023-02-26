@@ -1,4 +1,4 @@
-from pulp import LpProblem, LpMinimize, LpAffineExpression
+from pulp import LpAffineExpression
 
 from optimizer.optimizer_v2.extension import Extension
 

@@ -53,8 +53,7 @@ class BuildMipNetworkExt(Extension[NetworkMipData]):
         # All VMs are placed at exactly one location
         for v in self.base_data.virtual_machines:
             self.problem += (
-                lpSum(var_vm_locations[v, loc] for loc in self.network_data.locations)
-                == 1,
+                lpSum(var_vm_locations[v, loc] for loc in self.network_data.locations) == 1,
                 f"one_vm_location({v})",
             )
 
@@ -64,8 +63,7 @@ class BuildMipNetworkExt(Extension[NetworkMipData]):
                 for s in self.base_data.virtual_machine_services[v]:
                     if loc in self.network_data.service_location[s]:
                         self.problem += (
-                            var_vm_locations[v, loc]
-                            >= self.base_mip_data.var_vm_matching[v, s]
+                            var_vm_locations[v, loc] >= self.base_mip_data.var_vm_matching[v, s]
                         )
 
         # Pay for VM -> location traffic
@@ -118,17 +116,14 @@ class BuildMipNetworkExt(Extension[NetworkMipData]):
             for loc1 in self.network_data.locations:
                 for loc2 in self.network_data.locations:
                     self.problem += (
-                        var_vm_locations[vm2, loc2]
-                        >= var_vm_vm_locations[vm1, vm2, loc1, loc2]
+                        var_vm_locations[vm2, loc2] >= var_vm_vm_locations[vm1, vm2, loc1, loc2]
                     )
 
         # Respect maximum latencies for VM -> location traffic
         for (
             vm1,
             loc2,
-        ), max_latency in (
-            self.network_data.virtual_machine_location_max_latency.items()
-        ):
+        ), max_latency in self.network_data.virtual_machine_location_max_latency.items():
             for loc1 in self.network_data.locations:
                 if self.network_data.location_latency[loc1, loc2] > max_latency:
                     if (
@@ -141,9 +136,7 @@ class BuildMipNetworkExt(Extension[NetworkMipData]):
         for (
             vm1,
             vm2,
-        ), max_latency in (
-            self.network_data.virtual_machine_virtual_machine_max_latency.items()
-        ):
+        ), max_latency in self.network_data.virtual_machine_virtual_machine_max_latency.items():
             for loc1 in self.network_data.locations:
                 for loc2 in self.network_data.locations:
                     if self.network_data.location_latency[loc1, loc2] > max_latency:

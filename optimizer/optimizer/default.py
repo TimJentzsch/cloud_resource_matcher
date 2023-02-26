@@ -38,9 +38,7 @@ class DefaultOptimizer:
     optimizer: Optimizer
 
     def __init__(self, base_data: BaseData):
-        self.optimizer = (
-            Optimizer().register_extension(BaseExtension()).add_data("base", base_data)
-        )
+        self.optimizer = Optimizer().register_extension(BaseExtension()).add_data("base", base_data)
 
     def with_performance_data(self, performance_data: PerformanceData) -> Self:
         self.optimizer.register_extension(PerformanceExtension()).add_data(
@@ -49,9 +47,7 @@ class DefaultOptimizer:
         return self
 
     def with_network_data(self, network_data: NetworkData) -> Self:
-        self.optimizer.register_extension(NetworkExtension()).add_data(
-            "network", network_data
-        )
+        self.optimizer.register_extension(NetworkExtension()).add_data("network", network_data)
         return self
 
     def with_multi_cloud_data(self, multi_cloud_data: MultiCloudData) -> Self:
@@ -90,9 +86,7 @@ class _BuiltDefaultOptimizer:
         cost_gap_abs: Cost | None = None,
         cost_gap_rel: float | None = None,
     ) -> BaseSolution:
-        solution_data = self.built_optimizer.solve(
-            solver, time_limit, cost_gap_abs, cost_gap_rel
-        )
+        solution_data = self.built_optimizer.solve(solver, time_limit, cost_gap_abs, cost_gap_rel)
 
         # TODO: Return the other solution data as well
         return solution_data["base"]
