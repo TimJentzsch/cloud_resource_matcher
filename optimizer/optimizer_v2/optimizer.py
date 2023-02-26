@@ -24,7 +24,9 @@ class InitializedOptimizer:
         self.optimizer = optimizer
         self.step_data = step_data
 
-    def execute(self):
+    def execute(self) -> StepData:
         for step in self.optimizer.steps:
             # Execute each step sequentially and update the step data
             self.step_data = step.initialize(self.step_data).execute()
+
+        return self.step_data

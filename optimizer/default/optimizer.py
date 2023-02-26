@@ -1,14 +1,23 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import timedelta
 from typing import Optional, Self
 
 from optimizer.data import BaseData, PerformanceData, NetworkData, MultiCloudData
 from optimizer.data.types import Cost
 from optimizer.default.steps import step_validate, step_build_mip, step_solve, step_extract_solution
+from optimizer.extensions.base import BaseSolution
+from optimizer.extensions_v2.extract_solution.cost import SolutionCost
 from optimizer.extensions_v2.solve.solve import SolveSettings
 from optimizer.optimizer_v2.optimizer import Optimizer
 from optimizer.solver import Solver
+
+
+@dataclass
+class SolveSolution:
+    cost: Cost
+    base: BaseSolution
 
 
 class DefaultOptimizer:
@@ -92,8 +101,8 @@ class _InitializedDefaultOptimizer:
         time_limit: timedelta | None = None,
         cost_gap_abs: Cost | None = None,
         cost_gap_rel: float | None = None,
-    ) -> None:
-        self.optimizer.initialize(
+    ) -> SolveSolution:
+        step_data = self.optimizer.initialize(
             {
                 BaseData: self.base_data,
                 PerformanceData: self.performance_data,
@@ -103,4 +112,7 @@ class _InitializedDefaultOptimizer:
             }
         ).execute()
 
-        # FIXME: Return solution
+        return SolveSolution(
+            cost=step_data[SolutionCost].cost,
+            base=step_data[BaseSolution],
+        )
