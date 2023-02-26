@@ -8,13 +8,11 @@ from .extension import Extension
 
 
 class InjectionError(RuntimeError):
-    def __init__(self, msg: str):
-        super(msg)
+    pass
 
 
 class ScheduleError(RuntimeError):
-    def __init__(self, msg: str):
-        super(msg)
+    pass
 
 
 @dataclass

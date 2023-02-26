@@ -47,7 +47,7 @@ class BuildMipMultiCloudExt(Extension[MultiCloudMipData]):
                 self.base_mip_data.var_vm_matching[v, s]
                 for v in self.base_data.virtual_machines
                 for s in self.multi_cloud_data.cloud_service_provider_services[k]
-                if s in self.multi_cloud_data.data.virtual_machine_services[v]
+                if s in self.base_data.virtual_machine_services[v]
             )
 
             self.problem += (
