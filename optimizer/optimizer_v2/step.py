@@ -114,9 +114,17 @@ class InitializedStep:
                     # Instantiate the extension, using the data it requires
                     ext_obj = ext(**dep_data)
 
-                    if data_annotation is not None:
-                        # Execute the action of the extension and save the returned data
-                        self.step_data[data_annotation] = ext_obj.action()
+                    # Execute the action of the extension and save the returned data
+                    data = ext_obj.action()
+
+                    if data is None and data_annotation is not None:
+                        raise InjectionError(
+                            f"Extension {ext} returned data, but has not type annotation for it. "
+                            "This prevents the data from being accessible to other extensions."
+                        )
+                    elif data is not None:
+                        # Make the data available to other extensions
+                        self.step_data[data_annotation] = data
 
                     has_executed = True
                     ext_to_execute = [ext2 for ext2 in ext_to_execute if ext != ext2]
