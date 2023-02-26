@@ -25,14 +25,11 @@ class SolveExt(Extension[None]):
     def __init__(
         self, problem: LpProblem, objective: LpAffineExpression, solve_settings: SolveSettings
     ):
-        print("Initializing Solve Step")
         self.problem = problem
         self.objective = objective
         self.solve_settings = solve_settings
 
     def action(self) -> None:
-        print("Solving!")
-        print(self.objective)
         # Add objective to MIP
         self.problem.setObjective(self.objective)
 

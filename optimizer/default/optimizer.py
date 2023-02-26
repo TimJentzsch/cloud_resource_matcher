@@ -7,7 +7,7 @@ from typing import Optional, Self
 from optimizer.data import BaseData, PerformanceData, NetworkData, MultiCloudData
 from optimizer.data.types import Cost
 from optimizer.default.steps import step_validate, step_build_mip, step_solve, step_extract_solution
-from optimizer.extensions.base import BaseSolution
+from optimizer.extensions_v2.extract_solution.base import BaseSolution
 from optimizer.extensions_v2.extract_solution.cost import SolutionCost
 from optimizer.extensions_v2.solve.solve import SolveSettings
 from optimizer.optimizer_v2.optimizer import Optimizer
