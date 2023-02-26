@@ -20,6 +20,12 @@ class ExtDependency:
     param: str
     annotation: Any
 
+    def __repr__(self):
+        return f"{self.param}: {self.annotation.__name__}"
+
+    def __str__(self):
+        return f"{self.param}: {self.annotation.__name__}"
+
 
 # Data which can be injected into an extension.
 # The keys should be class objects which define the type of the data.
@@ -76,12 +82,15 @@ class InitializedStep:
         while len(ext_to_execute) > 0:
             has_executed = False
 
-            for ext in ext_to_execute:
-                missing_dependencies = [
+            missing_dependencies = {
+                ext: [
                     dep for dep in dependencies[ext] if dep.annotation not in self.step_data.keys()
                 ]
+                for ext in ext_to_execute
+            }
 
-                if len(missing_dependencies) == 0:
+            for ext in ext_to_execute:
+                if len(missing_dependencies[ext]) == 0:
                     # Create the data parameters to instantiate the extension
                     dep_data = {
                         dep.param: self.step_data[dep.annotation] for dep in dependencies[ext]
@@ -89,25 +98,27 @@ class InitializedStep:
                     # Determine what type of data is created by the extension
                     data_annotation = inspect.signature(ext.action).return_annotation
 
-                    if data_annotation is None:
-                        raise InjectionError(
-                            f"Extension {ext} is missing the return type "
-                            "annotation for the .action method"
-                        )
-
                     # Instantiate the extension, using the data it requires
                     ext_obj = ext(**dep_data)
-                    # Execute the action of the extension and save the returned data
-                    self.step_data[data_annotation] = ext_obj.action()
+
+                    if data_annotation is not None:
+                        # Execute the action of the extension and save the returned data
+                        self.step_data[data_annotation] = ext_obj.action()
 
                     has_executed = True
                     ext_to_execute = [ext2 for ext2 in ext_to_execute if ext != ext2]
 
-            # Protection against infinite loops in case of circular dependencies
+            # Protection against infinite loops in case of circular or missing dependencies
             if not has_executed:
+                ext_strs = [ext.__name__ for ext in ext_to_execute]
+                missing_deps_strs = "\n".join(
+                    f"- {ext.__name__}: {missing_deps}"
+                    for ext, missing_deps in missing_dependencies.items()
+                )
                 raise ScheduleError(
                     "The extensions could not be scheduled, "
-                    f"{ext_to_execute} have unfulfilled dependencies"
+                    f"{ext_strs} have unfulfilled dependencies:\n"
+                    f"{missing_deps_strs}"
                 )
 
         return self.step_data

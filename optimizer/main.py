@@ -1,13 +1,9 @@
 from datetime import timedelta, datetime
 from typing import Optional
 
-from optimizer.extensions.base import BaseSolution
-from optimizer.optimizer.default import DefaultOptimizer
-from optimizer.extensions.data.types import Cost
-from optimizer.extensions.data.base_data import BaseData
-from optimizer.extensions.data.network_data import NetworkData
-from optimizer.extensions.data.performance_data import PerformanceData
-from optimizer.extensions.data.multi_cloud_data import MultiCloudData
+from optimizer.default.optimizer import DefaultOptimizer, SolveSolution
+from optimizer.data.types import Cost
+from optimizer.data import BaseData, PerformanceData, NetworkData, MultiCloudData
 from optimizer.solving import SolveError
 from optimizer.solver import Solver
 
@@ -22,7 +18,7 @@ def solve_demo_model(
     time_limit: Optional[timedelta] = None,
     cost_gap_abs: Optional[Cost] = None,
     cost_gap_rel: Optional[float] = None,
-) -> BaseSolution:
+) -> SolveSolution:
     """Create and solve a model based on demo data."""
     base_data = BaseData(
         virtual_machines=[f"vm_{v}" for v in range(vm_count)],
@@ -94,8 +90,7 @@ def solve_demo_model(
         .with_performance_data(perf_data)
         .with_network_data(network_data)
         .with_multi_cloud_data(multi_data)
-        .validate()
-        .build_mip()
+        .initialize()
         .solve(
             solver=solver,
             time_limit=time_limit,

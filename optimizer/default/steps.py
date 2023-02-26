@@ -3,6 +3,8 @@ from optimizer.extensions_v2.build_mip import (
     BuildMipPerformanceExt,
     BuildMipNetworkExt,
     BuildMipMultiCloudExt,
+    CreateMipExt,
+    CreateObjectiveExt,
 )
 from optimizer.extensions_v2.extract_solution import (
     ExtractSolutionCostExt,
@@ -32,7 +34,12 @@ def step_validate(performance: bool, network: bool, multi_cloud: bool) -> Step:
 
 
 def step_build_mip(performance: bool, network: bool, multi_cloud: bool) -> Step:
-    step = Step().register_extension(BuildMipBaseExt)
+    step = (
+        Step()
+        .register_extension(CreateMipExt)
+        .register_extension(CreateObjectiveExt)
+        .register_extension(BuildMipBaseExt)
+    )
 
     if performance:
         step.register_extension(BuildMipPerformanceExt)

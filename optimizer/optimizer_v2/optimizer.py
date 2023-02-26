@@ -8,6 +8,9 @@ from .step import Step, StepData
 class Optimizer:
     steps: list[Step]
 
+    def __init__(self):
+        self.steps = list()
+
     def add_step(self, step: Step) -> Self:
         self.steps.append(step)
         return self
