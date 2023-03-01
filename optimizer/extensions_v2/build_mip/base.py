@@ -77,12 +77,11 @@ class BuildMipBaseExt(Extension[BaseMipData]):
 
         # Calculate service_used
         for s in self.base_data.services:
-            for t in self.base_data.time:
-                self.problem += (
-                    var_service_used[s]
-                    <= lpSum(var_vm_matching[vm, s] for vm in service_virtual_machines[s]),
-                    f"connect_service_instances_and_service_used({s},{t})",
-                )
+            self.problem += (
+                var_service_used[s]
+                <= lpSum(var_vm_matching[vm, s] for vm in service_virtual_machines[s]),
+                f"connect_service_instances_and_service_used({s})",
+            )
 
         # Base costs for used services
         self.objective += lpSum(
