@@ -58,7 +58,6 @@ class BuildMipMultiCloudExt(Extension[MultiCloudMipData]):
                 (
                     var_csp_used[k]
                     * len(self.base_data.virtual_machines)
-                    * len(self.base_data.time)
                     - used_service_count
                 )
                 >= 0,
