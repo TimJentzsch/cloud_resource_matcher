@@ -61,9 +61,7 @@ class BuildMipNetworkExt(Extension[NetworkMipData]):
         for v in self.base_data.virtual_machines:
             for s in self.base_data.virtual_machine_services[v]:
                 loc = self.network_data.service_location[s]
-                self.problem += (
-                    var_vm_locations[v, loc] >= self.base_mip_data.var_vm_matching[v, s]
-                )
+                self.problem += var_vm_locations[v, loc] >= self.base_mip_data.var_vm_matching[v, s]
 
         # Pay for VM -> location traffic
         self.objective += lpSum(

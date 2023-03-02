@@ -51,16 +51,11 @@ class BuildMipMultiCloudExt(Extension[MultiCloudMipData]):
             )
 
             self.problem += (
-                var_csp_used[k] - used_service_count <= 0,
+                var_csp_used[k] <= used_service_count,
                 f"csp_used({k})_enforce_0",
             )
             self.problem += (
-                (
-                    var_csp_used[k]
-                    * len(self.base_data.virtual_machines)
-                    - used_service_count
-                )
-                >= 0,
+                (var_csp_used[k] * len(self.base_data.virtual_machines)) >= used_service_count,
                 f"csp_used({k})_enforce_1",
             )
 
