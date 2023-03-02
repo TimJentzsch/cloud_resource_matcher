@@ -59,12 +59,11 @@ class BuildMipNetworkExt(Extension[NetworkMipData]):
 
         # The VMs location is the location of the service where it's placed
         for v in self.base_data.virtual_machines:
-            for loc in self.network_data.locations:
-                for s in self.base_data.virtual_machine_services[v]:
-                    if loc in self.network_data.service_location[s]:
-                        self.problem += (
-                            var_vm_locations[v, loc] >= self.base_mip_data.var_vm_matching[v, s]
-                        )
+            for s in self.base_data.virtual_machine_services[v]:
+                loc = self.network_data.service_location[s]
+                self.problem += (
+                    var_vm_locations[v, loc] >= self.base_mip_data.var_vm_matching[v, s]
+                )
 
         # Pay for VM -> location traffic
         self.objective += lpSum(
