@@ -44,6 +44,7 @@ class Step:
     Each step is composed of multiple tasks which will be executed within this step.
     Multiple steps are executed sequentially.
     """
+
     name: str
     tasks: list[Type[Task]]
 

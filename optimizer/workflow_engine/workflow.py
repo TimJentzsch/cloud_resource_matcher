@@ -12,6 +12,7 @@ class Workflow:
     The workflow is composed of steps, which are executed sequentially.
     Each step is composed of tasks, which can depend on each other.
     """
+
     steps: list[Step]
 
     def __init__(self):
