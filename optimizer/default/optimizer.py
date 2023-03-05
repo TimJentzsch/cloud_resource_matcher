@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import tempfile
 from dataclasses import dataclass
 from datetime import timedelta
 from typing import Optional, Self
@@ -113,6 +114,11 @@ class _BuiltDefaultOptimizer:
 
     def problem(self) -> LpProblem:
         return self.optimizer.step_data[LpProblem]
+
+    def get_lp_string(self, line_limit: int = 100) -> str:
+        with tempfile.NamedTemporaryFile(mode="w+", encoding="utf-8", suffix=".lp") as file:
+            self.problem().writeLP(filename=file.name)
+            return "".join(file.readlines()[:line_limit])
 
     def solve(
         self,

@@ -6,7 +6,11 @@ from typing import Self, Optional, Dict, List, Iterable
 import pytest
 from pulp import LpVariable, LpProblem
 
-from optimizer.optimizer.default import DefaultOptimizer, _BuiltDefaultOptimizer
+from optimizer.default.optimizer import (
+    _InitializedDefaultOptimizer,
+    _BuiltDefaultOptimizer,
+    SolveSolution,
+)
 from optimizer.solving import (
     SolveErrorReason,
     SolveError,
@@ -14,13 +18,8 @@ from optimizer.solving import (
 from optimizer.extensions.base import (
     VmServiceMatching,
     ServiceInstanceCount,
-    BaseSolution,
 )
 from optimizer.extensions.data.types import Service, VirtualMachine
-
-
-# TODO: This will be changed in the future
-SolveSolution = BaseSolution
 
 
 class Expect:
@@ -31,7 +30,7 @@ class Expect:
 
     _fixed_variable_values: dict[str, float]
 
-    def __init__(self, optimizer: DefaultOptimizer):
+    def __init__(self, optimizer: _InitializedDefaultOptimizer):
         self._optimizer = optimizer.validate().build_mip()
         self._variables = set()
         self._fixed_variable_values = dict()
@@ -228,7 +227,7 @@ class _ExpectFeasible(_ExpectResult):
             return
 
         assert (
-            solution.vm_service_matching == self._vm_service_matching
+            solution.base.vm_service_matching == self._vm_service_matching
         ), "Different VM/Service matching than expected"
 
     def _test_service_instance_count(self, solution: SolveSolution):
@@ -236,7 +235,7 @@ class _ExpectFeasible(_ExpectResult):
             return
 
         assert (
-            solution.service_instance_count == self._service_instance_count
+            solution.base.service_instance_count == self._service_instance_count
         ), "Different service instance counts than expected"
 
     def _test_variable_values(self):
@@ -258,4 +257,4 @@ class _ExpectFeasible(_ExpectResult):
 
     def _print_model(self, line_limit: int = 100):
         """Print out the LP model to debug infeasible problems."""
-        print(self._expect._optimizer.built_optimizer.get_lp_string(line_limit=line_limit))
+        print(self._expect._optimizer.get_lp_string(line_limit=line_limit))
