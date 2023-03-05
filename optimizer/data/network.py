@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from optimizer.extensions.data.types import Service, VirtualMachine
-from optimizer.extensions.data.base_data import BaseData
+from .types import Service, VirtualMachine
+from .base import BaseData
 
 Location = str
 Latency = int
@@ -23,9 +23,7 @@ class NetworkData:
     service_location: dict[Service, Location]
 
     # The network traffic between a virtual machine and a given location
-    virtual_machine_location_traffic: dict[
-        tuple[VirtualMachine, Location], NetworkTraffic
-    ]
+    virtual_machine_location_traffic: dict[tuple[VirtualMachine, Location], NetworkTraffic]
 
     # The maximum latency a virtual machine can have to a given location
     # There must be traffic between the VM and the location
@@ -54,12 +52,8 @@ class NetworkData:
         """
         # Validate location_latency
         for (loc1, loc2), latency in self.location_latency.items():
-            assert (
-                loc1 in self.locations
-            ), f"{loc1} in location_latency is not a valid location"
-            assert (
-                loc2 in self.locations
-            ), f"{loc2} in location_latency is not a valid location"
+            assert loc1 in self.locations, f"{loc1} in location_latency is not a valid location"
+            assert loc2 in self.locations, f"{loc2} in location_latency is not a valid location"
 
             assert latency >= 0, "Latency must not be negative"
 
@@ -74,17 +68,11 @@ class NetworkData:
 
         # Validate service_location
         for s, loc in self.service_location.items():
-            assert (
-                s in base_data.services
-            ), f"{s} in service_location is not a valid service"
-            assert (
-                loc in self.locations
-            ), f"{loc} in service_location is not a valid location"
+            assert s in base_data.services, f"{s} in service_location is not a valid service"
+            assert loc in self.locations, f"{loc} in service_location is not a valid location"
 
         for s in base_data.services:
-            assert (
-                s in self.service_location.keys()
-            ), f"No location defined for service {s}"
+            assert s in self.service_location.keys(), f"No location defined for service {s}"
 
         # Validate virtual_machine_max_latency
         for (v, loc), latency in self.virtual_machine_location_max_latency.items():
@@ -106,9 +94,7 @@ class NetworkData:
                 loc in self.locations
             ), f"{loc} in virtual_machine_location_traffic is not a valid location"
 
-            assert (
-                traffic >= 0
-            ), f"Traffic for VM {v} and location {loc} must not be negative"
+            assert traffic >= 0, f"Traffic for VM {v} and location {loc} must not be negative"
 
         # Validate virtual_machine_virtual_machine_traffic
         for (v1, v2), traffic in self.virtual_machine_virtual_machine_traffic.items():

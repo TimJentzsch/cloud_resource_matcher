@@ -1,6 +1,5 @@
-from optimizer.extensions.data.base_data import BaseData
-from optimizer.extensions.data.multi_cloud_data import MultiCloudData
-from optimizer.optimizer.default import DefaultOptimizer
+from optimizer.data import BaseData, MultiCloudData
+from optimizer.default import DefaultOptimizer
 from test.framework import Expect
 
 

@@ -1,6 +1,5 @@
-from optimizer.extensions.data.base_data import BaseData
-from optimizer.extensions.data.performance_data import PerformanceData
-from optimizer.optimizer.default import DefaultOptimizer
+from optimizer.data import BaseData, PerformanceData
+from optimizer.default import DefaultOptimizer
 from test.framework import Expect
 
 
@@ -93,9 +92,7 @@ def test_resource_matching():
                 f"vm_{v}": [f"s_{s}" for s in range(count)] for v in range(count)
             },
             # Arbitrary costs to make sure the constraints are actually enforced
-            service_base_costs={
-                f"s_{s}": (s + 4) % 7 + (s % 3) * (s % 10) for s in range(count)
-            },
+            service_base_costs={f"s_{s}": (s + 4) % 7 + (s % 3) * (s % 10) for s in range(count)},
             time=[0],
             virtual_machine_demand={(f"vm_{v}", 0): 1 for v in range(count)},
             max_service_instances={f"s_{s}": 1 for s in range(count)},
@@ -103,9 +100,7 @@ def test_resource_matching():
     ).with_performance_data(
         PerformanceData(
             virtual_machine_min_ram={f"vm_{v}": v for v in range(count)},
-            virtual_machine_min_cpu_count={
-                f"vm_{v}": (v + 25) % count for v in range(count)
-            },
+            virtual_machine_min_cpu_count={f"vm_{v}": (v + 25) % count for v in range(count)},
             service_ram={f"s_{s}": s for s in range(count)},
             service_cpu_count={f"s_{s}": (s + 25) % count for s in range(count)},
         )
@@ -138,9 +133,9 @@ def test_cheap_insufficient_service():
         )
     )
 
-    Expect(optimizer).to_be_feasible().with_vm_service_matching(
-        {("vm_0", "s_1", 0): 1}
-    ).with_cost(10).test()
+    Expect(optimizer).to_be_feasible().with_vm_service_matching({("vm_0", "s_1", 0): 1}).with_cost(
+        10
+    ).test()
 
 
 def test_allowed_incomplete_data():

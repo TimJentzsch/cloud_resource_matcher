@@ -1,68 +1,47 @@
+from __future__ import annotations
+
 from typing import Self, Any
 
-from optimizer.extensions.decorators import DependencyInfo
-from optimizer.extensions.extension import Extension, ExtensionId
-from optimizer.optimizer.validated_optimizer import ValidatedOptimizer
+from .step import Step, StepData
 
 
 class Optimizer:
-    extensions: dict[ExtensionId, Extension]
-    data: dict[str, Any]
+    steps: list[Step]
 
     def __init__(self):
-        self.extensions = dict()
-        self.data = dict()
+        self.steps = list()
 
-    def register_extension(self, extension: Extension) -> Self:
-        """Register a new extension."""
-        e_id = extension.identifier()
-        self.extensions[e_id] = extension
-
+    def add_step(self, step: Step) -> Self:
+        self.steps.append(step)
         return self
 
-    def add_data(self, e_id: ExtensionId, data: Any) -> Self:
-        """Add the data for an extension with the given ID."""
-        assert (
-            e_id in self.extensions.keys()
-        ), f"Extension {e_id} is not registered yet, use `.register_extension` first."
+    def initialize(self, *args: Any) -> InitializedOptimizer:
+        step_data = {type(data): data for data in args if data is not None}
 
-        self.data[e_id] = data
+        return InitializedOptimizer(self, step_data)
+
+
+class InitializedOptimizer:
+    optimizer: Optimizer
+    step_data: StepData
+
+    def __init__(self, optimizer: Optimizer, step_data: StepData):
+        self.optimizer = optimizer
+        self.step_data = step_data
+
+    def add_data(self, data: Any) -> Self:
+        data_type = type(data)
+        self.step_data[data_type] = data
         return self
 
-    def validate(self) -> ValidatedOptimizer:
-        validation_info: dict[ExtensionId, DependencyInfo] = {
-            e_id: extension.validate() for e_id, extension in self.extensions.items()
-        }
+    def execute_step(self, index: int) -> StepData:
+        step = self.optimizer.steps[index]
+        self.step_data = step.initialize(self.step_data).execute()
+        return self.step_data
 
-        dependencies: dict[ExtensionId, set[ExtensionId]] = {
-            e_id: info.dependencies for e_id, info in validation_info.items()
-        }
+    def execute(self) -> StepData:
+        for step in self.optimizer.steps:
+            # Execute each step sequentially and update the step data
+            self.step_data = step.initialize(self.step_data).execute()
 
-        to_validate: dict[ExtensionId, set[ExtensionId]] = {**dependencies}
-
-        while len(to_validate.keys()) > 0:
-            # If an extension has no outstanding dependencies it can be validated
-            can_be_validated = [
-                e_id for e_id, deps in to_validate.items() if len(deps) == 0
-            ]
-
-            assert len(can_be_validated) > 0, (
-                "Extensions can't be scheduled,"
-                f"dependency cycle detected\n{dependencies}"
-            )
-
-            # Validate the extensions and add them to the validated data
-            for e_id in can_be_validated:
-                info = validation_info[e_id]
-                dependency_data = {dep: self.data[dep] for dep in info.dependencies}
-
-                validation_info[e_id].action_fn(data=self.data[e_id], **dependency_data)
-
-            # Update the extensions that need to be validated
-            to_validate = {
-                e_id: set(dep for dep in deps if dep not in can_be_validated)
-                for e_id, deps in to_validate.items()
-                if e_id not in can_be_validated
-            }
-
-        return ValidatedOptimizer(optimizer=self)
+        return self.step_data

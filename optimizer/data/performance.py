@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Dict
 
-from optimizer.extensions.data.types import Service, VirtualMachine
-from optimizer.extensions.data.base_data import BaseData
+from .types import Service, VirtualMachine
+from .base import BaseData
 
 
 @dataclass
@@ -49,9 +49,7 @@ class PerformanceData:
 
         # Validate service_cpu_count
         for s in base_data.services:
-            assert (
-                s in self.service_cpu_count.keys()
-            ), f"No CPU count defined for service {s}"
+            assert s in self.service_cpu_count.keys(), f"No CPU count defined for service {s}"
 
         for s, cpu_count in self.service_cpu_count.items():
             assert s in base_data.services, f"{s} in service_ram is not a valid service"
