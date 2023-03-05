@@ -4,13 +4,15 @@ from dataclasses import dataclass
 from datetime import timedelta
 from typing import Optional, Self
 
+from pulp import LpProblem
+
 from optimizer.data import BaseData, PerformanceData, NetworkData, MultiCloudData
 from optimizer.data.types import Cost
 from optimizer.default.steps import step_validate, step_build_mip, step_solve, step_extract_solution
 from optimizer.extensions_v2.extract_solution.base import BaseSolution
 from optimizer.extensions_v2.extract_solution.cost import SolutionCost
 from optimizer.extensions_v2.solve.solve import SolveSettings
-from optimizer.optimizer_v2.optimizer import Optimizer
+from optimizer.optimizer_v2.optimizer import Optimizer, InitializedOptimizer
 from optimizer.solver import Solver
 
 
@@ -51,39 +53,11 @@ class DefaultOptimizer:
         return self
 
     def initialize(self) -> _InitializedDefaultOptimizer:
-        return _InitializedDefaultOptimizer(
-            base_data=self.base_data,
-            performance_data=self.performance_data,
-            network_data=self.network_data,
-            multi_cloud_data=self.multi_cloud_data,
-        )
+        performance = self.performance_data is not None
+        network = self.network_data is not None
+        multi_cloud = self.multi_cloud_data is not None
 
-
-class _InitializedDefaultOptimizer:
-    optimizer: Optimizer
-
-    base_data: BaseData
-    performance_data: Optional[PerformanceData] = None
-    network_data: Optional[NetworkData] = None
-    multi_cloud_data: Optional[MultiCloudData] = None
-
-    def __init__(
-        self,
-        base_data: BaseData,
-        performance_data: Optional[PerformanceData],
-        network_data: Optional[NetworkData],
-        multi_cloud_data: Optional[MultiCloudData],
-    ):
-        self.base_data = base_data
-        self.performance_data = performance_data
-        self.network_data = network_data
-        self.multi_cloud_data = multi_cloud_data
-
-        performance = performance_data is not None
-        network = network_data is not None
-        multi_cloud = multi_cloud_data is not None
-
-        self.optimizer = (
+        initialized_optimizer = (
             Optimizer()
             .add_step(
                 step_validate(performance=performance, network=network, multi_cloud=multi_cloud)
@@ -93,7 +67,22 @@ class _InitializedDefaultOptimizer:
             )
             .add_step(step_solve())
             .add_step(step_extract_solution())
+            .initialize(
+                self.base_data, self.performance_data, self.network_data, self.multi_cloud_data
+            )
         )
+        return _InitializedDefaultOptimizer(initialized_optimizer)
+
+
+class _InitializedDefaultOptimizer:
+    optimizer: InitializedOptimizer
+
+    def __init__(self, optimizer: InitializedOptimizer):
+        self.optimizer = optimizer
+
+    def validate(self) -> _ValidatedDefaultOptimizer:
+        self.optimizer.execute_step(0)
+        return _ValidatedDefaultOptimizer(self.optimizer)
 
     def solve(
         self,
@@ -102,15 +91,42 @@ class _InitializedDefaultOptimizer:
         cost_gap_abs: Cost | None = None,
         cost_gap_rel: float | None = None,
     ) -> SolveSolution:
-        step_data = self.optimizer.initialize(
-            {
-                BaseData: self.base_data,
-                PerformanceData: self.performance_data,
-                NetworkData: self.network_data,
-                MultiCloudData: self.multi_cloud_data,
-                SolveSettings: SolveSettings(solver, time_limit, cost_gap_abs, cost_gap_rel),
-            }
-        ).execute()
+        return self.validate().build_mip().solve(solver, time_limit, cost_gap_abs, cost_gap_rel)
+
+
+class _ValidatedDefaultOptimizer:
+    optimizer: InitializedOptimizer
+
+    def __init__(self, optimizer: InitializedOptimizer):
+        self.optimizer = optimizer
+
+    def build_mip(self) -> _BuiltDefaultOptimizer:
+        self.optimizer.execute_step(1)
+        return _BuiltDefaultOptimizer(self.optimizer)
+
+
+class _BuiltDefaultOptimizer:
+    optimizer: InitializedOptimizer
+
+    def __init__(self, optimizer: InitializedOptimizer):
+        self.optimizer = optimizer
+
+    def problem(self) -> LpProblem:
+        return self.optimizer.step_data[LpProblem]
+
+    def solve(
+        self,
+        solver: Solver = Solver.CBC,
+        time_limit: timedelta | None = None,
+        cost_gap_abs: Cost | None = None,
+        cost_gap_rel: float | None = None,
+    ) -> SolveSolution:
+        self.optimizer.add_data(SolveSettings(solver, time_limit, cost_gap_abs, cost_gap_rel))
+
+        # Solve the MIP
+        self.optimizer.execute_step(2)
+        # Extract the solution
+        step_data = self.optimizer.execute_step(3)
 
         return SolveSolution(
             cost=step_data[SolutionCost].cost,
