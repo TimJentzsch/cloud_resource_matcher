@@ -7,7 +7,7 @@ import pytest
 from pulp import LpVariable, LpProblem
 
 from optimizer.default.optimizer import (
-    _InitializedDefaultOptimizer,
+    DefaultOptimizer,
     _BuiltDefaultOptimizer,
     SolveSolution,
 )
@@ -30,8 +30,8 @@ class Expect:
 
     _fixed_variable_values: dict[str, float]
 
-    def __init__(self, optimizer: _InitializedDefaultOptimizer):
-        self._optimizer = optimizer.validate().build_mip()
+    def __init__(self, optimizer: DefaultOptimizer):
+        self._optimizer = optimizer.initialize().validate().build_mip()
         self._variables = set()
         self._fixed_variable_values = dict()
 

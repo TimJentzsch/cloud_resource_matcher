@@ -1,6 +1,5 @@
-from optimizer.extensions.data.base_data import BaseData
-from optimizer.extensions.data.network_data import NetworkData
-from optimizer.optimizer.default import DefaultOptimizer
+from optimizer.data import BaseData, NetworkData
+from optimizer.default import DefaultOptimizer
 from test.framework import Expect
 
 
