@@ -16,9 +16,9 @@ from ..workflow_engine.step import StepData
 
 @dataclass
 class OptimizationPackage:
-    validate: Optional[Type[Task[None]]]
     build_mip: Type[Task]
-    extract_solution: Optional[Type[Task]]
+    validate: Optional[Type[Task[None]]] = None
+    extract_solution: Optional[Type[Task]] = None
 
 
 class Optimizer:
