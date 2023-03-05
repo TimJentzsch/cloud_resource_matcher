@@ -2,7 +2,7 @@ from pulp import LpProblem
 
 from optimizer.data import BaseData, PerformanceData
 from .base import BaseMipData
-from optimizer.optimizer_v2.extension import Extension
+from optimizer.optimizer.extension import Extension
 
 
 class BuildMipPerformanceExt(Extension[None]):

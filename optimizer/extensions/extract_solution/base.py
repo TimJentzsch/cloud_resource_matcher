@@ -4,8 +4,8 @@ from pulp import pulp
 
 from optimizer.data import BaseData
 from optimizer.data.types import VirtualMachine, Service, TimeUnit
-from optimizer.extensions_v2.build_mip.base import BaseMipData
-from optimizer.optimizer_v2.extension import Extension
+from optimizer.extensions.build_mip.base import BaseMipData
+from optimizer.optimizer.extension import Extension
 
 
 VmServiceMatching = dict[tuple[VirtualMachine, Service, TimeUnit], int]

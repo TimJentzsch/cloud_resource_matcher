@@ -4,7 +4,7 @@ from pulp import LpVariable, LpProblem, LpAffineExpression, LpBinary, lpSum
 
 from optimizer.data import BaseData
 from optimizer.data.types import VirtualMachine, Service
-from optimizer.optimizer_v2.extension import Extension
+from optimizer.optimizer.extension import Extension
 
 
 VarVmServiceMatching = dict[tuple[VirtualMachine, Service], LpVariable]

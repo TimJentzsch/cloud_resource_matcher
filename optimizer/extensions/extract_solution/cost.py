@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from pulp import LpProblem
 
 from optimizer.data.types import Cost
-from optimizer.optimizer_v2.extension import Extension
+from optimizer.optimizer.extension import Extension
 
 
 @dataclass

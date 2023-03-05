@@ -11,7 +11,7 @@ from optimizer.default.optimizer import (
     _BuiltDefaultOptimizer,
     SolveSolution,
 )
-from optimizer.extensions_v2.extract_solution.base import VmServiceMatching, ServiceInstanceCount
+from optimizer.extensions.extract_solution.base import VmServiceMatching, ServiceInstanceCount
 from optimizer.solving import (
     SolveErrorReason,
     SolveError,

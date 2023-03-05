@@ -1,6 +1,6 @@
 from pulp import LpAffineExpression
 
-from optimizer.optimizer_v2.extension import Extension
+from optimizer.optimizer.extension import Extension
 
 
 class CreateObjectiveExt(Extension[LpAffineExpression]):

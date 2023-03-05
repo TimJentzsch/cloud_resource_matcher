@@ -1,4 +1,4 @@
-from optimizer.extensions_v2.build_mip import (
+from optimizer.extensions.build_mip import (
     BuildMipBaseExt,
     BuildMipPerformanceExt,
     BuildMipNetworkExt,
@@ -6,18 +6,18 @@ from optimizer.extensions_v2.build_mip import (
     CreateMipExt,
     CreateObjectiveExt,
 )
-from optimizer.extensions_v2.extract_solution import (
+from optimizer.extensions.extract_solution import (
     ExtractSolutionCostExt,
     ExtractSolutionBaseExt,
 )
-from optimizer.extensions_v2.solve import SolveExt
-from optimizer.extensions_v2.validate import (
+from optimizer.extensions.solve import SolveExt
+from optimizer.extensions.validate import (
     ValidateBaseExt,
     ValidatePerformanceExt,
     ValidateNetworkExt,
     ValidateMultiCloudExt,
 )
-from optimizer.optimizer_v2.step import Step
+from optimizer.optimizer.step import Step
 
 
 def step_validate(performance: bool, network: bool, multi_cloud: bool) -> Step:

@@ -1,5 +1,5 @@
 from optimizer.data import PerformanceData, BaseData
-from optimizer.optimizer_v2.extension import Extension
+from optimizer.optimizer.extension import Extension
 
 
 class ValidatePerformanceExt(Extension[None]):

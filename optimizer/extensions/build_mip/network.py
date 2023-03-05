@@ -4,7 +4,7 @@ from pulp import LpProblem, LpAffineExpression, LpBinary, LpVariable, lpSum
 
 from optimizer.data import BaseData, NetworkData
 from .base import BaseMipData
-from optimizer.optimizer_v2.extension import Extension
+from optimizer.optimizer.extension import Extension
 from optimizer.data.network import Location
 from optimizer.data.types import VirtualMachine
 

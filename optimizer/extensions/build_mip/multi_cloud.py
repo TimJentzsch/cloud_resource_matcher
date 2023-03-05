@@ -5,7 +5,7 @@ from pulp import LpProblem, LpAffineExpression, LpBinary, LpVariable, lpSum
 from optimizer.data import BaseData, MultiCloudData
 from optimizer.data.types import CloudServiceProvider
 from .base import BaseMipData
-from optimizer.optimizer_v2.extension import Extension
+from optimizer.optimizer.extension import Extension
 
 
 @dataclass

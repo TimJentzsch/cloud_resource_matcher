@@ -4,7 +4,7 @@ from datetime import timedelta
 from pulp import LpProblem, LpStatus, LpAffineExpression
 
 from optimizer.data.types import Cost
-from optimizer.optimizer_v2.extension import Extension
+from optimizer.optimizer.extension import Extension
 from optimizer.solver import Solver, get_pulp_solver
 from optimizer.solving import SolveError, SolveErrorReason
 

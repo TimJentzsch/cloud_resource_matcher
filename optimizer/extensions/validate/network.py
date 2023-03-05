@@ -1,5 +1,5 @@
 from optimizer.data import NetworkData, BaseData
-from optimizer.optimizer_v2.extension import Extension
+from optimizer.optimizer.extension import Extension
 
 
 class ValidateNetworkExt(Extension[None]):

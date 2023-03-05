@@ -1,6 +1,6 @@
 from pulp import LpProblem, LpMinimize
 
-from optimizer.optimizer_v2.extension import Extension
+from optimizer.optimizer.extension import Extension
 
 
 class CreateMipExt(Extension[LpProblem]):
