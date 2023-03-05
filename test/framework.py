@@ -11,15 +11,12 @@ from optimizer.default.optimizer import (
     _BuiltDefaultOptimizer,
     SolveSolution,
 )
+from optimizer.extensions_v2.extract_solution.base import VmServiceMatching, ServiceInstanceCount
 from optimizer.solving import (
     SolveErrorReason,
     SolveError,
 )
-from optimizer.extensions.base import (
-    VmServiceMatching,
-    ServiceInstanceCount,
-)
-from optimizer.extensions.data.types import Service, VirtualMachine
+from optimizer.data.types import Service, VirtualMachine
 
 
 class Expect:

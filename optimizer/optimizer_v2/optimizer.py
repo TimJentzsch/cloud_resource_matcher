@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Self, Optional, Any
+from typing import Self, Any
 
 from .step import Step, StepData
 
