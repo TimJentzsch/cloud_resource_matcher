@@ -116,7 +116,7 @@ class InitializedStep:
                         dep.param: self.step_data[dep.annotation] for dep in dependencies[task]
                     }
                     # Determine what type of data is created by the task
-                    data_annotation = inspect.signature(task.action).return_annotation
+                    data_annotation = inspect.signature(task.execute).return_annotation
 
                     # Instantiate the task, using the data it requires
                     task_obj = task(**dep_data)

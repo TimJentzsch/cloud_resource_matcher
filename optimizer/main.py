@@ -1,11 +1,21 @@
+from dataclasses import dataclass
 from datetime import timedelta, datetime
 from typing import Optional
 
-from optimizer.default.optimizer import DefaultOptimizer, SolveSolution
 from optimizer.data.types import Cost
 from optimizer.data import BaseData, PerformanceData, NetworkData, MultiCloudData
+from optimizer.framework import Optimizer
+from optimizer.framework.tasks import SolutionCost
+from optimizer.packages import BASE_PACKAGE, PERFORMANCE_PACKAGE, NETWORK_PACKAGE, MULTI_CLOUD_PACKAGE
+from optimizer.packages.base import BaseSolution
 from optimizer.solving import SolveError
 from optimizer.solver import Solver
+
+
+@dataclass
+class SolveSolution:
+    cost: Cost
+    base: BaseSolution
 
 
 def solve_demo_model(
@@ -85,12 +95,11 @@ def solve_demo_model(
         virtual_machine_virtual_machine_traffic={},
     )
 
-    return (
-        DefaultOptimizer(base_data)
-        .with_performance_data(perf_data)
-        .with_network_data(network_data)
-        .with_multi_cloud_data(multi_data)
-        .initialize()
+    data = (
+        Optimizer().add_package(BASE_PACKAGE).add_package(PERFORMANCE_PACKAGE).add_package(NETWORK_PACKAGE).add_package(MULTI_CLOUD_PACKAGE)
+        .initialize(base_data, perf_data, network_data, multi_data)
+        .validate()
+        .build_mip()
         .solve(
             solver=solver,
             time_limit=time_limit,
@@ -98,6 +107,8 @@ def solve_demo_model(
             cost_gap_rel=cost_gap_rel,
         )
     )
+
+    return SolveSolution(cost=data[SolutionCost].cost, base=data[BaseSolution])
 
 
 def main():

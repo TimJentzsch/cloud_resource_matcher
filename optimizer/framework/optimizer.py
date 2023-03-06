@@ -8,7 +8,7 @@ from optimizer.workflow_engine import Step
 from optimizer.workflow_engine.task import Task
 from optimizer.workflow_engine.workflow import Workflow, InitializedWorkflow
 
-from .tasks import CreateProblemTask, CreateObjectiveTask, SolveTask, SolveSettings
+from .tasks import CreateProblemTask, CreateObjectiveTask, SolveTask, SolveSettings, ExtractSolutionCostTask
 from ..data.types import Cost
 from ..solver import Solver
 from ..workflow_engine.step import StepData
@@ -24,6 +24,9 @@ class OptimizationPackage:
 class Optimizer:
     packages: list[OptimizationPackage]
 
+    def __init__(self):
+        self.packages = []
+
     def add_package(self, package: OptimizationPackage) -> Self:
         self.packages.append(package)
         return self
@@ -32,7 +35,7 @@ class Optimizer:
         validate_step = Step("validate")
         build_mip_step = Step("build_mip").add_task(CreateProblemTask).add_task(CreateObjectiveTask)
         solve_step = Step("solve").add_task(SolveTask)
-        extract_solution_step = Step("extract_solution")
+        extract_solution_step = Step("extract_solution").add_task(ExtractSolutionCostTask)
 
         for package in self.packages:
             if package.validate is not None:

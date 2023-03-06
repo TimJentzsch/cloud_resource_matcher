@@ -64,3 +64,22 @@ class SolveTask(Task[None]):
 
         if status != "Optimal":
             raise SolveError(SolveErrorReason.INFEASIBLE)
+
+
+@dataclass
+class SolutionCost:
+    """The total cost of the solution."""
+
+    cost: Cost
+
+
+class ExtractSolutionCostTask(Task[SolutionCost]):
+    problem: LpProblem
+
+    def __init__(self, problem: LpProblem):
+        self.problem = problem
+
+    def execute(self) -> SolutionCost:
+        cost = self.problem.objective.value()
+
+        return SolutionCost(cost)
