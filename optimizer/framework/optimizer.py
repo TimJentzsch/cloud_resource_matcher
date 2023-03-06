@@ -8,7 +8,13 @@ from optimizer.workflow_engine import Step
 from optimizer.workflow_engine.task import Task
 from optimizer.workflow_engine.workflow import Workflow, InitializedWorkflow
 
-from .tasks import CreateProblemTask, CreateObjectiveTask, SolveTask, SolveSettings, ExtractSolutionCostTask
+from .tasks import (
+    CreateProblemTask,
+    CreateObjectiveTask,
+    SolveTask,
+    SolveSettings,
+    ExtractSolutionCostTask,
+)
 from ..data.types import Cost
 from ..solver import Solver
 from ..workflow_engine.step import StepData
