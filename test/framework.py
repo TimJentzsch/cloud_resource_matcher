@@ -1,34 +1,39 @@
 from __future__ import annotations
 
 import math
+from dataclasses import dataclass
 from typing import Self, Optional, Dict, List, Iterable
 
 import pytest
 from pulp import LpVariable, LpProblem
 
-from optimizer.default.optimizer import (
-    DefaultOptimizer,
-    _BuiltDefaultOptimizer,
-    SolveSolution,
-)
+from optimizer.framework import InitializedOptimizer, BuiltOptimizer
 from optimizer.extensions.extract_solution.base import VmServiceMatching, ServiceInstanceCount
+from optimizer.framework.tasks import SolutionCost
+from optimizer.packages.base import BaseSolution
 from optimizer.solving import (
     SolveErrorReason,
     SolveError,
 )
-from optimizer.data.types import Service, VirtualMachine
+from optimizer.data.types import Service, VirtualMachine, Cost
+
+
+@dataclass
+class SolveSolution:
+    cost: Cost
+    base: BaseSolution
 
 
 class Expect:
-    _optimizer: _BuiltDefaultOptimizer
+    _optimizer: BuiltOptimizer
 
     _variables: set[str]
     _variables_exclusive: bool = False
 
     _fixed_variable_values: dict[str, float]
 
-    def __init__(self, optimizer: DefaultOptimizer):
-        self._optimizer = optimizer.initialize().validate().build_mip()
+    def __init__(self, optimizer: InitializedOptimizer):
+        self._optimizer = optimizer.validate().build_mip()
         self._variables = set()
         self._fixed_variable_values = dict()
 
@@ -102,7 +107,8 @@ class _ExpectResult:
         return self._expect._problem()
 
     def _solve(self) -> SolveSolution:
-        return self._expect._optimizer.solve()
+        data = self._expect._optimizer.solve()
+        return SolveSolution(cost=data[SolutionCost].cost, base=data[BaseSolution])
 
     def _fix_variable_values(self):
         # The warning here is invalid, the type is incorrectly specified in PuLP

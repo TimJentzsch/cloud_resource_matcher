@@ -1,6 +1,10 @@
 from optimizer.data import BaseData, NetworkData
-from optimizer.default import DefaultOptimizer
+from optimizer.framework import Optimizer
+from optimizer.packages import BASE_PACKAGE, NETWORK_PACKAGE
 from test.framework import Expect
+
+
+OPTIMIZER = Optimizer().add_package(BASE_PACKAGE).add_package(NETWORK_PACKAGE)
 
 
 def test_computation_of_vm_locations():
@@ -10,7 +14,7 @@ def test_computation_of_vm_locations():
     """
     locations = {"loc_0", "loc_1"}
 
-    optimizer = DefaultOptimizer(
+    optimizer = OPTIMIZER.initialize(
         BaseData(
             virtual_machines=["vm_0", "vm_1"],
             services=["s_0", "s_1"],
@@ -19,8 +23,7 @@ def test_computation_of_vm_locations():
             time=[0],
             virtual_machine_demand={("vm_0", 0): 3, ("vm_1", 0): 4},
             max_service_instances={},
-        )
-    ).with_network_data(
+        ),
         NetworkData(
             locations=locations,
             location_latency={
@@ -32,7 +35,7 @@ def test_computation_of_vm_locations():
             virtual_machine_virtual_machine_traffic={},
             virtual_machine_location_traffic={},
             location_traffic_cost={(loc1, loc2): 0 for loc1 in locations for loc2 in locations},
-        )
+        ),
     )
 
     Expect(optimizer).with_fixed_vm_service_matching(
@@ -51,7 +54,7 @@ def test_should_pay_for_vm_location_costs():
     """
     Ensure that the cost of traffic between VMs and specific locations is paid for.
     """
-    optimizer = DefaultOptimizer(
+    optimizer = OPTIMIZER.initialize(
         BaseData(
             virtual_machines=["vm_0"],
             services=["s_0"],
@@ -60,8 +63,7 @@ def test_should_pay_for_vm_location_costs():
             time=[0],
             virtual_machine_demand={("vm_0", 0): 3},
             max_service_instances={},
-        )
-    ).with_network_data(
+        ),
         NetworkData(
             locations={"loc_0"},
             location_latency={("loc_0", "loc_0"): 0},
@@ -71,7 +73,7 @@ def test_should_pay_for_vm_location_costs():
             virtual_machine_virtual_machine_traffic={},
             virtual_machine_location_traffic={("vm_0", "loc_0"): 3},
             location_traffic_cost={("loc_0", "loc_0"): 2},
-        )
+        ),
     )
 
     # Make sure the network costs are included in the total costs
@@ -86,7 +88,7 @@ def test_should_be_infeasible_if_max_latency_is_violated():
     """
     locations = {"loc_0", "loc_1"}
 
-    optimizer = DefaultOptimizer(
+    optimizer = OPTIMIZER.initialize(
         BaseData(
             virtual_machines=["vm_0"],
             services=["s_0"],
@@ -95,8 +97,7 @@ def test_should_be_infeasible_if_max_latency_is_violated():
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
             max_service_instances={},
-        )
-    ).with_network_data(
+        ),
         NetworkData(
             locations=locations,
             location_latency={
@@ -110,7 +111,7 @@ def test_should_be_infeasible_if_max_latency_is_violated():
             location_traffic_cost={
                 (loc1, loc2): 0 if loc1 == loc2 else 10 for loc1 in locations for loc2 in locations
             },
-        )
+        ),
     )
 
     Expect(optimizer).to_be_infeasible().test()
@@ -120,7 +121,7 @@ def test_should_choose_matching_that_respects_max_latency():
     """The VM can be placed in two locations, but only one has low enough latency."""
     locations = {"loc_0", "loc_1"}
 
-    optimizer = DefaultOptimizer(
+    optimizer = OPTIMIZER.initialize(
         BaseData(
             virtual_machines=["vm_0"],
             services=["s_0", "s_1"],
@@ -129,8 +130,7 @@ def test_should_choose_matching_that_respects_max_latency():
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1},
             max_service_instances={},
-        )
-    ).with_network_data(
+        ),
         NetworkData(
             locations=locations,
             location_latency={
@@ -144,7 +144,7 @@ def test_should_choose_matching_that_respects_max_latency():
             location_traffic_cost={
                 (loc1, loc2): 0 if loc1 == loc2 else 10 for loc1 in locations for loc2 in locations
             },
-        )
+        ),
     )
 
     Expect(optimizer).to_be_feasible().with_vm_service_matching(
@@ -161,7 +161,7 @@ def test_should_calculate_connections_between_vms():
     """Two VMs are connected and need to be placed in two different locations."""
     locations = {"loc_0", "loc_1"}
 
-    optimizer = DefaultOptimizer(
+    optimizer = OPTIMIZER.initialize(
         BaseData(
             virtual_machines=["vm_0", "vm_1"],
             services=["s_0", "s_1"],
@@ -170,8 +170,7 @@ def test_should_calculate_connections_between_vms():
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1, ("vm_1", 0): 3},
             max_service_instances={},
-        )
-    ).with_network_data(
+        ),
         NetworkData(
             locations=locations,
             location_latency={
@@ -188,7 +187,7 @@ def test_should_calculate_connections_between_vms():
             location_traffic_cost={
                 (loc1, loc2): 0 if loc1 == loc2 else 10 for loc1 in locations for loc2 in locations
             },
-        )
+        ),
     )
 
     Expect(optimizer).to_be_feasible().with_vm_service_matching(
@@ -211,7 +210,7 @@ def test_should_consider_latency_for_vm_vm_connections():
     """One of the connections between two VMs violates the maximum latency."""
     locations = {"loc_0", "loc_1"}
 
-    optimizer = DefaultOptimizer(
+    optimizer = OPTIMIZER.initialize(
         BaseData(
             virtual_machines=["vm_0", "vm_1"],
             services=["s_0", "s_1"],
@@ -220,8 +219,7 @@ def test_should_consider_latency_for_vm_vm_connections():
             time=[0],
             virtual_machine_demand={("vm_0", 0): 1, ("vm_1", 0): 1},
             max_service_instances={},
-        )
-    ).with_network_data(
+        ),
         NetworkData(
             locations=locations,
             location_latency={
@@ -237,7 +235,7 @@ def test_should_consider_latency_for_vm_vm_connections():
             location_traffic_cost={
                 (loc1, loc2): 0 if loc1 == loc2 else 10 for loc1 in locations for loc2 in locations
             },
-        )
+        ),
     )
 
     Expect(optimizer).to_be_infeasible().test()

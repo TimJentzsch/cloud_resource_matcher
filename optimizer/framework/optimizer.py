@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import tempfile
 from dataclasses import dataclass
 from datetime import timedelta
 from typing import Optional, Self, Type, Any
+
+from pulp import LpProblem
 
 from optimizer.workflow_engine import Step
 from optimizer.workflow_engine.task import Task
@@ -90,6 +93,14 @@ class BuiltOptimizer:
 
     def __init__(self, workflow: InitializedWorkflow):
         self.workflow = workflow
+
+    def problem(self) -> LpProblem:
+        return self.workflow.step_data[LpProblem]
+
+    def get_lp_string(self, line_limit: int = 100) -> str:
+        with tempfile.NamedTemporaryFile(mode="w+", encoding="utf-8", suffix=".lp") as file:
+            self.problem().writeLP(filename=file.name)
+            return "".join(file.readlines()[:line_limit])
 
     def solve(
         self,
