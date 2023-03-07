@@ -8,9 +8,9 @@ import pytest
 from pulp import LpVariable, LpProblem
 
 from optimizer.framework import InitializedOptimizer, BuiltOptimizer
-from optimizer.extensions.extract_solution.base import VmServiceMatching, ServiceInstanceCount
 from optimizer.framework.tasks import SolutionCost
 from optimizer.packages.base import BaseSolution
+from optimizer.packages.base.extract_solution import VmServiceMatching, ServiceInstanceCount
 from optimizer.solving import (
     SolveErrorReason,
     SolveError,
