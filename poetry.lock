@@ -136,7 +136,7 @@ pulp = "^2.7.0"
 type = "git"
 url = "https://github.com/TimJentzsch/optiframe.git"
 reference = "main"
-resolved_reference = "a9af97197a2cf841fe5cad32cff2acee2d34db97"
+resolved_reference = "46ee89c11e0ea5d51f72ccbed8ec64d7fc137b4b"
 
 [[package]]
 name = "packaging"

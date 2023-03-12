@@ -4,7 +4,7 @@ from optimizer.packages import BASE_PACKAGE, MULTI_CLOUD_PACKAGE
 from test.framework import Expect
 
 
-OPTIMIZER = Optimizer().add_package(BASE_PACKAGE).add_package(MULTI_CLOUD_PACKAGE)
+OPTIMIZER = Optimizer("test_multi_cloud").add_package(BASE_PACKAGE).add_package(MULTI_CLOUD_PACKAGE)
 
 
 def test_min_csp_count_constraint_matching():

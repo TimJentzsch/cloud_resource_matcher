@@ -4,7 +4,7 @@ from optimizer.packages import BASE_PACKAGE, PERFORMANCE_PACKAGE
 from test.framework import Expect
 
 
-OPTIMIZER = Optimizer().add_package(BASE_PACKAGE).add_package(PERFORMANCE_PACKAGE)
+OPTIMIZER = Optimizer("test_performance").add_package(BASE_PACKAGE).add_package(PERFORMANCE_PACKAGE)
 
 
 def test_with_sufficient_resources():

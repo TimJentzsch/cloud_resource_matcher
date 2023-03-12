@@ -4,7 +4,7 @@ from typing import Optional
 
 from optimizer.data.types import Cost
 from optimizer.data import BaseData, PerformanceData, NetworkData, MultiCloudData
-from optiframe import Optimizer, SolutionCost, SolveError
+from optiframe import Optimizer, SolutionObjValue, InfeasibleError
 from optimizer.packages import (
     BASE_PACKAGE,
     PERFORMANCE_PACKAGE,
@@ -99,7 +99,7 @@ def solve_demo_model(
     )
 
     data = (
-        Optimizer()
+        Optimizer("cloud_cost_optimization")
         .add_package(BASE_PACKAGE)
         .add_package(PERFORMANCE_PACKAGE)
         .add_package(NETWORK_PACKAGE)
@@ -117,7 +117,7 @@ def solve_demo_model(
         )
     )
 
-    return SolveSolution(cost=data[SolutionCost].cost, base=data[BaseSolution])
+    return SolveSolution(cost=data[SolutionObjValue].objective_value, base=data[BaseSolution])
 
 
 def main():
@@ -236,10 +236,9 @@ def main():
         print("=== SOLUTION FOUND ===\n")
         print(f"Cost: {solution.cost}")
         print(f"Duration: {duration.total_seconds():.2f}s")
-    except SolveError as e:
+    except InfeasibleError:
         duration = datetime.now() - start_time
 
         print("=== PROBLEM INFEASIBLE ===\n")
-        print(f"{e.reason}")
         print(f"Duration: {duration.total_seconds():.2f}s")
         exit(101)
