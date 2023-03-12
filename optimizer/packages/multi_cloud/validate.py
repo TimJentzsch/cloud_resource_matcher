@@ -1,8 +1,8 @@
 from optimizer.data import MultiCloudData, BaseData
-from optimizer.optimizer.extension import Extension
+from optimizer.workflow_engine import Task
 
 
-class ValidateMultiCloudExt(Extension[None]):
+class ValidateMultiCloudTask(Task[None]):
     base_data: BaseData
     multi_cloud_data: MultiCloudData
 
@@ -10,5 +10,5 @@ class ValidateMultiCloudExt(Extension[None]):
         self.base_data = base_data
         self.multi_cloud_data = multi_cloud_data
 
-    def action(self) -> None:
+    def execute(self) -> None:
         self.multi_cloud_data.validate(self.base_data)

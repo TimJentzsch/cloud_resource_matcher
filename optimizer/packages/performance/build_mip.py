@@ -1,11 +1,11 @@
 from pulp import LpProblem
 
 from optimizer.data import BaseData, PerformanceData
-from .base import BaseMipData
-from optimizer.optimizer.extension import Extension
+from optimizer.packages.base import BaseMipData
+from optimizer.workflow_engine import Task
 
 
-class BuildMipPerformanceExt(Extension[None]):
+class BuildMipPerformanceTask(Task[None]):
     base_data: BaseData
     performance_data: PerformanceData
     base_mip_data: BaseMipData
@@ -23,7 +23,7 @@ class BuildMipPerformanceExt(Extension[None]):
         self.base_mip_data = base_mip_data
         self.problem = problem
 
-    def action(self) -> None:
+    def execute(self) -> None:
         # Enforce performance limits for every service
         for vm in self.base_data.virtual_machines:
             for s in self.base_data.virtual_machine_services[vm]:

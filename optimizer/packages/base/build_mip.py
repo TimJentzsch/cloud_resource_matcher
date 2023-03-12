@@ -4,8 +4,7 @@ from pulp import LpVariable, LpProblem, LpAffineExpression, LpBinary, lpSum
 
 from optimizer.data import BaseData
 from optimizer.data.types import VirtualMachine, Service
-from optimizer.optimizer.extension import Extension
-
+from optimizer.workflow_engine import Task
 
 VarVmServiceMatching = dict[tuple[VirtualMachine, Service], LpVariable]
 ServiceVirtualMachines = dict[Service, set[VirtualMachine]]
@@ -19,7 +18,7 @@ class BaseMipData:
     var_service_used: dict[Service, LpVariable]
 
 
-class BuildMipBaseExt(Extension[BaseMipData]):
+class BuildMipBaseTask(Task[BaseMipData]):
     base_data: BaseData
     problem: LpProblem
     objective: LpAffineExpression
@@ -29,7 +28,7 @@ class BuildMipBaseExt(Extension[BaseMipData]):
         self.problem = problem
         self.objective = objective
 
-    def action(self) -> BaseMipData:
+    def execute(self) -> BaseMipData:
         # Pre-compute which services can host which VMs
         service_virtual_machines: ServiceVirtualMachines = {
             s: set(

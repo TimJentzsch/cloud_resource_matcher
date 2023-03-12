@@ -1,12 +1,29 @@
 from dataclasses import dataclass
 from datetime import timedelta
 
-from pulp import LpProblem, LpStatus, LpAffineExpression
+from pulp import LpProblem, LpMinimize, LpAffineExpression, LpStatus
 
 from optimizer.data.types import Cost
-from optimizer.optimizer.extension import Extension
 from optimizer.solver import Solver, get_pulp_solver
 from optimizer.solving import SolveError, SolveErrorReason
+from optimizer.workflow_engine import Task
+
+
+class CreateProblemTask(Task[LpProblem]):
+    def __init__(self):
+        pass
+
+    def execute(self) -> LpProblem:
+        # TODO: Add way to change name and min/max target
+        return LpProblem("optimization_problem", LpMinimize)
+
+
+class CreateObjectiveTask(Task[LpAffineExpression]):
+    def __init__(self):
+        pass
+
+    def execute(self) -> LpAffineExpression:
+        return LpAffineExpression()
 
 
 @dataclass
@@ -17,7 +34,7 @@ class SolveSettings:
     cost_gap_rel: float | None = None
 
 
-class SolveExt(Extension[None]):
+class SolveTask(Task[None]):
     problem: LpProblem
     objective: LpAffineExpression
     solve_settings: SolveSettings
@@ -29,7 +46,7 @@ class SolveExt(Extension[None]):
         self.objective = objective
         self.solve_settings = solve_settings
 
-    def action(self) -> None:
+    def execute(self) -> None:
         # Add objective to MIP
         self.problem.setObjective(self.objective)
 
@@ -47,3 +64,22 @@ class SolveExt(Extension[None]):
 
         if status != "Optimal":
             raise SolveError(SolveErrorReason.INFEASIBLE)
+
+
+@dataclass
+class SolutionCost:
+    """The total cost of the solution."""
+
+    cost: Cost
+
+
+class ExtractSolutionCostTask(Task[SolutionCost]):
+    problem: LpProblem
+
+    def __init__(self, problem: LpProblem):
+        self.problem = problem
+
+    def execute(self) -> SolutionCost:
+        cost = self.problem.objective.value()
+
+        return SolutionCost(cost)

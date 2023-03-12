@@ -3,10 +3,10 @@ from dataclasses import dataclass
 from pulp import LpProblem, LpAffineExpression, LpBinary, LpVariable, lpSum
 
 from optimizer.data import BaseData, NetworkData
-from .base import BaseMipData
-from optimizer.optimizer.extension import Extension
 from optimizer.data.network import Location
 from optimizer.data.types import VirtualMachine
+from optimizer.packages.base import BaseMipData
+from optimizer.workflow_engine import Task
 
 
 @dataclass
@@ -18,7 +18,7 @@ class NetworkMipData:
     ]
 
 
-class BuildMipNetworkExt(Extension[NetworkMipData]):
+class BuildMipNetworkTask(Task[NetworkMipData]):
     base_data: BaseData
     network_data: NetworkData
     base_mip_data: BaseMipData
@@ -39,7 +39,7 @@ class BuildMipNetworkExt(Extension[NetworkMipData]):
         self.problem = problem
         self.objective = objective
 
-    def action(self) -> NetworkMipData:
+    def execute(self) -> NetworkMipData:
         # Are the VMs v located at location loc?
         var_vm_locations: dict[tuple[VirtualMachine, Location], LpVariable] = {
             (v, loc): LpVariable(

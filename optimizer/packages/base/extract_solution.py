@@ -4,9 +4,8 @@ from pulp import pulp
 
 from optimizer.data import BaseData
 from optimizer.data.types import VirtualMachine, Service, TimeUnit
-from optimizer.extensions.build_mip.base import BaseMipData
-from optimizer.optimizer.extension import Extension
-
+from .build_mip import BaseMipData
+from optimizer.workflow_engine import Task
 
 VmServiceMatching = dict[tuple[VirtualMachine, Service, TimeUnit], int]
 ServiceInstanceCount = dict[tuple[Service, TimeUnit], int]
@@ -25,7 +24,7 @@ class BaseSolution:
     service_instance_count: ServiceInstanceCount
 
 
-class ExtractSolutionBaseExt(Extension[BaseSolution]):
+class ExtractSolutionBaseTask(Task[BaseSolution]):
     base_data: BaseData
     base_mip_data: BaseMipData
 
@@ -33,7 +32,7 @@ class ExtractSolutionBaseExt(Extension[BaseSolution]):
         self.base_data = base_data
         self.base_mip_data = base_mip_data
 
-    def action(self) -> BaseSolution:
+    def execute(self) -> BaseSolution:
         vm_service_matching: VmServiceMatching = dict()
 
         for v in self.base_data.virtual_machines:

@@ -1,8 +1,8 @@
 from optimizer.data import PerformanceData, BaseData
-from optimizer.optimizer.extension import Extension
+from optimizer.workflow_engine import Task
 
 
-class ValidatePerformanceExt(Extension[None]):
+class ValidatePerformanceTask(Task[None]):
     base_data: BaseData
     performance_data: PerformanceData
 
@@ -10,5 +10,5 @@ class ValidatePerformanceExt(Extension[None]):
         self.base_data = base_data
         self.performance_data = performance_data
 
-    def action(self) -> None:
+    def execute(self) -> None:
         self.performance_data.validate(self.base_data)

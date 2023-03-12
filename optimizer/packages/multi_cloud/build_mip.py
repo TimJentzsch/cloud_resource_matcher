@@ -4,8 +4,8 @@ from pulp import LpProblem, LpAffineExpression, LpBinary, LpVariable, lpSum
 
 from optimizer.data import BaseData, MultiCloudData
 from optimizer.data.types import CloudServiceProvider
-from .base import BaseMipData
-from optimizer.optimizer.extension import Extension
+from optimizer.packages.base import BaseMipData
+from optimizer.workflow_engine import Task
 
 
 @dataclass
@@ -13,7 +13,7 @@ class MultiCloudMipData:
     var_csp_used: dict[CloudServiceProvider, LpVariable]
 
 
-class BuildMipMultiCloudExt(Extension[MultiCloudMipData]):
+class BuildMipMultiCloudTask(Task[MultiCloudMipData]):
     base_data: BaseData
     multi_cloud_data: MultiCloudData
     base_mip_data: BaseMipData
@@ -34,7 +34,7 @@ class BuildMipMultiCloudExt(Extension[MultiCloudMipData]):
         self.problem = problem
         self.objective = objective
 
-    def action(self) -> MultiCloudMipData:
+    def execute(self) -> MultiCloudMipData:
         # Is cloud service provider k used at all?
         var_csp_used: dict[CloudServiceProvider, LpVariable] = {
             k: LpVariable(f"csp_used({k})", cat=LpBinary)

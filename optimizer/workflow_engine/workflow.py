@@ -5,7 +5,14 @@ from typing import Self, Any
 from .step import Step, StepData
 
 
-class Optimizer:
+class Workflow:
+    """
+    A complete workflow.
+
+    The workflow is composed of steps, which are executed sequentially.
+    Each step is composed of tasks, which can depend on each other.
+    """
+
     steps: list[Step]
 
     def __init__(self):
@@ -15,18 +22,18 @@ class Optimizer:
         self.steps.append(step)
         return self
 
-    def initialize(self, *args: Any) -> InitializedOptimizer:
+    def initialize(self, *args: Any) -> InitializedWorkflow:
         step_data = {type(data): data for data in args if data is not None}
 
-        return InitializedOptimizer(self, step_data)
+        return InitializedWorkflow(self, step_data)
 
 
-class InitializedOptimizer:
-    optimizer: Optimizer
+class InitializedWorkflow:
+    workflow: Workflow
     step_data: StepData
 
-    def __init__(self, optimizer: Optimizer, step_data: StepData):
-        self.optimizer = optimizer
+    def __init__(self, workflow: Workflow, step_data: StepData):
+        self.workflow = workflow
         self.step_data = step_data
 
     def add_data(self, data: Any) -> Self:
@@ -35,12 +42,12 @@ class InitializedOptimizer:
         return self
 
     def execute_step(self, index: int) -> StepData:
-        step = self.optimizer.steps[index]
+        step = self.workflow.steps[index]
         self.step_data = step.initialize(self.step_data).execute()
         return self.step_data
 
     def execute(self) -> StepData:
-        for step in self.optimizer.steps:
+        for step in self.workflow.steps:
             # Execute each step sequentially and update the step data
             self.step_data = step.initialize(self.step_data).execute()
 

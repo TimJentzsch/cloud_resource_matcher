@@ -1,8 +1,8 @@
 from optimizer.data import NetworkData, BaseData
-from optimizer.optimizer.extension import Extension
+from optimizer.workflow_engine import Task
 
 
-class ValidateNetworkExt(Extension[None]):
+class ValidateNetworkTask(Task[None]):
     base_data: BaseData
     network_data: NetworkData
 
@@ -10,5 +10,5 @@ class ValidateNetworkExt(Extension[None]):
         self.base_data = base_data
         self.network_data = network_data
 
-    def action(self) -> None:
+    def execute(self) -> None:
         self.network_data.validate(self.base_data)

@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Self, Type, Any
 
-from .extension import Extension
+from .task import Task
 
 
 logger = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ class ScheduleError(RuntimeError):
 
 
 @dataclass
-class ExtDependency:
+class TaskDependency:
     param: str
     annotation: Any
 
@@ -32,27 +32,34 @@ class ExtDependency:
         return f"{self.param}: {self.annotation.__name__}"
 
 
-# Data which can be injected into an extension.
+# Data which can be injected into an task.
 # The keys should be class objects which define the type of the data.
 StepData = dict[Any, Any]
 
 
 class Step:
+    """
+    One step in the workflow process.
+
+    Each step is composed of multiple tasks which will be executed within this step.
+    Multiple steps are executed sequentially.
+    """
+
     name: str
-    extensions: list[Type[Extension]]
+    tasks: list[Type[Task]]
 
     def __init__(self, name: str):
         self.name = name
-        self.extensions = []
+        self.tasks = []
 
-    def register_extension(self, extension: Type[Extension]) -> Self:
+    def add_task(self, task: Type[Task]) -> Self:
         """
-        Register an extension to use in this step.
+        Register a task to run in this step.
 
-        :param extension: The extension to register.
+        :param task: The task to register.
         :return: The same step, to use for function chaining.
         """
-        self.extensions.append(extension)
+        self.tasks.append(task)
         return self
 
     def initialize(self, step_data: StepData) -> InitializedStep:
@@ -70,74 +77,74 @@ class InitializedStep:
     def name(self) -> str:
         return self.step.name
 
-    def extensions(self) -> list[Type[Extension]]:
-        return self.step.extensions
+    def tasks(self) -> list[Type[Task]]:
+        return self.step.tasks
 
     def execute(self) -> StepData:
         """
-        Execute the step by executing the action of all extensions within it.
+        Execute the step by executing the action of all tasks within it.
 
-        The dependencies of each extension are injected automatically.
+        The dependencies of each task are injected automatically.
 
         :raises InjectionError: If the `__init__` or `action` methods are missing type annotations.
         This is necessary to inject the dependencies automatically.
-        :raises ScheduleError: If the extensions can't be scheduled,
+        :raises ScheduleError: If the tasks can't be scheduled,
         e.g. due to circular dependencies.
         :return: The step data, including the one generated during this step.
         """
         start_time = datetime.now()
         logger.info(f"Executing step {self.name()}...")
 
-        dependencies = self._extension_dependencies()
+        dependencies = self._task_dependencies()
 
-        ext_to_execute = [ext for ext in self.extensions()]
+        tasks_to_execute = [ext for ext in self.tasks()]
 
-        while len(ext_to_execute) > 0:
+        while len(tasks_to_execute) > 0:
             has_executed = False
 
             missing_dependencies = {
-                ext: [
-                    dep for dep in dependencies[ext] if dep.annotation not in self.step_data.keys()
+                task: [
+                    dep for dep in dependencies[task] if dep.annotation not in self.step_data.keys()
                 ]
-                for ext in ext_to_execute
+                for task in tasks_to_execute
             }
 
-            for ext in ext_to_execute:
-                if len(missing_dependencies[ext]) == 0:
-                    # Create the data parameters to instantiate the extension
+            for task in tasks_to_execute:
+                if len(missing_dependencies[task]) == 0:
+                    # Create the data parameters to instantiate the task
                     dep_data = {
-                        dep.param: self.step_data[dep.annotation] for dep in dependencies[ext]
+                        dep.param: self.step_data[dep.annotation] for dep in dependencies[task]
                     }
-                    # Determine what type of data is created by the extension
-                    data_annotation = inspect.signature(ext.action).return_annotation
+                    # Determine what type of data is created by the task
+                    data_annotation = inspect.signature(task.execute).return_annotation
 
-                    # Instantiate the extension, using the data it requires
-                    ext_obj = ext(**dep_data)
+                    # Instantiate the task, using the data it requires
+                    task_obj = task(**dep_data)
 
-                    # Execute the action of the extension and save the returned data
-                    data = ext_obj.action()
+                    # Execute the action of the task and save the returned data
+                    data = task_obj.execute()
 
                     if data is None and data_annotation is not None:
                         raise InjectionError(
-                            f"Extension {ext} returned data, but has not type annotation for it. "
-                            "This prevents the data from being accessible to other extensions."
+                            f"Task {task} returned data, but has not type annotation for it. "
+                            "This prevents the data from being accessible to other tasks."
                         )
                     elif data is not None:
-                        # Make the data available to other extensions
+                        # Make the data available to other tasks
                         self.step_data[data_annotation] = data
 
                     has_executed = True
-                    ext_to_execute = [ext2 for ext2 in ext_to_execute if ext != ext2]
+                    tasks_to_execute = [ext2 for ext2 in tasks_to_execute if task != ext2]
 
             # Protection against infinite loops in case of circular or missing dependencies
             if not has_executed:
-                ext_strs = [ext.__name__ for ext in ext_to_execute]
+                ext_strs = [ext.__name__ for ext in tasks_to_execute]
                 missing_deps_strs = "\n".join(
                     f"- {ext.__name__}: {missing_deps}"
                     for ext, missing_deps in missing_dependencies.items()
                 )
                 raise ScheduleError(
-                    "The extensions could not be scheduled, "
+                    "The tasks could not be scheduled, "
                     f"{ext_strs} have unfulfilled dependencies:\n"
                     f"{missing_deps_strs}"
                 )
@@ -148,19 +155,19 @@ class InitializedStep:
 
         return self.step_data
 
-    def _extension_dependencies(self) -> dict[Type[Extension], list[ExtDependency]]:
+    def _task_dependencies(self) -> dict[Type[Task], list[TaskDependency]]:
         """
-        Determine which extension depends on which type of data.
+        Determine which task depends on which type of data.
 
-        :return: For each extension, a list of its dependencies.
+        :return: For each task, a list of its dependencies.
         """
-        dependencies: dict[Type[Extension], list[ExtDependency]] = dict()
+        dependencies: dict[Type[Task], list[TaskDependency]] = dict()
 
-        # Collect the dependencies for each extension
-        for ext in self.extensions():
-            init_params = inspect.signature(ext.__init__).parameters
+        # Collect the dependencies for each task
+        for task in self.tasks():
+            init_params = inspect.signature(task.__init__).parameters
 
-            ext_dependencies: list[ExtDependency] = []
+            task_dependencies: list[TaskDependency] = []
 
             for param, signature in init_params.items():
                 # We don't need to inject the `self` parameter, skip it
@@ -171,13 +178,13 @@ class InitializedStep:
 
                 if annotation is None:
                     raise InjectionError(
-                        f"The __init__ method of extension {ext} "
+                        f"The __init__ method of task {task} "
                         "needs type annotation on its parameters. "
                         "This is needed to properly inject the dependencies."
                     )
 
-                ext_dependencies.append(ExtDependency(param=param, annotation=annotation))
+                task_dependencies.append(TaskDependency(param=param, annotation=annotation))
 
-            dependencies[ext] = ext_dependencies
+            dependencies[task] = task_dependencies
 
         return dependencies
