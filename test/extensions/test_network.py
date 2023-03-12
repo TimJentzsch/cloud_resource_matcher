@@ -1,5 +1,5 @@
 from optimizer.data import BaseData, NetworkData
-from optimizer.framework import Optimizer
+from optiframe import Optimizer
 from optimizer.packages import BASE_PACKAGE, NETWORK_PACKAGE
 from test.framework import Expect
 

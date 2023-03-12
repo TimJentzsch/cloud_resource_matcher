@@ -5,7 +5,7 @@ from pulp import LpProblem, LpAffineExpression, LpBinary, LpVariable, lpSum
 from optimizer.data import BaseData, MultiCloudData
 from optimizer.data.types import CloudServiceProvider
 from optimizer.packages.base import BaseMipData
-from optimizer.workflow_engine import Task
+from optiframe import Task
 
 
 @dataclass

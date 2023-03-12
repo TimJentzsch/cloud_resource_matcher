@@ -6,7 +6,7 @@ from optimizer.data import BaseData, NetworkData
 from optimizer.data.network import Location
 from optimizer.data.types import VirtualMachine
 from optimizer.packages.base import BaseMipData
-from optimizer.workflow_engine import Task
+from optiframe import Task
 
 
 @dataclass

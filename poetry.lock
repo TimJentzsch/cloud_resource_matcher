@@ -120,6 +120,25 @@ files = [
 setuptools = "*"
 
 [[package]]
+name = "optiframe"
+version = "0.1.0"
+description = "A modular framework for mixed integer programming"
+category = "main"
+optional = false
+python-versions = ">=3.11.0rc1"
+files = []
+develop = false
+
+[package.dependencies]
+pulp = "^2.7.0"
+
+[package.source]
+type = "git"
+url = "https://github.com/TimJentzsch/optiframe.git"
+reference = "main"
+resolved_reference = "a9af97197a2cf841fe5cad32cff2acee2d34db97"
+
+[[package]]
 name = "packaging"
 version = "23.0"
 description = "Core utilities for Python packages"
@@ -278,4 +297,4 @@ testing-integration = ["build[virtualenv]", "filelock (>=3.4.0)", "jaraco.envs (
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "59bc1923acbc9489dc5ebe056ec8bb6ef164f87244f5fe78f8e8e341023a8562"
+content-hash = "fe0a486f686a021bbe60270cc2c64cff8b72baf96c2711c0fb98e5137f19be05"
