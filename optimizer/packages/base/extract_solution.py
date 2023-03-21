@@ -5,7 +5,7 @@ from pulp import pulp
 from optimizer.data import BaseData
 from optimizer.data.types import VirtualMachine, Service, TimeUnit
 from .build_mip import BaseMipData
-from optimizer.workflow_engine import Task
+from optiframe import Task
 
 VmServiceMatching = dict[tuple[VirtualMachine, Service, TimeUnit], int]
 ServiceInstanceCount = dict[tuple[Service, TimeUnit], int]

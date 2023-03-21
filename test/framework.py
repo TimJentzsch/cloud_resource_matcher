@@ -7,14 +7,10 @@ from typing import Self, Optional, Dict, List, Iterable
 import pytest
 from pulp import LpVariable, LpProblem
 
-from optimizer.framework import InitializedOptimizer, BuiltOptimizer
-from optimizer.framework.tasks import SolutionCost
+from optiframe.framework import InitializedOptimizer, BuiltOptimizer
 from optimizer.packages.base import BaseSolution
 from optimizer.packages.base.extract_solution import VmServiceMatching, ServiceInstanceCount
-from optimizer.solving import (
-    SolveErrorReason,
-    SolveError,
-)
+from optiframe import SolutionObjValue, InfeasibleError
 from optimizer.data.types import Service, VirtualMachine, Cost
 
 
@@ -108,7 +104,7 @@ class _ExpectResult:
 
     def _solve(self) -> SolveSolution:
         data = self._expect._optimizer.solve()
-        return SolveSolution(cost=data[SolutionCost].cost, base=data[BaseSolution])
+        return SolveSolution(cost=data[SolutionObjValue].objective_value, base=data[BaseSolution])
 
     def _fix_variable_values(self):
         # The warning here is invalid, the type is incorrectly specified in PuLP
@@ -147,8 +143,8 @@ class _ExpectInfeasible(_ExpectResult):
         try:
             solution = self._solve()
             pytest.fail(f"Expected problem to be infeasible, got {solution}")
-        except SolveError as err:
-            assert err.reason == SolveErrorReason.INFEASIBLE
+        except InfeasibleError:
+            pass
 
 
 class _ExpectFeasible(_ExpectResult):
@@ -214,9 +210,9 @@ class _ExpectFeasible(_ExpectResult):
             self._test_vm_service_matching(solution)
             self._test_service_instance_count(solution)
             self._test_cost(solution)
-        except SolveError as err:
+        except InfeasibleError:
             self._print_model()
-            pytest.fail(f"Expected problem to be feasible, got {err}")
+            pytest.fail("Expected problem to be feasible, but it was infeasible")
 
     def _test_cost(self, solution: SolveSolution):
         if self._cost is None or self._epsilon is None:

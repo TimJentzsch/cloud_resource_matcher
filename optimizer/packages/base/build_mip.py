@@ -4,7 +4,7 @@ from pulp import LpVariable, LpProblem, LpAffineExpression, LpBinary, lpSum
 
 from optimizer.data import BaseData
 from optimizer.data.types import VirtualMachine, Service
-from optimizer.workflow_engine import Task
+from optiframe import Task
 
 VarVmServiceMatching = dict[tuple[VirtualMachine, Service], LpVariable]
 ServiceVirtualMachines = dict[Service, set[VirtualMachine]]

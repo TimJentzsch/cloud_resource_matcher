@@ -1,10 +1,10 @@
 from optimizer.data import BaseData, NetworkData
-from optimizer.framework import Optimizer
+from optiframe import Optimizer
 from optimizer.packages import BASE_PACKAGE, NETWORK_PACKAGE
 from test.framework import Expect
 
 
-OPTIMIZER = Optimizer().add_package(BASE_PACKAGE).add_package(NETWORK_PACKAGE)
+OPTIMIZER = Optimizer("test_network").add_package(BASE_PACKAGE).add_package(NETWORK_PACKAGE)
 
 
 def test_computation_of_vm_locations():

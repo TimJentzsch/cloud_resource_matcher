@@ -1,5 +1,5 @@
 from optimizer.data import PerformanceData, BaseData
-from optimizer.workflow_engine import Task
+from optiframe import Task
 
 
 class ValidatePerformanceTask(Task[None]):

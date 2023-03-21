@@ -2,7 +2,7 @@ from pulp import LpProblem
 
 from optimizer.data import BaseData, PerformanceData
 from optimizer.packages.base import BaseMipData
-from optimizer.workflow_engine import Task
+from optiframe import Task
 
 
 class BuildMipPerformanceTask(Task[None]):
