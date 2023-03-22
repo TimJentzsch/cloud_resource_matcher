@@ -166,8 +166,8 @@ pulp = "^2.7.0"
 [package.source]
 type = "git"
 url = "https://github.com/TimJentzsch/optiframe.git"
-reference = "declare-types"
-resolved_reference = "563100fef93b8b0c6304603b12f22078f63d29c9"
+reference = "main"
+resolved_reference = "33df91ff21fb1f3c0dd04e8de639d79acab1bfa5"
 
 [[package]]
 name = "packaging"
@@ -304,4 +304,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "43d3632460961b40cec536faa1ded3b4d1de13bc8735c7419d01dd872639f2e2"
+content-hash = "6d4e70245b81a09ad9f4adc685f600ee5030b05e0e2e0067960136a77b584743"
