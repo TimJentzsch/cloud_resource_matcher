@@ -6,3 +6,5 @@ from optiframe.framework import OptimizationPackage
 BASE_PACKAGE = OptimizationPackage(
     validate=ValidateBaseTask, build_mip=BuildMipBaseTask, extract_solution=ExtractSolutionBaseTask
 )
+
+__all__ = ["BaseMipData", "BaseSolution"]
