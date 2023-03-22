@@ -18,7 +18,7 @@ optiframe = { git = "https://github.com/TimJentzsch/optiframe.git", branch = "ma
 black = "^22.12.0"
 ruff = "^0.0.246"
 pytest = "^7.2.0"
-pyright = "^1.1.286"
+mypy = "^1.1.1"
 
 [tool.pyright]
 include = ["optimizer", "test"]
@@ -29,9 +29,6 @@ line-length = 100
 
 [tool.ruff]
 line-length = 100
-
-[tool.ruff.per-file-ignores]
-"__init__.py" = ["F401"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

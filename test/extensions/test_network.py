@@ -7,7 +7,7 @@ from test.framework import Expect
 OPTIMIZER = Optimizer("test_network").add_package(BASE_PACKAGE).add_package(NETWORK_PACKAGE)
 
 
-def test_computation_of_vm_locations():
+def test_computation_of_vm_locations() -> None:
     """Ensure that the location of a VM corresponds to the service it's placed at.
 
     One VM is only at one location.
@@ -50,7 +50,7 @@ def test_computation_of_vm_locations():
     ).test()
 
 
-def test_should_pay_for_vm_location_costs():
+def test_should_pay_for_vm_location_costs() -> None:
     """
     Ensure that the cost of traffic between VMs and specific locations is paid for.
     """
@@ -81,7 +81,7 @@ def test_should_pay_for_vm_location_costs():
     Expect(optimizer).to_be_feasible().with_cost(3 * 5 + 3 * 3 * 2).test()
 
 
-def test_should_be_infeasible_if_max_latency_is_violated():
+def test_should_be_infeasible_if_max_latency_is_violated() -> None:
     """
     The virtual machine can only be placed in a location where the max latency
     can't be respected.
@@ -117,7 +117,7 @@ def test_should_be_infeasible_if_max_latency_is_violated():
     Expect(optimizer).to_be_infeasible().test()
 
 
-def test_should_choose_matching_that_respects_max_latency():
+def test_should_choose_matching_that_respects_max_latency() -> None:
     """The VM can be placed in two locations, but only one has low enough latency."""
     locations = {"loc_0", "loc_1"}
 
@@ -157,7 +157,7 @@ def test_should_choose_matching_that_respects_max_latency():
     ).test()
 
 
-def test_should_calculate_connections_between_vms():
+def test_should_calculate_connections_between_vms() -> None:
     """Two VMs are connected and need to be placed in two different locations."""
     locations = {"loc_0", "loc_1"}
 
@@ -206,7 +206,7 @@ def test_should_calculate_connections_between_vms():
     ).test()
 
 
-def test_should_consider_latency_for_vm_vm_connections():
+def test_should_consider_latency_for_vm_vm_connections() -> None:
     """One of the connections between two VMs violates the maximum latency."""
     locations = {"loc_0", "loc_1"}
 

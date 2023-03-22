@@ -7,7 +7,7 @@ from test.framework import Expect
 OPTIMIZER = Optimizer("test_performance").add_package(BASE_PACKAGE).add_package(PERFORMANCE_PACKAGE)
 
 
-def test_with_sufficient_resources():
+def test_with_sufficient_resources() -> None:
     """The service has enough resources to host the VM."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
@@ -32,7 +32,7 @@ def test_with_sufficient_resources():
     ).test()
 
 
-def test_with_insufficient_ram():
+def test_with_insufficient_ram() -> None:
     """The only service does not have enough RAM for the VM."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
@@ -55,7 +55,7 @@ def test_with_insufficient_ram():
     Expect(optimizer).to_be_infeasible().test()
 
 
-def test_with_insufficient_cpu_count():
+def test_with_insufficient_cpu_count() -> None:
     """The only service does not have enough vCPUs for the VM."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
@@ -78,7 +78,7 @@ def test_with_insufficient_cpu_count():
     Expect(optimizer).to_be_infeasible().test()
 
 
-def test_resource_matching():
+def test_resource_matching() -> None:
     """Each VM has one service matching its requirements exactly.
 
     There is only one valid matching: Assigning each VM to their matching service.
@@ -111,7 +111,7 @@ def test_resource_matching():
     ).test()
 
 
-def test_cheap_insufficient_service():
+def test_cheap_insufficient_service() -> None:
     """There are two services, but the cheaper one has insufficient resources."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
@@ -137,7 +137,7 @@ def test_cheap_insufficient_service():
     ).test()
 
 
-def test_allowed_incomplete_data():
+def test_allowed_incomplete_data() -> None:
     """
     Make sure that the user is allowed to leave data undefined where it makes sense.
     """
@@ -163,7 +163,7 @@ def test_allowed_incomplete_data():
     Expect(optimizer).to_be_feasible()
 
 
-def test_should_work_with_higher_virtual_machine_demand():
+def test_should_work_with_higher_virtual_machine_demand() -> None:
     """Some virtual machines have a demand higher than 1."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
@@ -186,7 +186,7 @@ def test_should_work_with_higher_virtual_machine_demand():
     Expect(optimizer).to_be_feasible().with_vm_service_matching({("vm_0", "s_0", 0): 2})
 
 
-def test_should_buy_multiple_services_if_needed():
+def test_should_buy_multiple_services_if_needed() -> None:
     """There are two virtual machines and one service instance can only host one VM."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
@@ -211,7 +211,7 @@ def test_should_buy_multiple_services_if_needed():
     ).with_service_instance_count({("s_0", 0): 2}).with_cost(2)
 
 
-def test_should_be_feasible_if_service_can_be_bought_enough_times_two_instances():
+def test_should_be_feasible_if_service_can_be_bought_enough_times_two_instances() -> None:
     """There is demand for two VM instances, which each occupy the service fully.
     Two service instances can be bought to cover this demand.
     """
@@ -238,7 +238,7 @@ def test_should_be_feasible_if_service_can_be_bought_enough_times_two_instances(
     ).with_service_instance_count({("s_0", 0): 2}).test()
 
 
-def test_should_be_feasible_if_service_can_be_bought_enough_times_two_vms():
+def test_should_be_feasible_if_service_can_be_bought_enough_times_two_vms() -> None:
     """There is demand for two VMs, which each occupy the service fully.
     Two service instances can be bought to cover this demand.
     """
@@ -265,7 +265,7 @@ def test_should_be_feasible_if_service_can_be_bought_enough_times_two_vms():
     ).with_service_instance_count({("s_0", 0): 2}).test()
 
 
-def test_should_be_infeasible_if_vms_cant_be_split():
+def test_should_be_infeasible_if_vms_cant_be_split() -> None:
     """There is a service with performance 3 and max instance count of 2.
     There is a demand of VMs with performance 2 and demand 3.
 
@@ -294,7 +294,7 @@ def test_should_be_infeasible_if_vms_cant_be_split():
     Expect(optimizer).to_be_infeasible().test()
 
 
-def test_should_be_infeasible_if_not_enough_service_instances_can_be_bought():
+def test_should_be_infeasible_if_not_enough_service_instances_can_be_bought() -> None:
     """There is demand for two VMs, which each occupy the service fully.
     But only one instance of the service may be bought.
     """

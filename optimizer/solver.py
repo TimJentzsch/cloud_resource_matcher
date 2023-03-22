@@ -1,6 +1,6 @@
 from datetime import timedelta
 from enum import Enum
-from typing import Optional
+from typing import Optional, Any
 
 import pulp
 
@@ -31,7 +31,7 @@ def get_pulp_solver(
     time_limit: Optional[timedelta] = None,
     cost_gap_abs: Optional[Cost] = None,
     cost_gap_rel: Optional[float] = None,
-):
+) -> Any:
     """Get the corresponding pulp solver for the solver type."""
     time_limit_sec = None if time_limit is None else time_limit.total_seconds()
 

@@ -3,7 +3,7 @@ import pytest
 from optimizer.data import BaseData, NetworkData
 
 
-def test_should_not_raise_error_for_valid_data():
+def test_should_not_raise_error_for_valid_data() -> None:
     """Validating valid data should not raise an assertion error."""
     base_data = BaseData(
         virtual_machines=["vm_0"],
@@ -30,7 +30,7 @@ def test_should_not_raise_error_for_valid_data():
 
 
 class TestValidateLocationLatency:
-    def test_should_raise_error_for_missing_location_pair(self):
+    def test_should_raise_error_for_missing_location_pair(self) -> None:
         """One location pair does not have a latency defined between them."""
         base_data = BaseData(
             virtual_machines=["vm_0"],
@@ -56,7 +56,7 @@ class TestValidateLocationLatency:
         with pytest.raises(AssertionError):
             network_data.validate(base_data)
 
-    def test_should_raise_error_for_invalid_location(self):
+    def test_should_raise_error_for_invalid_location(self) -> None:
         """One location in the definitions does not exist."""
         base_data = BaseData(
             virtual_machines=["vm_0"],
@@ -82,7 +82,7 @@ class TestValidateLocationLatency:
         with pytest.raises(AssertionError):
             network_data.validate(base_data)
 
-    def test_should_raise_error_for_negative_latency(self):
+    def test_should_raise_error_for_negative_latency(self) -> None:
         """One location pair has a negative latency."""
         base_data = BaseData(
             virtual_machines=["vm_0"],
@@ -110,7 +110,7 @@ class TestValidateLocationLatency:
 
 
 class TestValidateServiceLocation:
-    def test_should_raise_error_on_missing_service(self):
+    def test_should_raise_error_on_missing_service(self) -> None:
         """One service has no location defined."""
 
         base_data = BaseData(
@@ -137,7 +137,7 @@ class TestValidateServiceLocation:
         with pytest.raises(AssertionError):
             network_data.validate(base_data)
 
-    def test_should_raise_error_on_invalid_service(self):
+    def test_should_raise_error_on_invalid_service(self) -> None:
         """The max_cloud_service_provider_count is negative."""
 
         base_data = BaseData(
@@ -164,7 +164,7 @@ class TestValidateServiceLocation:
         with pytest.raises(AssertionError):
             network_data.validate(base_data)
 
-    def test_should_raise_error_on_invalid_location(self):
+    def test_should_raise_error_on_invalid_location(self) -> None:
         """A specified location does not exist."""
 
         base_data = BaseData(
@@ -193,7 +193,7 @@ class TestValidateServiceLocation:
 
 
 class TestValidateVirtualMachineMaxLatency:
-    def test_should_raise_error_on_invalid_virtual_machine(self):
+    def test_should_raise_error_on_invalid_virtual_machine(self) -> None:
         """One virtual machine does not exist."""
 
         base_data = BaseData(
@@ -220,7 +220,7 @@ class TestValidateVirtualMachineMaxLatency:
         with pytest.raises(AssertionError):
             network_data.validate(base_data)
 
-    def test_should_raise_error_on_invalid_location(self):
+    def test_should_raise_error_on_invalid_location(self) -> None:
         """One location does not exist."""
 
         base_data = BaseData(
@@ -247,7 +247,7 @@ class TestValidateVirtualMachineMaxLatency:
         with pytest.raises(AssertionError):
             network_data.validate(base_data)
 
-    def test_should_raise_error_on_negative_latency(self):
+    def test_should_raise_error_on_negative_latency(self) -> None:
         """One of the maximum latencies is negative."""
 
         base_data = BaseData(
@@ -276,7 +276,7 @@ class TestValidateVirtualMachineMaxLatency:
 
 
 class TestValidateVirtualMachineLocationTraffic:
-    def test_should_raise_error_on_invalid_virtual_machine(self):
+    def test_should_raise_error_on_invalid_virtual_machine(self) -> None:
         """One virtual machine does not exist."""
 
         base_data = BaseData(
@@ -306,7 +306,7 @@ class TestValidateVirtualMachineLocationTraffic:
         with pytest.raises(AssertionError):
             network_data.validate(base_data)
 
-    def test_should_raise_error_on_invalid_location(self):
+    def test_should_raise_error_on_invalid_location(self) -> None:
         """One location does not exist."""
 
         base_data = BaseData(
@@ -336,7 +336,7 @@ class TestValidateVirtualMachineLocationTraffic:
         with pytest.raises(AssertionError):
             network_data.validate(base_data)
 
-    def test_should_raise_error_on_negative_traffic(self):
+    def test_should_raise_error_on_negative_traffic(self) -> None:
         """One of the traffics is negative."""
 
         base_data = BaseData(
@@ -365,7 +365,7 @@ class TestValidateVirtualMachineLocationTraffic:
 
 
 class TestValidateVirtualMachineVirtualMachineTraffic:
-    def test_should_raise_error_on_invalid_virtual_machine(self):
+    def test_should_raise_error_on_invalid_virtual_machine(self) -> None:
         """One virtual machine does not exist."""
 
         base_data = BaseData(
@@ -392,7 +392,7 @@ class TestValidateVirtualMachineVirtualMachineTraffic:
         with pytest.raises(AssertionError):
             network_data.validate(base_data)
 
-    def test_should_raise_error_on_negative_traffic(self):
+    def test_should_raise_error_on_negative_traffic(self) -> None:
         """One location does not exist."""
 
         base_data = BaseData(
@@ -421,7 +421,7 @@ class TestValidateVirtualMachineVirtualMachineTraffic:
 
 
 class TestValidateLocationTrafficCost:
-    def test_should_raise_error_on_invalid_location(self):
+    def test_should_raise_error_on_invalid_location(self) -> None:
         """One location does not exist."""
 
         base_data = BaseData(
@@ -448,7 +448,7 @@ class TestValidateLocationTrafficCost:
         with pytest.raises(AssertionError):
             network_data.validate(base_data)
 
-    def test_should_raise_error_on_missing_location_pair(self):
+    def test_should_raise_error_on_missing_location_pair(self) -> None:
         """One location pair has no costs defined."""
 
         base_data = BaseData(

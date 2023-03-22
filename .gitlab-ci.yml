@@ -23,7 +23,7 @@ Check formatting:
 Check types:
   stage: lint
   script:
-    - poetry run pyright
+    - poetry run mypy .
 
 Check lints:
   stage: lint

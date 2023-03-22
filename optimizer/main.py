@@ -120,7 +120,7 @@ def solve_demo_model(
     return SolveSolution(cost=data[SolutionObjValue].objective_value, base=data[BaseSolution])
 
 
-def main():
+def main() -> None:
     import logging
     import argparse
 

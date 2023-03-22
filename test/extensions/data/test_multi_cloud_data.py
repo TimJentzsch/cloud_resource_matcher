@@ -3,7 +3,7 @@ import pytest
 from optimizer.data import BaseData, MultiCloudData
 
 
-def test_should_not_raise_error_for_valid_data():
+def test_should_not_raise_error_for_valid_data() -> None:
     """Validating valid data should not raise an assertion error."""
     base_data = BaseData(
         virtual_machines=["vm_0"],
@@ -26,7 +26,7 @@ def test_should_not_raise_error_for_valid_data():
 
 
 class TestValidateCloudServiceProviderServices:
-    def test_should_raise_error_for_missing_cloud_service_provider(self):
+    def test_should_raise_error_for_missing_cloud_service_provider(self) -> None:
         """One CSP is missing the definition of services that belong to it."""
         base_data = BaseData(
             virtual_machines=["vm_0"],
@@ -48,7 +48,7 @@ class TestValidateCloudServiceProviderServices:
         with pytest.raises(AssertionError):
             multi_data.validate(base_data)
 
-    def test_should_raise_error_for_invalid_cloud_service_provider(self):
+    def test_should_raise_error_for_invalid_cloud_service_provider(self) -> None:
         """One CSP in the definitions does not exist."""
         base_data = BaseData(
             virtual_machines=["vm_0"],
@@ -70,7 +70,7 @@ class TestValidateCloudServiceProviderServices:
         with pytest.raises(AssertionError):
             multi_data.validate(base_data)
 
-    def test_should_raise_error_for_invalid_service(self):
+    def test_should_raise_error_for_invalid_service(self) -> None:
         """One service in the definitions does not exist."""
         base_data = BaseData(
             virtual_machines=["vm_0"],
@@ -92,7 +92,7 @@ class TestValidateCloudServiceProviderServices:
         with pytest.raises(AssertionError):
             multi_data.validate(base_data)
 
-    def test_should_raise_error_for_unmatched_service(self):
+    def test_should_raise_error_for_unmatched_service(self) -> None:
         """One service has not been matched to a CSP."""
         base_data = BaseData(
             virtual_machines=["vm_0"],
@@ -116,7 +116,7 @@ class TestValidateCloudServiceProviderServices:
 
 
 class TestValidateCloudServiceProviderMinMaxCounts:
-    def test_should_raise_error_on_negative_min_count(self):
+    def test_should_raise_error_on_negative_min_count(self) -> None:
         """The min_cloud_service_provider_count is negative."""
 
         base_data = BaseData(
@@ -139,7 +139,7 @@ class TestValidateCloudServiceProviderMinMaxCounts:
         with pytest.raises(AssertionError):
             multi_data.validate(base_data)
 
-    def test_should_raise_error_on_negative_max_count(self):
+    def test_should_raise_error_on_negative_max_count(self) -> None:
         """The max_cloud_service_provider_count is negative."""
 
         base_data = BaseData(
@@ -162,7 +162,7 @@ class TestValidateCloudServiceProviderMinMaxCounts:
         with pytest.raises(AssertionError):
             multi_data.validate(base_data)
 
-    def test_should_raise_error_on_max_smaller_min_count(self):
+    def test_should_raise_error_on_max_smaller_min_count(self) -> None:
         """
         The max_cloud_service_provider_count is smaller than
         max_cloud_service_provider_count.
