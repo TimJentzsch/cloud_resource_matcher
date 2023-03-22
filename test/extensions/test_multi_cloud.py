@@ -7,7 +7,7 @@ from test.framework import Expect
 OPTIMIZER = Optimizer("test_multi_cloud").add_package(BASE_PACKAGE).add_package(MULTI_CLOUD_PACKAGE)
 
 
-def test_min_csp_count_constraint_matching():
+def test_min_csp_count_constraint_matching() -> None:
     """There are two CSPs, one cheap and one expensive.
     To respect the min CSP count constraint, both CSPs have to be used.
     """
@@ -37,7 +37,7 @@ def test_min_csp_count_constraint_matching():
     ).with_variable_values({"csp_used(csp_0)": 1, "csp_used(csp_1)": 1}).test()
 
 
-def test_max_csp_count_constraint_matching():
+def test_max_csp_count_constraint_matching() -> None:
     """There are two CSPs, it would be cheapest to use most of them.
     To respect the max CSP count constraint, only one CSP can be used.
     """
@@ -67,7 +67,7 @@ def test_max_csp_count_constraint_matching():
     ).with_variable_values({"csp_used(csp_0)": 1, "csp_used(csp_1)": 0}).test()
 
 
-def test_min_csp_count_constraint_infeasible():
+def test_min_csp_count_constraint_infeasible() -> None:
     """Two CSPs have to be used, but there is only one CSP."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
@@ -90,7 +90,7 @@ def test_min_csp_count_constraint_infeasible():
     Expect(optimizer).to_be_infeasible().test()
 
 
-def test_max_csp_count_constraint_infeasible():
+def test_max_csp_count_constraint_infeasible() -> None:
     """Only one CSP must be used, but it's only possible with two."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
@@ -113,7 +113,7 @@ def test_max_csp_count_constraint_infeasible():
     Expect(optimizer).to_be_infeasible().test()
 
 
-def test_with_multiple_time_points():
+def test_with_multiple_time_points() -> None:
     """Make sure that the CSP constraints also work for multiple time points."""
     optimizer = OPTIMIZER.initialize(
         BaseData(

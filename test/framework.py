@@ -81,7 +81,7 @@ class _ExpectResult:
     def __init__(self, expect: Expect):
         self._expect = expect
 
-    def test(self):
+    def test(self) -> None:
         """Test all conditions."""
         # First, fix the model's variables to the given values, if applicable
         self._fix_variable_values()
@@ -106,7 +106,7 @@ class _ExpectResult:
         data = self._expect._optimizer.solve()
         return SolveSolution(cost=data[SolutionObjValue].objective_value, base=data[BaseSolution])
 
-    def _fix_variable_values(self):
+    def _fix_variable_values(self) -> None:
         # The warning here is invalid, the type is incorrectly specified in PuLP
         variables: List[LpVariable] = self._problem().variables()
 
@@ -117,7 +117,7 @@ class _ExpectResult:
                     var.fixValue()
                     break
 
-    def _test_variables(self):
+    def _test_variables(self) -> None:
         variables = [var.name for var in self._problem().variables()]
         missing_variables = [var for var in self._expect._variables if var not in variables]
         for var in missing_variables:
@@ -137,7 +137,7 @@ class _ExpectInfeasible(_ExpectResult):
     def __init__(self, expect: Expect):
         super(_ExpectInfeasible, self).__init__(expect)
 
-    def test(self):
+    def test(self) -> None:
         super(_ExpectInfeasible, self).test()
 
         try:
@@ -200,7 +200,7 @@ class _ExpectFeasible(_ExpectResult):
 
         return self
 
-    def test(self):
+    def test(self) -> None:
         super(_ExpectFeasible, self).test()
 
         try:
@@ -214,14 +214,14 @@ class _ExpectFeasible(_ExpectResult):
             self._print_model()
             pytest.fail("Expected problem to be feasible, but it was infeasible")
 
-    def _test_cost(self, solution: SolveSolution):
+    def _test_cost(self, solution: SolveSolution) -> None:
         if self._cost is None or self._epsilon is None:
             return
 
         if math.fabs(solution.cost - self._cost) > self._epsilon:
             pytest.fail(f"Expected cost of {self._cost}, got {solution.cost}")
 
-    def _test_vm_service_matching(self, solution: SolveSolution):
+    def _test_vm_service_matching(self, solution: SolveSolution) -> None:
         if self._vm_service_matching is None:
             return
 
@@ -229,7 +229,7 @@ class _ExpectFeasible(_ExpectResult):
             solution.base.vm_service_matching == self._vm_service_matching
         ), "Different VM/Service matching than expected"
 
-    def _test_service_instance_count(self, solution: SolveSolution):
+    def _test_service_instance_count(self, solution: SolveSolution) -> None:
         if self._service_instance_count is None:
             return
 
@@ -237,7 +237,7 @@ class _ExpectFeasible(_ExpectResult):
             solution.base.service_instance_count == self._service_instance_count
         ), "Different service instance counts than expected"
 
-    def _test_variable_values(self):
+    def _test_variable_values(self) -> None:
         actual_values = {
             var.name: var.value()
             for var in self._problem().variables()
@@ -254,6 +254,6 @@ class _ExpectFeasible(_ExpectResult):
         if len(wrong_values) > 0:
             pytest.fail(f"Wrong variable values: {wrong_values}")
 
-    def _print_model(self, line_limit: int = 100):
+    def _print_model(self, line_limit: int = 100) -> None:
         """Print out the LP model to debug infeasible problems."""
         print(self._expect._optimizer.get_lp_string(line_limit=line_limit))

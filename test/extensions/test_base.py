@@ -6,7 +6,7 @@ from test.framework import Expect
 OPTIMIZER = Optimizer("test_base").add_package(BASE_PACKAGE)
 
 
-def test_one_vm_one_service_trivial_solution():
+def test_one_vm_one_service_trivial_solution() -> None:
     """One VM has one valid service and has to match to it."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
@@ -25,7 +25,7 @@ def test_one_vm_one_service_trivial_solution():
     ).test()
 
 
-def test_only_one_valid_matching():
+def test_only_one_valid_matching() -> None:
     """Every VM has only one valid service."""
     count = 100
 
@@ -46,7 +46,7 @@ def test_only_one_valid_matching():
     ).test()
 
 
-def test_no_valid_systems_for_vm():
+def test_no_valid_systems_for_vm() -> None:
     """There are no valid services for the only VM."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
@@ -63,7 +63,7 @@ def test_no_valid_systems_for_vm():
     Expect(optimizer).to_be_infeasible().test()
 
 
-def test_one_vm_multiple_time_units():
+def test_one_vm_multiple_time_units() -> None:
     optimizer = OPTIMIZER.initialize(
         BaseData(
             virtual_machines=["vm_0"],
@@ -81,7 +81,7 @@ def test_one_vm_multiple_time_units():
     ).test()
 
 
-def test_one_vm_multiple_time_units_varying_demand():
+def test_one_vm_multiple_time_units_varying_demand() -> None:
     optimizer = OPTIMIZER.initialize(
         BaseData(
             virtual_machines=["vm_0"],

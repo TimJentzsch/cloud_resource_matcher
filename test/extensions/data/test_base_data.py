@@ -3,7 +3,7 @@ import pytest
 from optimizer.data import BaseData
 
 
-def test_should_not_raise_error_for_valid_data():
+def test_should_not_raise_error_for_valid_data() -> None:
     """Validating valid data should not raise an assertion error."""
     data = BaseData(
         virtual_machines=["vm_0"],
@@ -19,7 +19,7 @@ def test_should_not_raise_error_for_valid_data():
 
 
 class TestValidateVirtualMachineServices:
-    def test_should_raise_error_for_missing_virtual_machine(self):
+    def test_should_raise_error_for_missing_virtual_machine(self) -> None:
         """One VM does not have the valid services defined."""
         data = BaseData(
             virtual_machines=["vm_0"],
@@ -34,7 +34,7 @@ class TestValidateVirtualMachineServices:
         with pytest.raises(AssertionError):
             data.validate()
 
-    def test_should_raise_error_for_invalid_virtual_machine(self):
+    def test_should_raise_error_for_invalid_virtual_machine(self) -> None:
         """The valid services are defined for a VM that doesn't exist."""
         data = BaseData(
             virtual_machines=[],
@@ -49,7 +49,7 @@ class TestValidateVirtualMachineServices:
         with pytest.raises(AssertionError):
             data.validate()
 
-    def test_should_raise_error_for_invalid_service(self):
+    def test_should_raise_error_for_invalid_service(self) -> None:
         """One of the valid services for a VM does not exist."""
         data = BaseData(
             virtual_machines=["vm_0"],
@@ -66,7 +66,7 @@ class TestValidateVirtualMachineServices:
 
 
 class TestServiceBaseCosts:
-    def test_should_raise_error_for_missing_service(self):
+    def test_should_raise_error_for_missing_service(self) -> None:
         """One service does not have base costs defined."""
         data = BaseData(
             virtual_machines=["vm_0"],
@@ -81,7 +81,7 @@ class TestServiceBaseCosts:
         with pytest.raises(AssertionError):
             data.validate()
 
-    def test_should_raise_error_for_invalid_service(self):
+    def test_should_raise_error_for_invalid_service(self) -> None:
         """One service that has base costs defined does not exist."""
         data = BaseData(
             virtual_machines=["vm_0"],
@@ -98,7 +98,7 @@ class TestServiceBaseCosts:
 
 
 class TestVirtualMachineDemand:
-    def test_should_raise_error_for_missing_entry(self):
+    def test_should_raise_error_for_missing_entry(self) -> None:
         """A VM-time pair does not have the demand defined."""
         data = BaseData(
             virtual_machines=["vm_0"],
@@ -113,7 +113,7 @@ class TestVirtualMachineDemand:
         with pytest.raises(AssertionError):
             data.validate()
 
-    def test_should_raise_error_for_invalid_virtual_machine(self):
+    def test_should_raise_error_for_invalid_virtual_machine(self) -> None:
         """A VM that has the demand defined does not exist."""
         data = BaseData(
             virtual_machines=[],
@@ -128,7 +128,7 @@ class TestVirtualMachineDemand:
         with pytest.raises(AssertionError):
             data.validate()
 
-    def test_should_raise_error_for_invalid_time(self):
+    def test_should_raise_error_for_invalid_time(self) -> None:
         """A time that has the demand defined does not exist."""
         data = BaseData(
             virtual_machines=["vm_0"],
@@ -143,7 +143,7 @@ class TestVirtualMachineDemand:
         with pytest.raises(AssertionError):
             data.validate()
 
-    def test_should_raise_error_for_negative_demand(self):
+    def test_should_raise_error_for_negative_demand(self) -> None:
         """A defined demand is negative."""
         data = BaseData(
             virtual_machines=["vm_0"],
@@ -160,7 +160,7 @@ class TestVirtualMachineDemand:
 
 
 class TestMaxServiceInstances:
-    def test_should_raise_error_for_invalid_service(self):
+    def test_should_raise_error_for_invalid_service(self) -> None:
         """One of the services does not exist."""
         data = BaseData(
             virtual_machines=["vm_0"],
@@ -175,7 +175,7 @@ class TestMaxServiceInstances:
         with pytest.raises(AssertionError):
             data.validate()
 
-    def test_should_raise_error_for_negative_instance_count(self):
+    def test_should_raise_error_for_negative_instance_count(self) -> None:
         """A maximum instance count is negative."""
         data = BaseData(
             virtual_machines=["vm_0"],
