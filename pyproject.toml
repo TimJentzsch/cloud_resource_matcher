@@ -18,7 +18,6 @@ optiframe = { git = "https://github.com/TimJentzsch/optiframe.git", branch = "de
 black = "^22.12.0"
 ruff = "^0.0.246"
 pytest = "^7.2.0"
-pyright = "^1.1.286"
 mypy = "^1.1.1"
 
 [tool.pyright]
