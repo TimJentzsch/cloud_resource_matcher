@@ -58,7 +58,7 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
             LpVariable,
         ] = {
             (vm1, s1, vm2, s2): LpVariable(
-                f"var_vm_pair_services({vm1},{s1},{vm2},{s2})",
+                f"vm_pair_services({vm1},{s1},{vm2},{s2})",
                 cat=LpBinary,
             )
             for (
