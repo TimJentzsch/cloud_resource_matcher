@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from pulp import LpProblem, LpAffineExpression, LpBinary, LpVariable, lpSum
 
 from optimizer.data import BaseData, NetworkData
-from optimizer.data.network import Location
 from optimizer.data.types import VirtualMachine, Service
 from optimizer.packages.base import BaseMipData
 from optiframe import Task
@@ -11,11 +10,8 @@ from optiframe import Task
 
 @dataclass
 class NetworkMipData:
-    var_vm_locations: dict[tuple[VirtualMachine, Location], LpVariable]
-    var_vm_vm_locations: dict[
-        tuple[VirtualMachine, VirtualMachine, Location, Location],
-        LpVariable,
-    ]
+    # Is vm1 deployed to s1 and vm2 deployed to s2?
+    var_vm_pair_services: dict[tuple[VirtualMachine, Service, VirtualMachine, Service], LpVariable]
 
 
 class BuildMipNetworkTask(Task[NetworkMipData]):
@@ -50,7 +46,7 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
                 vm,
                 loc,
             ), traffic in self.network_data.virtual_machine_location_traffic.items()
-            for s in self.base_data.services
+            for s in self.base_data.virtual_machine_services[vm]
             for t in self.base_data.time
         )
 
@@ -69,8 +65,8 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
                 vm1,
                 vm2,
             ) in self.network_data.virtual_machine_virtual_machine_traffic.keys()
-            for s1 in self.base_data.services
-            for s2 in self.base_data.services
+            for s1 in self.base_data.virtual_machine_services[vm1]
+            for s2 in self.base_data.virtual_machine_services[vm2]
         }
 
         # Calculate service pair deployments
@@ -79,50 +75,71 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
             vm2,
         ) in self.network_data.virtual_machine_virtual_machine_traffic.keys():
             # Every VM pair has one pair of service connections
-            self.problem += lpSum(var_vm_pair_services[vm1, s1, vm2, s2] for s1 in self.base_data.services for s2 in self.base_data.services) == 1
+            self.problem += (
+                lpSum(
+                    var_vm_pair_services[vm1, s1, vm2, s2]
+                    for s1 in self.base_data.virtual_machine_services[vm1]
+                    for s2 in self.base_data.virtual_machine_services[vm2]
+                )
+                == 1
+            )
 
             # Enforce that the VMs must be deployed to the given services
-            for s1 in self.base_data.services:
-                for s2 in self.base_data.services:
-                    self.problem += var_vm_pair_services[vm1, s1, vm2, s2] <= self.base_mip_data.var_vm_matching[vm1, s1]
-                    self.problem += var_vm_pair_services[vm1, s1, vm2, s2] <= self.base_mip_data.var_vm_matching[vm2, s2]
+            for s1 in self.base_data.virtual_machine_services[vm1]:
+                for s2 in self.base_data.virtual_machine_services[vm2]:
+                    self.problem += (
+                        var_vm_pair_services[vm1, s1, vm2, s2]
+                        <= self.base_mip_data.var_vm_matching[vm1, s1]
+                    )
+                    self.problem += (
+                        var_vm_pair_services[vm1, s1, vm2, s2]
+                        <= self.base_mip_data.var_vm_matching[vm2, s2]
+                    )
 
         # Respect maximum latencies for VM -> location traffic
         for (
             vm1,
             loc2,
         ), max_latency in self.network_data.virtual_machine_location_max_latency.items():
-            for loc1 in self.network_data.locations:
+            for s in self.base_data.virtual_machine_services[vm1]:
+                loc1 = self.network_data.service_location[s]
+
                 if self.network_data.location_latency[loc1, loc2] > max_latency:
                     if (
                         vm1,
                         loc2,
                     ) in self.network_data.virtual_machine_location_traffic.keys():
-                        self.problem += var_vm_locations[vm1, loc1] == 0
+                        self.problem += self.base_mip_data.var_vm_matching[vm1, s] == 0
 
         # Respect maximum latencies for VM -> VM traffic
         for (
             vm1,
             vm2,
         ), max_latency in self.network_data.virtual_machine_virtual_machine_max_latency.items():
-            for loc1 in self.network_data.locations:
-                for loc2 in self.network_data.locations:
+            for s1 in self.base_data.virtual_machine_services[vm1]:
+                loc1 = self.network_data.service_location[s1]
+
+                for s2 in self.base_data.virtual_machine_services[vm2]:
+                    loc2 = self.network_data.service_location[s2]
+
                     if self.network_data.location_latency[loc1, loc2] > max_latency:
-                        self.problem += var_vm_vm_locations[vm1, vm2, loc1, loc2] == 0
+                        self.problem += var_vm_pair_services[vm1, s1, vm2, s2] == 0
 
         # Pay for VM -> location traffic caused by VM -> VM connections
         self.objective += lpSum(
-            var_vm_vm_locations[vm1, vm2, loc1, loc2]
+            var_vm_pair_services[vm1, s1, vm2, s2]
             * self.base_data.virtual_machine_demand[vm1, t]
             * traffic
-            * self.network_data.location_traffic_cost[loc1, loc2]
+            * self.network_data.location_traffic_cost[
+                self.network_data.service_location[s1], self.network_data.service_location[s2]
+            ]
             for (
                 vm1,
                 vm2,
             ), traffic in self.network_data.virtual_machine_virtual_machine_traffic.items()
-            for loc1 in self.network_data.locations
-            for loc2 in self.network_data.locations
+            for s1 in self.base_data.virtual_machine_services[vm1]
+            for s2 in self.base_data.virtual_machine_services[vm2]
             for t in self.base_data.time
         )
 
-        return NetworkMipData(var_vm_locations, var_vm_vm_locations)
+        return NetworkMipData(var_vm_pair_services)
