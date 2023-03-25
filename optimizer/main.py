@@ -233,12 +233,12 @@ def main() -> None:
 
         duration = datetime.now() - start_time
 
-        print("=== SOLUTION FOUND ===\n")
-        print(f"Cost: {solution.cost}")
+        print("\n=== SOLUTION FOUND ===\n")
+        print(f"Cost: {solution.cost:,} €")
         print(f"Duration: {duration.total_seconds():.2f}s")
     except InfeasibleError:
         duration = datetime.now() - start_time
 
-        print("=== PROBLEM INFEASIBLE ===\n")
+        print("\n=== PROBLEM INFEASIBLE ===\n")
         print(f"Duration: {duration.total_seconds():.2f}s")
         exit(101)
