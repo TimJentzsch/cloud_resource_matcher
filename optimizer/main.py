@@ -67,6 +67,7 @@ def solve_demo_model(
         },
         min_cloud_service_provider_count=2,
         max_cloud_service_provider_count=3,
+        cloud_service_provider_costs={f"csp_{k}": k * 10_000 for k in range(csp_count)},
     )
 
     network_data = NetworkData(
