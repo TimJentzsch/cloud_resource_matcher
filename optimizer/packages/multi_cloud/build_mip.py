@@ -52,24 +52,27 @@ class BuildMipMultiCloudTask(Task[MultiCloudMipData]):
 
             self.problem += (
                 var_csp_used[k] <= used_service_count,
-                f"csp_used({k})_enforce_0",
-            )
-            self.problem += (
-                (var_csp_used[k] * len(self.base_data.virtual_machines)) >= used_service_count,
-                f"csp_used({k})_enforce_1",
+                f"csp_used_enforce_0({k})",
             )
 
+            for vm in self.base_data.virtual_machines:
+                for s in self.base_data.virtual_machine_services[vm]:
+                    if s in self.multi_cloud_data.cloud_service_provider_services[k]:
+                        self.problem += (
+                            var_csp_used[k] >= self.base_mip_data.var_vm_matching[vm, s],
+                            f"csp_used_enforce_1({k},{vm},{s})",
+                        )
+
         # Enforce minimum and maximum number of used CSPs
-        for k in self.multi_cloud_data.cloud_service_providers:
-            self.problem.addConstraint(
-                lpSum(var_csp_used[k] for k in self.multi_cloud_data.cloud_service_providers)
-                >= self.multi_cloud_data.min_cloud_service_provider_count,
-                f"min_cloud_service_provider_count({k})",
-            )
-            self.problem.addConstraint(
-                lpSum(var_csp_used[k] for k in self.multi_cloud_data.cloud_service_providers)
-                <= self.multi_cloud_data.max_cloud_service_provider_count,
-                f"max_cloud_service_provider_count({k})",
-            )
+        self.problem.addConstraint(
+            lpSum(var_csp_used[k] for k in self.multi_cloud_data.cloud_service_providers)
+            >= self.multi_cloud_data.min_cloud_service_provider_count,
+            "min_cloud_service_provider_count",
+        )
+        self.problem.addConstraint(
+            lpSum(var_csp_used[k] for k in self.multi_cloud_data.cloud_service_providers)
+            <= self.multi_cloud_data.max_cloud_service_provider_count,
+            "max_cloud_service_provider_count",
+        )
 
         return MultiCloudMipData(var_csp_used)

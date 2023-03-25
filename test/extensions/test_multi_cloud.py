@@ -38,7 +38,7 @@ def test_min_csp_count_constraint_matching() -> None:
 
 
 def test_max_csp_count_constraint_matching() -> None:
-    """There are two CSPs, it would be cheapest to use most of them.
+    """There are two CSPs, it would be cheapest to use both of them.
     To respect the max CSP count constraint, only one CSP can be used.
     """
     optimizer = OPTIMIZER.initialize(
