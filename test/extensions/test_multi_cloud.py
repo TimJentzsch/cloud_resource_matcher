@@ -29,6 +29,7 @@ def test_min_csp_count_constraint_matching() -> None:
             },
             min_cloud_service_provider_count=2,
             max_cloud_service_provider_count=100,
+            cloud_service_provider_costs={"csp_0": 0, "csp_1": 0}
         ),
     )
 
@@ -59,6 +60,7 @@ def test_max_csp_count_constraint_matching() -> None:
             },
             min_cloud_service_provider_count=0,
             max_cloud_service_provider_count=1,
+            cloud_service_provider_costs={"csp_0": 0, "csp_1": 0}
         ),
     )
 
@@ -84,6 +86,7 @@ def test_min_csp_count_constraint_infeasible() -> None:
             cloud_service_provider_services={"csp_0": ["s_0"]},
             min_cloud_service_provider_count=2,
             max_cloud_service_provider_count=100,
+            cloud_service_provider_costs={"csp_0": 0}
         ),
     )
 
@@ -107,6 +110,7 @@ def test_max_csp_count_constraint_infeasible() -> None:
             cloud_service_provider_services={"csp_0": ["s_0"], "csp_1": ["s_1"]},
             min_cloud_service_provider_count=0,
             max_cloud_service_provider_count=1,
+            cloud_service_provider_costs={"csp_0": 0, "csp_1": 0}
         ),
     )
 
@@ -130,6 +134,7 @@ def test_with_multiple_time_points() -> None:
             cloud_service_provider_services={"csp_0": ["s_0"]},
             min_cloud_service_provider_count=1,
             max_cloud_service_provider_count=1,
+            cloud_service_provider_costs={"csp_0": 0}
         ),
     )
 
