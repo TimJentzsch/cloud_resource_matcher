@@ -75,4 +75,10 @@ class BuildMipMultiCloudTask(Task[MultiCloudMipData]):
             "max_cloud_service_provider_count",
         )
 
+        # Add CSP cost to objective
+        self.objective += lpSum(
+            var_csp_used[k] * self.multi_cloud_data.cloud_service_provider_costs[k]
+            for k in self.multi_cloud_data.cloud_service_providers
+        )
+
         return MultiCloudMipData(var_csp_used)

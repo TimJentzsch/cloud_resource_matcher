@@ -1,23 +1,27 @@
 from dataclasses import dataclass
-from typing import List, Dict
 
-from .types import Service, CloudServiceProvider
+from .types import Service, CloudServiceProvider, Cost
 from .base import BaseData
 
 
 @dataclass
 class MultiCloudData:
     # The available cloud service providers
-    cloud_service_providers: List[CloudServiceProvider]
+    cloud_service_providers: list[CloudServiceProvider]
 
     # The services each cloud service provider offers
-    cloud_service_provider_services: Dict[CloudServiceProvider, List[Service]]
+    cloud_service_provider_services: dict[CloudServiceProvider, list[Service]]
 
     # The minimum number of cloud service providers that have to be used
     min_cloud_service_provider_count: int
 
     # The maximum number of cloud service providers that can be used
     max_cloud_service_provider_count: int
+
+    # How much does it cost to use each CSP?
+    # This can be used to model migration or training costs
+    # Must be specified for every CSP
+    cloud_service_provider_costs: dict[CloudServiceProvider, Cost]
 
     def validate(self, base_data: BaseData) -> None:
         """
@@ -62,3 +66,9 @@ class MultiCloudData:
             "min_cloud_service_provider_count must be smaller or equal"
             "than max_cloud_service_provider_count"
         )
+
+        # Validate costs
+        for csp in self.cloud_service_providers:
+            assert (
+                csp in self.cloud_service_provider_costs
+            ), f"CSP {csp} does not have a cost defined"
