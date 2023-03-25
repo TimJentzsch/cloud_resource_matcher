@@ -20,7 +20,7 @@ def test_should_not_raise_error_for_valid_data() -> None:
         cloud_service_provider_services={"csp_0": ["s_0"]},
         max_cloud_service_provider_count=1,
         min_cloud_service_provider_count=0,
-        cloud_service_provider_costs={"csp_0": 10}
+        cloud_service_provider_costs={"csp_0": 10},
     )
 
     multi_data.validate(base_data)
@@ -44,7 +44,7 @@ class TestValidateCloudServiceProviderServices:
             cloud_service_provider_services={},
             max_cloud_service_provider_count=1,
             min_cloud_service_provider_count=0,
-            cloud_service_provider_costs={"csp_0": 10}
+            cloud_service_provider_costs={"csp_0": 10},
         )
 
         with pytest.raises(AssertionError):
@@ -67,7 +67,7 @@ class TestValidateCloudServiceProviderServices:
             cloud_service_provider_services={"csp_0": ["s_0"]},
             max_cloud_service_provider_count=1,
             min_cloud_service_provider_count=0,
-            cloud_service_provider_costs={"csp_0": 10}
+            cloud_service_provider_costs={"csp_0": 10},
         )
 
         with pytest.raises(AssertionError):
@@ -90,7 +90,7 @@ class TestValidateCloudServiceProviderServices:
             cloud_service_provider_services={"csp_0": ["s_0", "s_1"]},
             max_cloud_service_provider_count=1,
             min_cloud_service_provider_count=0,
-            cloud_service_provider_costs={"csp_0": 10}
+            cloud_service_provider_costs={"csp_0": 10},
         )
 
         with pytest.raises(AssertionError):
@@ -113,7 +113,7 @@ class TestValidateCloudServiceProviderServices:
             cloud_service_provider_services={},
             max_cloud_service_provider_count=1,
             min_cloud_service_provider_count=0,
-            cloud_service_provider_costs={}
+            cloud_service_provider_costs={},
         )
 
         with pytest.raises(AssertionError):
@@ -139,7 +139,7 @@ class TestValidateCloudServiceProviderMinMaxCounts:
             cloud_service_provider_services={"csp_0": ["s_0"]},
             max_cloud_service_provider_count=1,
             min_cloud_service_provider_count=-1,
-            cloud_service_provider_costs={"csp_0": 10}
+            cloud_service_provider_costs={"csp_0": 10},
         )
 
         with pytest.raises(AssertionError):
@@ -163,7 +163,7 @@ class TestValidateCloudServiceProviderMinMaxCounts:
             cloud_service_provider_services={"csp_0": ["s_0"]},
             max_cloud_service_provider_count=-1,
             min_cloud_service_provider_count=0,
-            cloud_service_provider_costs={"csp_0": 10}
+            cloud_service_provider_costs={"csp_0": 10},
         )
 
         with pytest.raises(AssertionError):
@@ -190,7 +190,7 @@ class TestValidateCloudServiceProviderMinMaxCounts:
             cloud_service_provider_services={"csp_0": ["s_0"]},
             max_cloud_service_provider_count=1,
             min_cloud_service_provider_count=2,
-            cloud_service_provider_costs={"csp_0": 10}
+            cloud_service_provider_costs={"csp_0": 10},
         )
 
         with pytest.raises(AssertionError):
@@ -215,7 +215,7 @@ class TestValidateCloudServiceProviderCosts:
             cloud_service_provider_services={"csp_0": ["s_0"]},
             max_cloud_service_provider_count=1,
             min_cloud_service_provider_count=0,
-            cloud_service_provider_costs={}
+            cloud_service_provider_costs={},
         )
 
         with pytest.raises(AssertionError):

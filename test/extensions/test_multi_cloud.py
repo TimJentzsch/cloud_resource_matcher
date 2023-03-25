@@ -29,7 +29,7 @@ def test_min_csp_count_constraint_matching() -> None:
             },
             min_cloud_service_provider_count=2,
             max_cloud_service_provider_count=100,
-            cloud_service_provider_costs={"csp_0": 0, "csp_1": 0}
+            cloud_service_provider_costs={"csp_0": 0, "csp_1": 0},
         ),
     )
 
@@ -60,7 +60,7 @@ def test_max_csp_count_constraint_matching() -> None:
             },
             min_cloud_service_provider_count=0,
             max_cloud_service_provider_count=1,
-            cloud_service_provider_costs={"csp_0": 0, "csp_1": 0}
+            cloud_service_provider_costs={"csp_0": 0, "csp_1": 0},
         ),
     )
 
@@ -86,7 +86,7 @@ def test_min_csp_count_constraint_infeasible() -> None:
             cloud_service_provider_services={"csp_0": ["s_0"]},
             min_cloud_service_provider_count=2,
             max_cloud_service_provider_count=100,
-            cloud_service_provider_costs={"csp_0": 0}
+            cloud_service_provider_costs={"csp_0": 0},
         ),
     )
 
@@ -110,7 +110,7 @@ def test_max_csp_count_constraint_infeasible() -> None:
             cloud_service_provider_services={"csp_0": ["s_0"], "csp_1": ["s_1"]},
             min_cloud_service_provider_count=0,
             max_cloud_service_provider_count=1,
-            cloud_service_provider_costs={"csp_0": 0, "csp_1": 0}
+            cloud_service_provider_costs={"csp_0": 0, "csp_1": 0},
         ),
     )
 
@@ -134,10 +134,41 @@ def test_with_multiple_time_points() -> None:
             cloud_service_provider_services={"csp_0": ["s_0"]},
             min_cloud_service_provider_count=1,
             max_cloud_service_provider_count=1,
-            cloud_service_provider_costs={"csp_0": 0}
+            cloud_service_provider_costs={"csp_0": 0},
         ),
     )
 
     Expect(optimizer).to_be_feasible().with_vm_service_matching(
         {("vm_0", "s_0", 0): 1, ("vm_0", "s_0", 1): 1}
     ).with_cost(20).test()
+
+
+def test_csp_objective() -> None:
+    """
+    There are two CSPs, one has cheaper services, but a higher migration cost.
+    """
+    optimizer = OPTIMIZER.initialize(
+        BaseData(
+            virtual_machines=["vm_0"],
+            services=["s_0", "s_1"],
+            virtual_machine_services={"vm_0": ["s_0", "s_1"]},
+            service_base_costs={"s_0": 10, "s_1": 5},
+            time=[0],
+            virtual_machine_demand={("vm_0", 0): 1},
+            max_service_instances={},
+        ),
+        MultiCloudData(
+            cloud_service_providers=["csp_0", "csp_1"],
+            cloud_service_provider_services={
+                "csp_0": ["s_0"],
+                "csp_1": ["s_1"],
+            },
+            min_cloud_service_provider_count=0,
+            max_cloud_service_provider_count=1,
+            cloud_service_provider_costs={"csp_0": 1, "csp_1": 10},
+        ),
+    )
+
+    Expect(optimizer).to_be_feasible().with_cost(11).with_vm_service_matching(
+        {("vm_0", "s_0", 0): 1}
+    ).test()
