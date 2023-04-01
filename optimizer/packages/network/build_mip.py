@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from pulp import LpProblem, LpAffineExpression, LpBinary, LpVariable, lpSum
+from pulp import LpProblem, LpBinary, LpVariable, lpSum
 
 from optimizer.data import BaseData, NetworkData
 from optimizer.data.types import VirtualMachine, Service
