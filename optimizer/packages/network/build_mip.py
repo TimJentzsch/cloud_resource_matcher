@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from pulp import LpProblem, LpAffineExpression, LpBinary, LpVariable, lpSum
+from pulp import LpProblem, LpBinary, LpVariable, lpSum
 
 from optimizer.data import BaseData, NetworkData
 from optimizer.data.types import VirtualMachine, Service
@@ -19,7 +19,6 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
     network_data: NetworkData
     base_mip_data: BaseMipData
     problem: LpProblem
-    objective: LpAffineExpression
 
     def __init__(
         self,
@@ -27,17 +26,15 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
         network_data: NetworkData,
         base_mip_data: BaseMipData,
         problem: LpProblem,
-        objective: LpAffineExpression,
     ):
         self.base_data = base_data
         self.network_data = network_data
         self.base_mip_data = base_mip_data
         self.problem = problem
-        self.objective = objective
 
     def execute(self) -> NetworkMipData:
         # Pay for VM -> location traffic
-        self.objective += lpSum(
+        self.problem.objective += lpSum(
             self.base_mip_data.var_vm_matching[vm, s]
             * self.base_data.virtual_machine_demand[vm, t]
             * traffic
@@ -126,7 +123,7 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
                         self.problem += var_vm_pair_services[vm1, s1, vm2, s2] == 0
 
         # Pay for VM -> location traffic caused by VM -> VM connections
-        self.objective += lpSum(
+        self.problem.objective += lpSum(
             var_vm_pair_services[vm1, s1, vm2, s2]
             * self.base_data.virtual_machine_demand[vm1, t]
             * traffic

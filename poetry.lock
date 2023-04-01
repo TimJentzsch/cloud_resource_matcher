@@ -157,17 +157,13 @@ description = "A modular framework for mixed integer programming"
 category = "main"
 optional = false
 python-versions = ">=3.11.0rc1"
-files = []
-develop = false
+files = [
+    {file = "optiframe-0.1.0-py3-none-any.whl", hash = "sha256:67a582c351a9a770c390522cbdcadce2fc87557e4bd7cb792b151f4c9f1009e5"},
+    {file = "optiframe-0.1.0.tar.gz", hash = "sha256:c59b4f425b24fbc458ad6b61218561afa0a81eb721bd810933ad818accf83972"},
+]
 
 [package.dependencies]
-pulp = "^2.7.0"
-
-[package.source]
-type = "git"
-url = "https://github.com/TimJentzsch/optiframe.git"
-reference = "main"
-resolved_reference = "33df91ff21fb1f3c0dd04e8de639d79acab1bfa5"
+pulp = ">=2.7.0,<3.0.0"
 
 [[package]]
 name = "packaging"
@@ -195,19 +191,19 @@ files = [
 
 [[package]]
 name = "platformdirs"
-version = "3.1.1"
+version = "3.2.0"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "platformdirs-3.1.1-py3-none-any.whl", hash = "sha256:e5986afb596e4bb5bde29a79ac9061aa955b94fca2399b7aaac4090860920dd8"},
-    {file = "platformdirs-3.1.1.tar.gz", hash = "sha256:024996549ee88ec1a9aa99ff7f8fc819bb59e2c3477b410d90a16d32d6e707aa"},
+    {file = "platformdirs-3.2.0-py3-none-any.whl", hash = "sha256:ebe11c0d7a805086e99506aa331612429a72ca7cd52a1f0d277dc4adc20cb10e"},
+    {file = "platformdirs-3.2.0.tar.gz", hash = "sha256:d5b638ca397f25f979350ff789db335903d7ea010ab28903f57b27e1b16c2b08"},
 ]
 
 [package.extras]
 docs = ["furo (>=2022.12.7)", "proselint (>=0.13)", "sphinx (>=6.1.3)", "sphinx-autodoc-typehints (>=1.22,!=1.23.4)"]
-test = ["appdirs (==1.4.4)", "covdefaults (>=2.2.2)", "pytest (>=7.2.1)", "pytest-cov (>=4)", "pytest-mock (>=3.10)"]
+test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=7.2.2)", "pytest-cov (>=4)", "pytest-mock (>=3.10)"]
 
 [[package]]
 name = "pluggy"
@@ -304,4 +300,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "6d4e70245b81a09ad9f4adc685f600ee5030b05e0e2e0067960136a77b584743"
+content-hash = "ceb34890d2d0f96b63ec92f56dbef29e970c3e274ff97c3db3cd4cdb49d50797"

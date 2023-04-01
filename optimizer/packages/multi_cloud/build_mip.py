@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from pulp import LpProblem, LpAffineExpression, LpBinary, LpVariable, lpSum
+from pulp import LpProblem, LpBinary, LpVariable, lpSum
 
 from optimizer.data import BaseData, MultiCloudData
 from optimizer.data.types import CloudServiceProvider
@@ -18,7 +18,6 @@ class BuildMipMultiCloudTask(Task[MultiCloudMipData]):
     multi_cloud_data: MultiCloudData
     base_mip_data: BaseMipData
     problem: LpProblem
-    objective: LpAffineExpression
 
     def __init__(
         self,
@@ -26,13 +25,11 @@ class BuildMipMultiCloudTask(Task[MultiCloudMipData]):
         multi_cloud_data: MultiCloudData,
         base_mip_data: BaseMipData,
         problem: LpProblem,
-        objective: LpAffineExpression,
     ):
         self.base_data = base_data
         self.multi_cloud_data = multi_cloud_data
         self.base_mip_data = base_mip_data
         self.problem = problem
-        self.objective = objective
 
     def execute(self) -> MultiCloudMipData:
         # Is cloud service provider k used at all?
@@ -76,7 +73,7 @@ class BuildMipMultiCloudTask(Task[MultiCloudMipData]):
         )
 
         # Add CSP cost to objective
-        self.objective += lpSum(
+        self.problem.objective += lpSum(
             var_csp_used[k] * self.multi_cloud_data.cloud_service_provider_costs[k]
             for k in self.multi_cloud_data.cloud_service_providers
         )

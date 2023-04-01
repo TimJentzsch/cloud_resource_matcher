@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from pulp import LpVariable, LpProblem, LpAffineExpression, LpBinary, lpSum
+from pulp import LpVariable, LpProblem, LpBinary, lpSum
 
 from optimizer.data import BaseData
 from optimizer.data.types import VirtualMachine, Service
@@ -21,12 +21,10 @@ class BaseMipData:
 class BuildMipBaseTask(Task[BaseMipData]):
     base_data: BaseData
     problem: LpProblem
-    objective: LpAffineExpression
 
-    def __init__(self, base_data: BaseData, problem: LpProblem, objective: LpAffineExpression):
+    def __init__(self, base_data: BaseData, problem: LpProblem):
         self.base_data = base_data
         self.problem = problem
-        self.objective = objective
 
     def execute(self) -> BaseMipData:
         # Pre-compute which services can host which VMs
@@ -83,7 +81,7 @@ class BuildMipBaseTask(Task[BaseMipData]):
             )
 
         # Base costs for used services
-        self.objective += lpSum(
+        self.problem.objective += lpSum(
             var_vm_matching[vm, s]
             * self.base_data.virtual_machine_demand[vm, t]
             * self.base_data.service_base_costs[s]
