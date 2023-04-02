@@ -2,6 +2,7 @@ import pytest
 
 from optimizer.packages.base import BaseData
 from optimizer.packages.network import NetworkData
+from optimizer.packages.network.validate import ValidateNetworkTask
 
 
 def test_should_not_raise_error_for_valid_data() -> None:
@@ -27,7 +28,7 @@ def test_should_not_raise_error_for_valid_data() -> None:
         location_traffic_cost={("loc_0", "loc_0"): 0},
     )
 
-    network_data.validate(base_data)
+    ValidateNetworkTask(base_data, network_data).execute()
 
 
 class TestValidateLocationLatency:
@@ -55,7 +56,7 @@ class TestValidateLocationLatency:
         )
 
         with pytest.raises(AssertionError):
-            network_data.validate(base_data)
+            ValidateNetworkTask(base_data, network_data).execute()
 
     def test_should_raise_error_for_invalid_location(self) -> None:
         """One location in the definitions does not exist."""
@@ -81,7 +82,7 @@ class TestValidateLocationLatency:
         )
 
         with pytest.raises(AssertionError):
-            network_data.validate(base_data)
+            ValidateNetworkTask(base_data, network_data).execute()
 
     def test_should_raise_error_for_negative_latency(self) -> None:
         """One location pair has a negative latency."""
@@ -107,7 +108,7 @@ class TestValidateLocationLatency:
         )
 
         with pytest.raises(AssertionError):
-            network_data.validate(base_data)
+            ValidateNetworkTask(base_data, network_data).execute()
 
 
 class TestValidateServiceLocation:
@@ -136,7 +137,7 @@ class TestValidateServiceLocation:
         )
 
         with pytest.raises(AssertionError):
-            network_data.validate(base_data)
+            ValidateNetworkTask(base_data, network_data).execute()
 
     def test_should_raise_error_on_invalid_service(self) -> None:
         """The max_cloud_service_provider_count is negative."""
@@ -163,7 +164,7 @@ class TestValidateServiceLocation:
         )
 
         with pytest.raises(AssertionError):
-            network_data.validate(base_data)
+            ValidateNetworkTask(base_data, network_data).execute()
 
     def test_should_raise_error_on_invalid_location(self) -> None:
         """A specified location does not exist."""
@@ -190,7 +191,7 @@ class TestValidateServiceLocation:
         )
 
         with pytest.raises(AssertionError):
-            network_data.validate(base_data)
+            ValidateNetworkTask(base_data, network_data).execute()
 
 
 class TestValidateVirtualMachineMaxLatency:
@@ -219,7 +220,7 @@ class TestValidateVirtualMachineMaxLatency:
         )
 
         with pytest.raises(AssertionError):
-            network_data.validate(base_data)
+            ValidateNetworkTask(base_data, network_data).execute()
 
     def test_should_raise_error_on_invalid_location(self) -> None:
         """One location does not exist."""
@@ -246,7 +247,7 @@ class TestValidateVirtualMachineMaxLatency:
         )
 
         with pytest.raises(AssertionError):
-            network_data.validate(base_data)
+            ValidateNetworkTask(base_data, network_data).execute()
 
     def test_should_raise_error_on_negative_latency(self) -> None:
         """One of the maximum latencies is negative."""
@@ -273,7 +274,7 @@ class TestValidateVirtualMachineMaxLatency:
         )
 
         with pytest.raises(AssertionError):
-            network_data.validate(base_data)
+            ValidateNetworkTask(base_data, network_data).execute()
 
 
 class TestValidateVirtualMachineLocationTraffic:
@@ -305,7 +306,7 @@ class TestValidateVirtualMachineLocationTraffic:
         )
 
         with pytest.raises(AssertionError):
-            network_data.validate(base_data)
+            ValidateNetworkTask(base_data, network_data).execute()
 
     def test_should_raise_error_on_invalid_location(self) -> None:
         """One location does not exist."""
@@ -335,7 +336,7 @@ class TestValidateVirtualMachineLocationTraffic:
         )
 
         with pytest.raises(AssertionError):
-            network_data.validate(base_data)
+            ValidateNetworkTask(base_data, network_data).execute()
 
     def test_should_raise_error_on_negative_traffic(self) -> None:
         """One of the traffics is negative."""
@@ -362,7 +363,7 @@ class TestValidateVirtualMachineLocationTraffic:
         )
 
         with pytest.raises(AssertionError):
-            network_data.validate(base_data)
+            ValidateNetworkTask(base_data, network_data).execute()
 
 
 class TestValidateVirtualMachineVirtualMachineTraffic:
@@ -391,7 +392,7 @@ class TestValidateVirtualMachineVirtualMachineTraffic:
         )
 
         with pytest.raises(AssertionError):
-            network_data.validate(base_data)
+            ValidateNetworkTask(base_data, network_data).execute()
 
     def test_should_raise_error_on_negative_traffic(self) -> None:
         """One location does not exist."""
@@ -418,7 +419,7 @@ class TestValidateVirtualMachineVirtualMachineTraffic:
         )
 
         with pytest.raises(AssertionError):
-            network_data.validate(base_data)
+            ValidateNetworkTask(base_data, network_data).execute()
 
 
 class TestValidateLocationTrafficCost:
@@ -447,7 +448,7 @@ class TestValidateLocationTrafficCost:
         )
 
         with pytest.raises(AssertionError):
-            network_data.validate(base_data)
+            ValidateNetworkTask(base_data, network_data).execute()
 
     def test_should_raise_error_on_missing_location_pair(self) -> None:
         """One location pair has no costs defined."""
@@ -474,4 +475,4 @@ class TestValidateLocationTrafficCost:
         )
 
         with pytest.raises(AssertionError):
-            network_data.validate(base_data)
+            ValidateNetworkTask(base_data, network_data).execute()
