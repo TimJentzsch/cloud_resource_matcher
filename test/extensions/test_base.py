@@ -1,6 +1,5 @@
-from optimizer.data import BaseData
 from optiframe import Optimizer
-from optimizer.packages import BASE_PACKAGE
+from optimizer.packages.base import BaseData, BASE_PACKAGE
 from test.framework import Expect
 
 OPTIMIZER = Optimizer("test_base").add_package(BASE_PACKAGE)

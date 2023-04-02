@@ -1,6 +1,7 @@
-from optimizer.data import BaseData, NetworkData
 from optiframe import Optimizer
-from optimizer.packages import BASE_PACKAGE, NETWORK_PACKAGE
+
+from optimizer.packages.base import BaseData, BASE_PACKAGE
+from optimizer.packages.network import NetworkData, NETWORK_PACKAGE
 from test.framework import Expect
 
 

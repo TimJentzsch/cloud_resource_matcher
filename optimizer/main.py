@@ -3,15 +3,11 @@ from datetime import timedelta, datetime
 from typing import Optional
 
 from optimizer.data.types import Cost
-from optimizer.data import BaseData, PerformanceData, NetworkData, MultiCloudData
 from optiframe import Optimizer, SolutionObjValue, InfeasibleError
-from optimizer.packages import (
-    BASE_PACKAGE,
-    PERFORMANCE_PACKAGE,
-    NETWORK_PACKAGE,
-    MULTI_CLOUD_PACKAGE,
-)
-from optimizer.packages.base import BaseSolution
+from optimizer.packages.base import BaseSolution, BaseData, BASE_PACKAGE
+from optimizer.packages.multi_cloud import MultiCloudData, MULTI_CLOUD_PACKAGE
+from optimizer.packages.network import NetworkData, NETWORK_PACKAGE
+from optimizer.packages.performance import PerformanceData, PERFORMANCE_PACKAGE
 from optimizer.solver import Solver, get_pulp_solver
 
 

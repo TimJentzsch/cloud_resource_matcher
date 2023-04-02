@@ -1,6 +1,7 @@
-from optimizer.data import BaseData, PerformanceData
 from optiframe import Optimizer
-from optimizer.packages import BASE_PACKAGE, PERFORMANCE_PACKAGE
+
+from optimizer.packages.base import BaseData, BASE_PACKAGE
+from optimizer.packages.performance import PerformanceData, PERFORMANCE_PACKAGE
 from test.framework import Expect
 
 

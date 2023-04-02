@@ -1,6 +1,7 @@
-from optimizer.data import BaseData, MultiCloudData
 from optiframe import Optimizer
-from optimizer.packages import BASE_PACKAGE, MULTI_CLOUD_PACKAGE
+
+from optimizer.packages.base import BaseData, BASE_PACKAGE
+from optimizer.packages.multi_cloud import MultiCloudData, MULTI_CLOUD_PACKAGE
 from test.framework import Expect
 
 

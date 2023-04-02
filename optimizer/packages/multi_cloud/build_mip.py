@@ -2,9 +2,9 @@ from dataclasses import dataclass
 
 from pulp import LpProblem, LpBinary, LpVariable, lpSum
 
-from optimizer.data import BaseData, MultiCloudData
+from .data import MultiCloudData
 from optimizer.data.types import CloudServiceProvider
-from optimizer.packages.base import BaseMipData
+from optimizer.packages.base import BaseData, BaseMipData
 from optiframe import Task
 
 

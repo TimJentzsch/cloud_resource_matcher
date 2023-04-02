@@ -2,9 +2,9 @@ from dataclasses import dataclass
 
 from pulp import LpProblem, LpBinary, LpVariable, lpSum
 
-from optimizer.data import BaseData, NetworkData
+from .data import NetworkData
 from optimizer.data.types import VirtualMachine, Service
-from optimizer.packages.base import BaseMipData
+from optimizer.packages.base import BaseData, BaseMipData
 from optiframe import Task
 
 
