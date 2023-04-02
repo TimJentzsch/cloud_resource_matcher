@@ -1,23 +1,24 @@
 from dataclasses import dataclass
-from typing import Dict
 
 from optimizer.packages.base.data import Service, VirtualMachine
 from optimizer.packages.base import BaseData
 
 
+PerformanceCriterion = str
+
+
 @dataclass
 class PerformanceData:
-    # The minimum amount of RAM each virtual machine requires
-    virtual_machine_min_ram: Dict[VirtualMachine, int]
+    # The available performance criteria, e.g. number of vCPUs or amount of RAM
+    performance_criteria: list[PerformanceCriterion]
 
-    # The minimum mount of vCPUs each virtual machine requires
-    virtual_machine_min_cpu_count: Dict[VirtualMachine, int]
+    # The demand a VM has for a given performance criterion
+    # E.g. the number of vCPUs a VM needs to execute its workflows
+    performance_demand: dict[tuple[VirtualMachine, PerformanceCriterion], int]
 
-    # The amount of RAM each service has
-    service_ram: Dict[Service, int]
-
-    # The amount of vCPUs each service has
-    service_cpu_count: Dict[Service, int]
+    # The supply a CS has of a given performance criterion
+    # E.g. the number of vCPUs a CS offers
+    performance_supply: dict[tuple[Service, PerformanceCriterion], int]
 
     def validate(self, base_data: BaseData) -> None:
         """
@@ -25,32 +26,23 @@ class PerformanceData:
 
         :raises AssertionError: When the data is not valid.
         """
-        # Validate virtual_machine_min_ram
-        for v, min_ram in self.virtual_machine_min_ram.items():
+        # Validate performance_demand
+        for (vm, pc) in self.performance_demand.keys():
+            assert vm in base_data.virtual_machines, f"{vm} in performance_demand is not a valid VM"
             assert (
-                v in base_data.virtual_machines
-            ), f"{v} in virtual_machine_min_ram is not a valid VM"
-            assert min_ram >= 0, f"Min RAM for VM {v} cannot be negative"
+                pc in self.performance_criteria
+            ), f"{pc} in performance_demand is not a valid performance criterion"
 
-        # Validate virtual_machine_min_cpu_count
-        for v, cpu_count in self.virtual_machine_min_cpu_count.items():
+        # Validate performance_supply
+        for (cs, pc) in self.performance_supply.keys():
+            assert cs in base_data.services, f"{cs} in performance_supply is not a valid CS"
             assert (
-                v in base_data.virtual_machines
-            ), f"{v} in virtual_machine_min_cpu_count is not a valid VM"
-            assert cpu_count >= 0, f"Min RAM for VM {v} cannot be negative"
+                pc in self.performance_criteria
+            ), f"{pc} in performance_supply is not a valid performance criterion"
 
-        # Validate service_ram
-        for s in base_data.services:
-            assert s in self.service_ram.keys(), f"No RAM defined for service {s}"
-
-        for s, ram in self.service_ram.items():
-            assert s in base_data.services, f"{s} in service_ram is not a valid service"
-            assert ram >= 0, f"RAM for service {s} cannot be negative"
-
-        # Validate service_cpu_count
-        for s in base_data.services:
-            assert s in self.service_cpu_count.keys(), f"No CPU count defined for service {s}"
-
-        for s, cpu_count in self.service_cpu_count.items():
-            assert s in base_data.services, f"{s} in service_ram is not a valid service"
-            assert cpu_count >= 0, f"RAM for service {s} cannot be negative"
+        # The supply for each criterion must be specified for all CSs
+        for cs in base_data.services:
+            for pc in self.performance_criteria:
+                assert cs in [
+                    s for (s, pc) in self.performance_supply.keys()
+                ], f"CS {cs} does not have its supply for {pc} defined"

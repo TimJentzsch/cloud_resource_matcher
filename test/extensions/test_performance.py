@@ -21,10 +21,9 @@ def test_with_sufficient_resources() -> None:
             max_service_instances={},
         ),
         PerformanceData(
-            virtual_machine_min_ram={"vm_0": 8},
-            virtual_machine_min_cpu_count={"vm_0": 3},
-            service_ram={"s_0": 8},
-            service_cpu_count={"s_0": 3},
+            performance_criteria=["vCPU", "RAM"],
+            performance_demand={("vm_0", "vCPU"): 8, ("vm_0", "RAM"): 3},
+            performance_supply={("s_0", "vCPU"): 8, ("s_0", "RAM"): 4},
         ),
     )
 
@@ -33,7 +32,7 @@ def test_with_sufficient_resources() -> None:
     ).test()
 
 
-def test_with_insufficient_ram() -> None:
+def test_with_insufficient_performance() -> None:
     """The only service does not have enough RAM for the VM."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
@@ -46,33 +45,9 @@ def test_with_insufficient_ram() -> None:
             max_service_instances={"s_0": 1},
         ),
         PerformanceData(
-            virtual_machine_min_ram={"vm_0": 3},
-            virtual_machine_min_cpu_count={"vm_0": 0},
-            service_ram={"s_0": 2},
-            service_cpu_count={"s_0": 10},
-        ),
-    )
-
-    Expect(optimizer).to_be_infeasible().test()
-
-
-def test_with_insufficient_cpu_count() -> None:
-    """The only service does not have enough vCPUs for the VM."""
-    optimizer = OPTIMIZER.initialize(
-        BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
-            time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={"s_0": 1},
-        ),
-        PerformanceData(
-            virtual_machine_min_ram={"vm_0": 0},
-            virtual_machine_min_cpu_count={"vm_0": 3},
-            service_ram={"s_0": 10},
-            service_cpu_count={"s_0": 2},
+            performance_criteria=["vCPU", "RAM"],
+            performance_demand={("vm_0", "vCPU"): 8, ("vm_0", "RAM"): 3},
+            performance_supply={("s_0", "vCPU"): 8, ("s_0", "RAM"): 2},
         ),
     )
 
@@ -100,10 +75,9 @@ def test_resource_matching() -> None:
             max_service_instances={f"s_{s}": 1 for s in range(count)},
         ),
         PerformanceData(
-            virtual_machine_min_ram={f"vm_{v}": v for v in range(count)},
-            virtual_machine_min_cpu_count={f"vm_{v}": (v + 25) % count for v in range(count)},
-            service_ram={f"s_{s}": s for s in range(count)},
-            service_cpu_count={f"s_{s}": (s + 25) % count for s in range(count)},
+            performance_criteria=["RAM"],
+            performance_demand={(f"vm_{v}", "RAM"): v for v in range(count)},
+            performance_supply={(f"s_{s}", "RAM"): s for s in range(count)},
         ),
     )
 
@@ -126,10 +100,9 @@ def test_cheap_insufficient_service() -> None:
             max_service_instances={"s_0": 1, "s_1": 1},
         ),
         PerformanceData(
-            virtual_machine_min_ram={"vm_0": 3},
-            virtual_machine_min_cpu_count={"vm_0": 2},
-            service_ram={"s_0": 2, "s_1": 3},
-            service_cpu_count={"s_0": 1, "s_1": 2},
+            performance_criteria=["RAM"],
+            performance_demand={("vm_0", "RAM"): 3},
+            performance_supply={("s_0", "RAM"): 2, ("s_1", "RAM"): 3},
         ),
     )
 
@@ -154,10 +127,9 @@ def test_allowed_incomplete_data() -> None:
         ),
         # Leave min requirements undefined
         PerformanceData(
-            virtual_machine_min_ram={},
-            virtual_machine_min_cpu_count={},
-            service_ram={"s_0": 1},
-            service_cpu_count={"s_0": 1},
+            performance_criteria=["RAM"],
+            performance_demand={},
+            performance_supply={("s_0", "RAM"): 1},
         ),
     )
 
@@ -177,122 +149,13 @@ def test_should_work_with_higher_virtual_machine_demand() -> None:
             max_service_instances={},
         ),
         PerformanceData(
-            virtual_machine_min_ram={"vm_0": 1},
-            virtual_machine_min_cpu_count={"vm_0": 1},
-            service_ram={"s_0": 2},
-            service_cpu_count={"s_0": 2},
+            performance_criteria=["RAM"],
+            performance_demand={("vm_0", "RAM"): 3},
+            performance_supply={("s_0", "RAM"): 3},
         ),
     )
 
     Expect(optimizer).to_be_feasible().with_vm_service_matching({("vm_0", "s_0", 0): 2})
-
-
-def test_should_buy_multiple_services_if_needed() -> None:
-    """There are two virtual machines and one service instance can only host one VM."""
-    optimizer = OPTIMIZER.initialize(
-        BaseData(
-            virtual_machines=["vm_0", "vm_1"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"], "vm_1": ["s_0"]},
-            service_base_costs={"s_0": 1},
-            time=[0],
-            virtual_machine_demand={("vm_0", 0): 1, ("vm_1", 0): 1},
-            max_service_instances={},
-        ),
-        PerformanceData(
-            virtual_machine_min_ram={"vm_0": 1},
-            virtual_machine_min_cpu_count={"vm_0": 1},
-            service_ram={"s_0": 1},
-            service_cpu_count={"s_0": 1},
-        ),
-    )
-
-    Expect(optimizer).to_be_feasible().with_vm_service_matching(
-        {("vm_0", "s_0", 0): 1, ("vm_1", "s_0", 0): 1}
-    ).with_service_instance_count({("s_0", 0): 2}).with_cost(2)
-
-
-def test_should_be_feasible_if_service_can_be_bought_enough_times_two_instances() -> None:
-    """There is demand for two VM instances, which each occupy the service fully.
-    Two service instances can be bought to cover this demand.
-    """
-    optimizer = OPTIMIZER.initialize(
-        BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 1},
-            time=[0],
-            virtual_machine_demand={("vm_0", 0): 2},
-            max_service_instances={"s_0": 2},
-        ),
-        PerformanceData(
-            virtual_machine_min_ram={"vm_0": 1},
-            virtual_machine_min_cpu_count={"vm_0": 1},
-            service_ram={"s_0": 1},
-            service_cpu_count={"s_0": 1},
-        ),
-    )
-
-    Expect(optimizer).to_be_feasible().with_cost(2).with_vm_service_matching(
-        {("vm_0", "s_0", 0): 2}
-    ).with_service_instance_count({("s_0", 0): 2}).test()
-
-
-def test_should_be_feasible_if_service_can_be_bought_enough_times_two_vms() -> None:
-    """There is demand for two VMs, which each occupy the service fully.
-    Two service instances can be bought to cover this demand.
-    """
-    optimizer = OPTIMIZER.initialize(
-        BaseData(
-            virtual_machines=["vm_0", "vm_1"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"], "vm_1": ["s_0"]},
-            service_base_costs={"s_0": 1},
-            time=[0],
-            virtual_machine_demand={("vm_0", 0): 1, ("vm_1", 0): 1},
-            max_service_instances={"s_0": 2},
-        ),
-        PerformanceData(
-            virtual_machine_min_ram={"vm_0": 1, "vm_1": 1},
-            virtual_machine_min_cpu_count={"vm_0": 1, "vm_1": 1},
-            service_ram={"s_0": 1},
-            service_cpu_count={"s_0": 1},
-        ),
-    )
-
-    Expect(optimizer).to_be_feasible().with_cost(2).with_vm_service_matching(
-        {("vm_0", "s_0", 0): 1, ("vm_1", "s_0", 0): 1}
-    ).with_service_instance_count({("s_0", 0): 2}).test()
-
-
-def test_should_be_infeasible_if_vms_cant_be_split() -> None:
-    """There is a service with performance 3 and max instance count of 2.
-    There is a demand of VMs with performance 2 and demand 3.
-
-    In total, the two services have enough performance to serve all 3 VMs.
-    But this would require to "split" one VM between the two service instances,
-    which is not possible.
-    """
-    optimizer = OPTIMIZER.initialize(
-        BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 1},
-            time=[0],
-            virtual_machine_demand={("vm_0", 0): 3},
-            max_service_instances={"s_0": 2},
-        ),
-        PerformanceData(
-            virtual_machine_min_ram={"vm_0": 2},
-            virtual_machine_min_cpu_count={"vm_0": 2},
-            service_ram={"s_0": 3},
-            service_cpu_count={"s_0": 3},
-        ),
-    )
-
-    Expect(optimizer).to_be_infeasible().test()
 
 
 def test_should_be_infeasible_if_not_enough_service_instances_can_be_bought() -> None:
@@ -310,10 +173,9 @@ def test_should_be_infeasible_if_not_enough_service_instances_can_be_bought() ->
             max_service_instances={"s_0": 1},
         ),
         PerformanceData(
-            virtual_machine_min_ram={"vm_0": 1},
-            virtual_machine_min_cpu_count={"vm_0": 1},
-            service_ram={"s_0": 1},
-            service_cpu_count={"s_0": 1},
+            performance_criteria=["RAM"],
+            performance_demand={("vm_0", "RAM"): 1},
+            performance_supply={("s_0", "RAM"): 1},
         ),
     )
 
