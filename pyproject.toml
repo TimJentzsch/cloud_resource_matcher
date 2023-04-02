@@ -1,8 +1,9 @@
 [tool.poetry]
 name = "optimizer"
 version = "0.1.0"
-description = ""
-authors = ["Tim Jentzsch <tim.jentzsch@rwth-aachen.de>"]
+description = "A tool to match cloud resources to cloud services."
+authors = ["Tim Jentzsch <optimizer.projects@timjen.net>"]
+exclude = ["examples", "test"]
 
 [tool.poetry.scripts]
 demo = "examples.demo:main"
@@ -18,10 +19,6 @@ black = "^22.12.0"
 ruff = "^0.0.246"
 pytest = "^7.2.0"
 mypy = "^1.1.1"
-
-[tool.pyright]
-include = ["optimizer", "test"]
-pythonVersion = "3.11"
 
 [tool.black]
 line-length = 100
