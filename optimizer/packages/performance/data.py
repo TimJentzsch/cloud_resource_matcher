@@ -40,3 +40,10 @@ class PerformanceData:
             assert (
                 pc in self.performance_criteria
             ), f"{pc} in performance_supply is not a valid performance criterion"
+
+        # The supply for each criterion must be specified for all CSs
+        for cs in base_data.services:
+            for pc in self.performance_criteria:
+                assert cs in [
+                    s for (s, pc) in self.performance_supply.keys()
+                ], f"CS {cs} does not have its supply for {pc} defined"
