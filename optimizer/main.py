@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import timedelta, datetime
 from typing import Optional
 
-from optimizer.data.types import Cost
+from optimizer.packages.base.data import Cost
 from optiframe import Optimizer, SolutionObjValue, InfeasibleError
 from optimizer.packages.base import BaseSolution, BaseData, BASE_PACKAGE
 from optimizer.packages.multi_cloud import MultiCloudData, MULTI_CLOUD_PACKAGE

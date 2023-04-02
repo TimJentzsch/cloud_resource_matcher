@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict
 
-from optimizer.data.types import Service, VirtualMachine
+from optimizer.packages.base.data import Service, VirtualMachine
 from optimizer.packages.base import BaseData
 
 

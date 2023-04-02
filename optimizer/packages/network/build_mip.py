@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from pulp import LpProblem, LpBinary, LpVariable, lpSum
 
 from .data import NetworkData
-from optimizer.data.types import VirtualMachine, Service
+from ..base.data import Service, VirtualMachine
 from optimizer.packages.base import BaseData, BaseMipData
 from optiframe import Task
 

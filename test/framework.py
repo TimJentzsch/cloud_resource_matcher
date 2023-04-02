@@ -11,7 +11,7 @@ from optiframe.framework import InitializedOptimizer, BuiltOptimizer
 from optimizer.packages.base import BaseSolution
 from optimizer.packages.base.extract_solution import VmServiceMatching, ServiceInstanceCount
 from optiframe import SolutionObjValue, InfeasibleError
-from optimizer.data.types import Service, VirtualMachine, Cost
+from optimizer.packages.base.data import Service, VirtualMachine, Cost
 
 
 @dataclass

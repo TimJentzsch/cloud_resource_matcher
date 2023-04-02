@@ -1,7 +1,10 @@
 from dataclasses import dataclass
 
-from optimizer.data.types import Service, CloudServiceProvider, Cost
+from optimizer.packages.base.data import Service, Cost
 from optimizer.packages.base import BaseData
+
+
+CloudServiceProvider = str
 
 
 @dataclass
