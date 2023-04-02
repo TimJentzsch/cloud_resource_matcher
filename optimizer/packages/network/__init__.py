@@ -3,6 +3,6 @@ from .validate import ValidateNetworkTask
 from .build_mip import BuildMipNetworkTask, NetworkMipData
 from optiframe.framework import OptimizationPackage
 
-NETWORK_PACKAGE = OptimizationPackage(validate=ValidateNetworkTask, build_mip=BuildMipNetworkTask)
+network_package = OptimizationPackage(validate=ValidateNetworkTask, build_mip=BuildMipNetworkTask)
 
-__all__ = ["NetworkData", "NetworkMipData", "NETWORK_PACKAGE"]
+__all__ = ["NetworkData", "NetworkMipData", "network_package"]

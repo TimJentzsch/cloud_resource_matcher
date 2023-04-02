@@ -1,8 +1,8 @@
 from optiframe import Optimizer
-from optimizer.packages.base import BaseData, BASE_PACKAGE
+from optimizer.packages.base import BaseData, base_package
 from test.framework import Expect
 
-OPTIMIZER = Optimizer("test_base").add_package(BASE_PACKAGE)
+OPTIMIZER = Optimizer("test_base").add_package(base_package)
 
 
 def test_one_vm_one_service_trivial_solution() -> None:

@@ -4,10 +4,10 @@ from typing import Optional
 
 from optimizer.packages.base.data import Cost
 from optiframe import Optimizer, SolutionObjValue, InfeasibleError
-from optimizer.packages.base import BaseSolution, BaseData, BASE_PACKAGE
-from optimizer.packages.multi_cloud import MultiCloudData, MULTI_CLOUD_PACKAGE
-from optimizer.packages.network import NetworkData, NETWORK_PACKAGE
-from optimizer.packages.performance import PerformanceData, PERFORMANCE_PACKAGE
+from optimizer.packages.base import BaseSolution, BaseData, base_package
+from optimizer.packages.multi_cloud import MultiCloudData, multi_cloud_package
+from optimizer.packages.network import NetworkData, network_package
+from optimizer.packages.performance import PerformanceData, performance_package
 from optimizer.solver import Solver, get_pulp_solver
 
 
@@ -97,10 +97,10 @@ def solve_demo_model(
 
     data = (
         Optimizer("cloud_cost_optimization")
-        .add_package(BASE_PACKAGE)
-        .add_package(PERFORMANCE_PACKAGE)
-        .add_package(NETWORK_PACKAGE)
-        .add_package(MULTI_CLOUD_PACKAGE)
+        .add_package(base_package)
+        .add_package(performance_package)
+        .add_package(network_package)
+        .add_package(multi_cloud_package)
         .initialize(base_data, perf_data, network_data, multi_data)
         .validate()
         .build_mip()

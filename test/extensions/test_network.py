@@ -1,11 +1,11 @@
 from optiframe import Optimizer
 
-from optimizer.packages.base import BaseData, BASE_PACKAGE
-from optimizer.packages.network import NetworkData, NETWORK_PACKAGE
+from optimizer.packages.base import BaseData, base_package
+from optimizer.packages.network import NetworkData, network_package
 from test.framework import Expect
 
 
-OPTIMIZER = Optimizer("test_network").add_package(BASE_PACKAGE).add_package(NETWORK_PACKAGE)
+OPTIMIZER = Optimizer("test_network").add_package(base_package).add_package(network_package)
 
 
 def test_should_pay_for_vm_location_costs() -> None:

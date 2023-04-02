@@ -1,11 +1,11 @@
 from optiframe import Optimizer
 
-from optimizer.packages.base import BaseData, BASE_PACKAGE
-from optimizer.packages.performance import PerformanceData, PERFORMANCE_PACKAGE
+from optimizer.packages.base import BaseData, base_package
+from optimizer.packages.performance import PerformanceData, performance_package
 from test.framework import Expect
 
 
-OPTIMIZER = Optimizer("test_performance").add_package(BASE_PACKAGE).add_package(PERFORMANCE_PACKAGE)
+OPTIMIZER = Optimizer("test_performance").add_package(base_package).add_package(performance_package)
 
 
 def test_with_sufficient_resources() -> None:
