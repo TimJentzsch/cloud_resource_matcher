@@ -1,6 +1,6 @@
 import pytest
 
-from optimizer.packages.base import BaseData
+from optimizer.packages.base import BaseData, ValidateBaseTask
 
 
 def test_should_not_raise_error_for_valid_data() -> None:
@@ -15,7 +15,7 @@ def test_should_not_raise_error_for_valid_data() -> None:
         max_service_instances={"s_0": 1},
     )
 
-    data.validate()
+    ValidateBaseTask(data).execute()
 
 
 class TestValidateVirtualMachineServices:
@@ -32,7 +32,7 @@ class TestValidateVirtualMachineServices:
         )
 
         with pytest.raises(AssertionError):
-            data.validate()
+            ValidateBaseTask(data).execute()
 
     def test_should_raise_error_for_invalid_virtual_machine(self) -> None:
         """The valid services are defined for a VM that doesn't exist."""
@@ -47,7 +47,7 @@ class TestValidateVirtualMachineServices:
         )
 
         with pytest.raises(AssertionError):
-            data.validate()
+            ValidateBaseTask(data).execute()
 
     def test_should_raise_error_for_invalid_service(self) -> None:
         """One of the valid services for a VM does not exist."""
@@ -62,7 +62,7 @@ class TestValidateVirtualMachineServices:
         )
 
         with pytest.raises(AssertionError):
-            data.validate()
+            ValidateBaseTask(data).execute()
 
 
 class TestServiceBaseCosts:
@@ -79,7 +79,7 @@ class TestServiceBaseCosts:
         )
 
         with pytest.raises(AssertionError):
-            data.validate()
+            ValidateBaseTask(data).execute()
 
     def test_should_raise_error_for_invalid_service(self) -> None:
         """One service that has base costs defined does not exist."""
@@ -94,7 +94,7 @@ class TestServiceBaseCosts:
         )
 
         with pytest.raises(AssertionError):
-            data.validate()
+            ValidateBaseTask(data).execute()
 
 
 class TestVirtualMachineDemand:
@@ -111,7 +111,7 @@ class TestVirtualMachineDemand:
         )
 
         with pytest.raises(AssertionError):
-            data.validate()
+            ValidateBaseTask(data).execute()
 
     def test_should_raise_error_for_invalid_virtual_machine(self) -> None:
         """A VM that has the demand defined does not exist."""
@@ -126,7 +126,7 @@ class TestVirtualMachineDemand:
         )
 
         with pytest.raises(AssertionError):
-            data.validate()
+            ValidateBaseTask(data).execute()
 
     def test_should_raise_error_for_invalid_time(self) -> None:
         """A time that has the demand defined does not exist."""
@@ -141,7 +141,7 @@ class TestVirtualMachineDemand:
         )
 
         with pytest.raises(AssertionError):
-            data.validate()
+            ValidateBaseTask(data).execute()
 
     def test_should_raise_error_for_negative_demand(self) -> None:
         """A defined demand is negative."""
@@ -156,7 +156,7 @@ class TestVirtualMachineDemand:
         )
 
         with pytest.raises(AssertionError):
-            data.validate()
+            ValidateBaseTask(data).execute()
 
 
 class TestMaxServiceInstances:
@@ -173,7 +173,7 @@ class TestMaxServiceInstances:
         )
 
         with pytest.raises(AssertionError):
-            data.validate()
+            ValidateBaseTask(data).execute()
 
     def test_should_raise_error_for_negative_instance_count(self) -> None:
         """A maximum instance count is negative."""
@@ -188,4 +188,4 @@ class TestMaxServiceInstances:
         )
 
         with pytest.raises(AssertionError):
-            data.validate()
+            ValidateBaseTask(data).execute()
