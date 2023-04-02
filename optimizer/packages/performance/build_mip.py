@@ -25,23 +25,12 @@ class BuildMipPerformanceTask(Task[None]):
         self.problem = problem
 
     def execute(self) -> None:
-        # Enforce performance limits for every service
-        for vm in self.base_data.virtual_machines:
-            for s in self.base_data.virtual_machine_services[vm]:
-                if vm in self.performance_data.virtual_machine_min_ram.keys():
-                    # RAM
-                    self.problem += (
-                        self.base_mip_data.var_vm_matching[vm, s]
-                        * self.performance_data.virtual_machine_min_ram[vm]
-                        <= self.performance_data.service_ram[s],
-                        f"ram_performance_limit({vm},{s})",
-                    )
-
-                if vm in self.performance_data.virtual_machine_min_cpu_count.keys():
-                    # vCPUs
-                    self.problem += (
-                        self.base_mip_data.var_vm_matching[vm, s]
-                        * self.performance_data.virtual_machine_min_cpu_count[vm]
-                        <= self.performance_data.service_cpu_count[s],
-                        f"cpu_performance_limit({vm},{s})",
-                    )
+        # Enforce performance limits for every cloud service
+        for (vm, pc), demand in self.performance_data.performance_demand.items():
+            for cs in self.base_data.virtual_machine_services[vm]:
+                if supply := self.performance_data.performance_supply.get((cs, pc)):
+                    if supply < demand:
+                        self.problem += (
+                            self.base_mip_data.var_vm_matching[vm, cs] == 0,
+                            f"performance_limit({vm},{cs},{pc})",
+                        )
