@@ -28,14 +28,14 @@ class PerformanceData:
         :raises AssertionError: When the data is not valid.
         """
         # Validate performance_demand
-        for (vm, pc) in self.performance_demand.items():
+        for (vm, pc) in self.performance_demand.keys():
             assert vm in base_data.virtual_machines, f"{vm} in performance_demand is not a valid VM"
             assert (
                 pc in self.performance_criteria
             ), f"{pc} in performance_demand is not a valid performance criterion"
 
         # Validate performance_supply
-        for (cs, pc) in self.performance_supply.items():
+        for (cs, pc) in self.performance_supply.keys():
             assert cs in base_data.services, f"{cs} in performance_supply is not a valid CS"
             assert (
                 pc in self.performance_criteria

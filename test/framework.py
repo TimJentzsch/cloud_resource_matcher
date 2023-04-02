@@ -103,7 +103,7 @@ class _ExpectResult:
         return self._expect._problem()
 
     def _solve(self) -> SolveSolution:
-        data = self._expect._optimizer.solve()
+        data = self._expect._optimizer.print_mip_and_solve()
         return SolveSolution(cost=data[SolutionObjValue].objective_value, base=data[BaseSolution])
 
     def _fix_variable_values(self) -> None:
@@ -225,17 +225,23 @@ class _ExpectFeasible(_ExpectResult):
         if self._vm_service_matching is None:
             return
 
+        actual = solution.base.vm_service_matching
+        expected = self._vm_service_matching
+
         assert (
-            solution.base.vm_service_matching == self._vm_service_matching
-        ), "Different VM/Service matching than expected"
+            actual == expected
+        ), f"Different VM/Service matching than expected\n{actual}\n!= {expected}"
 
     def _test_service_instance_count(self, solution: SolveSolution) -> None:
         if self._service_instance_count is None:
             return
 
+        actual = solution.base.service_instance_count
+        expected = self._service_instance_count
+
         assert (
-            solution.base.service_instance_count == self._service_instance_count
-        ), "Different service instance counts than expected"
+            actual == expected
+        ), "Different service instance counts than expected\n{actual}\n!= {expected}"
 
     def _test_variable_values(self) -> None:
         actual_values = {
