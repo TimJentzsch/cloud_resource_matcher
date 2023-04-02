@@ -2,6 +2,7 @@ import pytest
 
 from optimizer.packages.base import BaseData
 from optimizer.packages.performance import PerformanceData
+from optimizer.packages.performance.validate import ValidatePerformanceTask
 
 
 def test_should_not_raise_error_for_valid_data() -> None:
@@ -22,7 +23,7 @@ def test_should_not_raise_error_for_valid_data() -> None:
         performance_supply={("s_0", "vCPUs"): 4, ("s_0", "RAM"): 2},
     )
 
-    performance_data.validate(base_data)
+    ValidatePerformanceTask(base_data, performance_data).execute()
 
 
 class TestValidatePerformanceDemand:
@@ -45,7 +46,7 @@ class TestValidatePerformanceDemand:
         )
 
         with pytest.raises(AssertionError):
-            performance_data.validate(base_data)
+            ValidatePerformanceTask(base_data, performance_data).execute()
 
     def test_should_raise_error_for_invalid_pc(self) -> None:
         """A demand is defined for a performance criterion that doesn't exist."""
@@ -66,7 +67,7 @@ class TestValidatePerformanceDemand:
         )
 
         with pytest.raises(AssertionError):
-            performance_data.validate(base_data)
+            ValidatePerformanceTask(base_data, performance_data).execute()
 
 
 class TestValidatePerformanceSupply:
@@ -89,7 +90,7 @@ class TestValidatePerformanceSupply:
         )
 
         with pytest.raises(AssertionError):
-            performance_data.validate(base_data)
+            ValidatePerformanceTask(base_data, performance_data).execute()
 
     def test_should_raise_error_for_invalid_pc(self) -> None:
         """A supply is defined for a performance criterion that doesn't exist."""
@@ -110,7 +111,7 @@ class TestValidatePerformanceSupply:
         )
 
         with pytest.raises(AssertionError):
-            performance_data.validate(base_data)
+            ValidatePerformanceTask(base_data, performance_data).execute()
 
     def test_should_raise_error_for_missing_supply(self) -> None:
         """A supply is NOT defined for an existing CS-PC pair."""
@@ -131,4 +132,4 @@ class TestValidatePerformanceSupply:
         )
 
         with pytest.raises(AssertionError):
-            performance_data.validate(base_data)
+            ValidatePerformanceTask(base_data, performance_data).execute()
