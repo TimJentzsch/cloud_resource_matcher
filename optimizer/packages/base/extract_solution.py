@@ -2,8 +2,7 @@ from dataclasses import dataclass
 
 from pulp import pulp
 
-from optimizer.data import BaseData
-from optimizer.data.types import VirtualMachine, Service, TimeUnit
+from .data import BaseData, Service, VirtualMachine, TimeUnit
 from .build_mip import BaseMipData
 from optiframe import Task
 

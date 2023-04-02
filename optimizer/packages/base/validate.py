@@ -1,4 +1,4 @@
-from optimizer.data import BaseData
+from .data import BaseData
 from optiframe import Task
 
 

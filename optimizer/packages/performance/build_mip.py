@@ -1,8 +1,9 @@
 from pulp import LpProblem
 
-from optimizer.data import BaseData, PerformanceData
-from optimizer.packages.base import BaseMipData
+from optimizer.packages.base import BaseData, BaseMipData
 from optiframe import Task
+
+from .data import PerformanceData
 
 
 class BuildMipPerformanceTask(Task[None]):

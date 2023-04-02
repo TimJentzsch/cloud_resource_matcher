@@ -2,8 +2,7 @@ from dataclasses import dataclass
 
 from pulp import LpVariable, LpProblem, LpBinary, lpSum
 
-from optimizer.data import BaseData
-from optimizer.data.types import VirtualMachine, Service
+from .data import BaseData, Service, VirtualMachine
 from optiframe import Task
 
 VarVmServiceMatching = dict[tuple[VirtualMachine, Service], LpVariable]

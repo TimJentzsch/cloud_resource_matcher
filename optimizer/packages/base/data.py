@@ -1,12 +1,11 @@
 from dataclasses import dataclass
 from typing import List, Dict, Tuple
 
-from .types import (
-    Service,
-    VirtualMachine,
-    Cost,
-    TimeUnit,
-)
+
+Service = str
+VirtualMachine = str
+TimeUnit = int
+Cost = float
 
 
 @dataclass
