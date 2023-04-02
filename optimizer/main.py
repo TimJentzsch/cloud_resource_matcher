@@ -49,10 +49,15 @@ def solve_demo_model(
     )
 
     perf_data = PerformanceData(
-        virtual_machine_min_ram={f"vm_{v}": v % 4 + 1 for v in range(vm_count)},
-        virtual_machine_min_cpu_count={f"vm_{v}": (v + 2) % 3 + 1 for v in range(vm_count)},
-        service_ram={f"service_{s}": (s + 4) % 30 + 5 for s in range(service_count)},
-        service_cpu_count={f"service_{s}": s % 23 + 1 for s in range(service_count)},
+        performance_criteria=["vCPUs", "RAM"],
+        performance_demand={
+            **{(f"vm_{v}", "vCPUs"): (v + 2) % 3 + 1 for v in range(vm_count)},
+            **{(f"vm_{v}", "RAM"): v % 4 + 1 for v in range(vm_count)},
+        },
+        performance_supply={
+            **{(f"service_{s}", "vCPUs"): (s + 4) % 30 + 5 for s in range(service_count)},
+            **{(f"service_{s}", "RAM"): s % 23 + 1 for s in range(service_count)},
+        },
     )
 
     multi_data = MultiCloudData(
