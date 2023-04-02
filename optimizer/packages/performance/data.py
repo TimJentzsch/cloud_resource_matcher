@@ -43,6 +43,9 @@ class PerformanceData:
         # The supply for each criterion must be specified for all CSs
         for cs in base_data.services:
             for pc in self.performance_criteria:
-                assert cs in [
-                    s for (s, pc) in self.performance_supply.keys()
-                ], f"CS {cs} does not have its supply for {pc} defined"
+                assert (
+                    cs,
+                    pc,
+                ) in self.performance_supply.keys(), (
+                    f"CS {cs} does not have its supply for {pc} defined"
+                )
