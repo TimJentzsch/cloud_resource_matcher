@@ -16,8 +16,8 @@ An optimizer for cloud computing costs, using mixed integer programming.
 
 ### Demo
 
-Run `poetry run start` to solve an artificially created cloud cost problem.
-See `poetry run start --help` for the available configuration options.
+Run `poetry run demo` to solve an artificially created cloud cost problem.
+See `poetry run demo --help` for the available configuration options.
 
 ### Code Quality
 
