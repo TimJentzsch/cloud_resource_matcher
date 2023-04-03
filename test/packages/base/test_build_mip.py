@@ -46,7 +46,7 @@ def test_only_one_valid_matching() -> None:
 
 
 def test_no_valid_systems_for_vm() -> None:
-    """There are no valid services for the only VM."""
+    """There are no valid cloud_services for the only VM."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
             virtual_machines=["vm_0"],

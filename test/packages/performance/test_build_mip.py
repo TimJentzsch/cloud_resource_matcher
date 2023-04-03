@@ -87,7 +87,7 @@ def test_resource_matching() -> None:
 
 
 def test_cheap_insufficient_service() -> None:
-    """There are two services, but the cheaper one has insufficient resources."""
+    """There are two cloud_services, but the cheaper one has insufficient resources."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
             virtual_machines=["vm_0"],

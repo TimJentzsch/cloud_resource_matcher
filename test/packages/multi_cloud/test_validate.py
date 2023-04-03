@@ -30,7 +30,7 @@ def test_should_not_raise_error_for_valid_data() -> None:
 
 class TestValidateCloudServiceProviderServices:
     def test_should_raise_error_for_missing_cloud_service_provider(self) -> None:
-        """One CSP is missing the definition of services that belong to it."""
+        """One CSP is missing the definition of cloud_services that belong to it."""
         base_data = BaseData(
             virtual_machines=["vm_0"],
             services=["s_0"],

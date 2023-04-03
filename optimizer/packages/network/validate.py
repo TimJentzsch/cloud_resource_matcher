@@ -40,12 +40,12 @@ class ValidateNetworkTask(Task[None]):
 
         # Validate service_location
         for s, loc in self.network_data.service_location.items():
-            assert s in self.base_data.services, f"{s} in service_location is not a valid service"
+            assert s in self.base_data.cloud_services, f"{s} in service_location is not a valid service"
             assert (
                 loc in self.network_data.locations
             ), f"{loc} in service_location is not a valid location"
 
-        for s in self.base_data.services:
+        for s in self.base_data.cloud_services:
             assert (
                 s in self.network_data.service_location.keys()
             ), f"No location defined for service {s}"
@@ -53,7 +53,7 @@ class ValidateNetworkTask(Task[None]):
         # Validate virtual_machine_max_latency
         for (v, loc), latency in self.network_data.virtual_machine_location_max_latency.items():
             assert (
-                v in self.base_data.virtual_machines
+                v in self.base_data.cloud_resources
             ), f"{v} in virtual_machine_max_latency is not a valid VM"
             assert (
                 loc in self.network_data.locations
@@ -64,7 +64,7 @@ class ValidateNetworkTask(Task[None]):
         # Validate virtual_machine_location_traffic
         for (v, loc), traffic in self.network_data.virtual_machine_location_traffic.items():
             assert (
-                v in self.base_data.virtual_machines
+                v in self.base_data.cloud_resources
             ), f"{v} in virtual_machine_location_traffic is not a valid VM"
             assert (
                 loc in self.network_data.locations
@@ -75,10 +75,10 @@ class ValidateNetworkTask(Task[None]):
         # Validate virtual_machine_virtual_machine_traffic
         for (v1, v2), traffic in self.network_data.virtual_machine_virtual_machine_traffic.items():
             assert (
-                v1 in self.base_data.virtual_machines
+                v1 in self.base_data.cloud_resources
             ), f"{v1} in virtual_machine_virtual_machine_traffic is not a valid VM"
             assert (
-                v2 in self.base_data.virtual_machines
+                v2 in self.base_data.cloud_resources
             ), f"{v2} in virtual_machine_virtual_machine_traffic is not a valid VM"
 
             assert traffic >= 0, f"Traffic for VM {v1} and VM {v2} must not be negative"

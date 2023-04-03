@@ -41,7 +41,7 @@ class BuildMipMultiCloudTask(Task[MultiCloudMipData]):
         for k in self.multi_cloud_data.cloud_service_providers:
             used_service_count = lpSum(
                 self.base_mip_data.var_vm_matching[v, s]
-                for v in self.base_data.virtual_machines
+                for v in self.base_data.cloud_resources
                 for s in self.base_data.virtual_machine_services[v]
                 if s in self.multi_cloud_data.cloud_service_provider_services[k]
             )
@@ -51,7 +51,7 @@ class BuildMipMultiCloudTask(Task[MultiCloudMipData]):
                 f"csp_used_enforce_0({k})",
             )
 
-            for vm in self.base_data.virtual_machines:
+            for vm in self.base_data.cloud_resources:
                 for s in self.base_data.virtual_machine_services[vm]:
                     if s in self.multi_cloud_data.cloud_service_provider_services[k]:
                         self.problem += (

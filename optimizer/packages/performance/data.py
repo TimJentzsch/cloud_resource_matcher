@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from optimizer.packages.base.data import Service, VirtualMachine
+from optimizer.packages.base.data import CloudService, CloudResource
 
 
 PerformanceCriterion = str
@@ -13,8 +13,8 @@ class PerformanceData:
 
     # The demand a VM has for a given performance criterion
     # E.g. the number of vCPUs a VM needs to execute its workflows
-    performance_demand: dict[tuple[VirtualMachine, PerformanceCriterion], int]
+    performance_demand: dict[tuple[CloudResource, PerformanceCriterion], int]
 
     # The supply a CS has of a given performance criterion
     # E.g. the number of vCPUs a CS offers
-    performance_supply: dict[tuple[Service, PerformanceCriterion], int]
+    performance_supply: dict[tuple[CloudService, PerformanceCriterion], int]

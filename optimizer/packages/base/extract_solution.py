@@ -2,19 +2,19 @@ from dataclasses import dataclass
 
 from pulp import pulp
 
-from .data import BaseData, Service, VirtualMachine, TimeUnit
+from .data import BaseData, CloudService, CloudResource, TimeUnit
 from .build_mip import BaseMipData
 from optiframe import Task
 
-VmServiceMatching = dict[tuple[VirtualMachine, Service, TimeUnit], int]
-ServiceInstanceCount = dict[tuple[Service, TimeUnit], int]
+VmServiceMatching = dict[tuple[CloudResource, CloudService, TimeUnit], int]
+ServiceInstanceCount = dict[tuple[CloudService, TimeUnit], int]
 
 
 @dataclass
 class BaseSolution:
     """
     The most important parts of the solution, including the assignment
-    of VMs to services and the number of service instances to buy.
+    of VMs to cloud_services and the number of service instances to buy.
     """
 
     # Which VM should be deployed on which service?
@@ -34,12 +34,12 @@ class ExtractSolutionBaseTask(Task[BaseSolution]):
     def execute(self) -> BaseSolution:
         vm_service_matching: VmServiceMatching = dict()
 
-        for v in self.base_data.virtual_machines:
+        for v in self.base_data.cloud_resources:
             for s in self.base_data.virtual_machine_services[v]:
                 for t in self.base_data.time:
                     value = (
                         round(pulp.value(self.base_mip_data.var_vm_matching[v, s]))
-                        * self.base_data.virtual_machine_demand[v, t]
+                        * self.base_data.cr_and_time_to_instance_demand[v, t]
                     )
 
                     if value >= 1:
@@ -47,12 +47,12 @@ class ExtractSolutionBaseTask(Task[BaseSolution]):
 
         service_instance_count: ServiceInstanceCount = {}
 
-        for s in self.base_data.services:
+        for s in self.base_data.cloud_services:
             for t in self.base_data.time:
                 value = sum(
                     round(pulp.value(self.base_mip_data.var_vm_matching[vm, s]))
-                    * self.base_data.virtual_machine_demand[vm, t]
-                    for vm in self.base_data.virtual_machines
+                    * self.base_data.cr_and_time_to_instance_demand[vm, t]
+                    for vm in self.base_data.cloud_resources
                     if s in self.base_data.virtual_machine_services[vm]
                 )
 

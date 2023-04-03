@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from optimizer.packages.base.data import Service, Cost
+from optimizer.packages.base.data import CloudService, Cost
 
 
 CloudServiceProvider = str
@@ -11,8 +11,8 @@ class MultiCloudData:
     # The available cloud service providers
     cloud_service_providers: list[CloudServiceProvider]
 
-    # The services each cloud service provider offers
-    cloud_service_provider_services: dict[CloudServiceProvider, list[Service]]
+    # The cloud_services each cloud service provider offers
+    cloud_service_provider_services: dict[CloudServiceProvider, list[CloudService]]
 
     # The minimum number of cloud service providers that have to be used
     min_cloud_service_provider_count: int

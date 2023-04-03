@@ -21,7 +21,7 @@ def test_should_not_raise_error_for_valid_data() -> None:
 
 class TestValidateVirtualMachineServices:
     def test_should_raise_error_for_missing_virtual_machine(self) -> None:
-        """One VM does not have the valid services defined."""
+        """One VM does not have the valid cloud_services defined."""
         data = BaseData(
             virtual_machines=["vm_0"],
             services=["s_0"],
@@ -36,7 +36,7 @@ class TestValidateVirtualMachineServices:
             ValidateBaseTask(data).execute()
 
     def test_should_raise_error_for_invalid_virtual_machine(self) -> None:
-        """The valid services are defined for a VM that doesn't exist."""
+        """The valid cloud_services are defined for a VM that doesn't exist."""
         data = BaseData(
             virtual_machines=[],
             services=["s_0"],
@@ -51,7 +51,7 @@ class TestValidateVirtualMachineServices:
             ValidateBaseTask(data).execute()
 
     def test_should_raise_error_for_invalid_service(self) -> None:
-        """One of the valid services for a VM does not exist."""
+        """One of the valid cloud_services for a VM does not exist."""
         data = BaseData(
             virtual_machines=["vm_0"],
             services=[],
@@ -162,7 +162,7 @@ class TestVirtualMachineDemand:
 
 class TestMaxServiceInstances:
     def test_should_raise_error_for_invalid_service(self) -> None:
-        """One of the services does not exist."""
+        """One of the cloud_services does not exist."""
         data = BaseData(
             virtual_machines=["vm_0"],
             services=["s_0"],

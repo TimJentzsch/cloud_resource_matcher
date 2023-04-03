@@ -109,7 +109,7 @@ def test_should_choose_matching_that_respects_max_latency() -> None:
 
 
 def test_should_calculate_service_deployments_for_vm_pairs() -> None:
-    """Two VMs are connected and need to be placed on two different services."""
+    """Two VMs are connected and need to be placed on two different cloud_services."""
     locations = {"loc_0", "loc_1"}
 
     optimizer = OPTIMIZER.initialize(

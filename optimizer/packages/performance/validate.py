@@ -21,7 +21,7 @@ class ValidatePerformanceTask(Task[None]):
         # Validate performance_demand
         for (vm, pc) in self.performance_data.performance_demand.keys():
             assert (
-                vm in self.base_data.virtual_machines
+                vm in self.base_data.cloud_resources
             ), f"{vm} in performance_demand is not a valid VM"
             assert (
                 pc in self.performance_data.performance_criteria
@@ -29,13 +29,13 @@ class ValidatePerformanceTask(Task[None]):
 
         # Validate performance_supply
         for (cs, pc) in self.performance_data.performance_supply.keys():
-            assert cs in self.base_data.services, f"{cs} in performance_supply is not a valid CS"
+            assert cs in self.base_data.cloud_services, f"{cs} in performance_supply is not a valid CS"
             assert (
                 pc in self.performance_data.performance_criteria
             ), f"{pc} in performance_supply is not a valid performance criterion"
 
         # The supply for each criterion must be specified for all CSs
-        for cs in self.base_data.services:
+        for cs in self.base_data.cloud_services:
             for pc in self.performance_data.performance_criteria:
                 assert (
                     cs,

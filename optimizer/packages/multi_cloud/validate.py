@@ -31,10 +31,10 @@ class ValidateMultiCloudTask(Task[None]):
 
             for s in services:
                 assert (
-                    s in self.base_data.services
+                    s in self.base_data.cloud_services
                 ), f"{s} in cloud_service_provider_services is not a valid service"
 
-        for s in self.base_data.services:
+        for s in self.base_data.cloud_services:
             matched_to_csp = False
 
             for services in self.multi_cloud_data.cloud_service_provider_services.values():

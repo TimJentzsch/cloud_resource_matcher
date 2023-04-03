@@ -1,32 +1,41 @@
 from dataclasses import dataclass
-from typing import List, Dict, Tuple
 
 
-Service = str
-VirtualMachine = str
+# Any resource that needs to be deployed to the cloud (e.g. virtual machines).
+# Often abbreviated as 'CR'.
+CloudResource = str
+
+# A service offered by the cloud service provider that can host cloud resources.
+# Often abbreviated as 'CS'.
+CloudService = str
+
+# The number of time units (e.g. hours)
 TimeUnit = int
+
+# A cost unit, e.g. € or $.
 Cost = float
 
 
 @dataclass
 class BaseData:
-    # The available virtual machines
-    virtual_machines: List[VirtualMachine]
+    # The identifiers of available cloud resources
+    cloud_resources: list[CloudResource]
 
-    # The available services
-    services: List[Service]
+    # The identifiers of offered cloud services.
+    cloud_services: list[CloudService]
 
-    # The services that are applicable for each virtual machine
-    virtual_machine_services: Dict[VirtualMachine, List[Service]]
+    # A map from cloud resources to the cloud services they can use.
+    cr_to_cs_list: dict[CloudResource, list[CloudService]]
 
-    # The base cost for each service
-    service_base_costs: Dict[Service, Cost]
+    # A map from cloud services to their fixed base cost.
+    # The cost is given per instance and per time unit.
+    cs_to_base_cost: dict[CloudService, Cost]
 
-    # The discrete units of time when a decision can be made
-    time: List[TimeUnit]
+    # The discrete units of time when a decision can be made.
+    time: list[TimeUnit]
 
-    # The number of virtual machine instances that are needed at a given point in time
-    virtual_machine_demand: Dict[Tuple[VirtualMachine, TimeUnit], int]
+    # A map from a cloud resource and a point in time to the number of instances needed at that time.
+    cr_and_time_to_instance_demand: dict[tuple[CloudResource, TimeUnit], int]
 
-    # The maximum number of instances available for each service
-    max_service_instances: Dict[Service, int]
+    # A map from cloud services to the maximum number of available instances.
+    cs_to_instance_limit: dict[CloudService, int]

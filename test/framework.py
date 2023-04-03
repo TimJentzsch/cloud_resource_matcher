@@ -11,7 +11,7 @@ from optiframe.framework import InitializedOptimizer, BuiltOptimizer
 from optimizer.packages.base import BaseSolution
 from optimizer.packages.base.extract_solution import VmServiceMatching, ServiceInstanceCount
 from optiframe import SolutionObjValue, InfeasibleError
-from optimizer.packages.base.data import Service, VirtualMachine, Cost
+from optimizer.packages.base.data import CloudService, CloudResource, Cost
 
 
 @dataclass
@@ -58,7 +58,7 @@ class Expect:
         return self
 
     def with_fixed_vm_service_matching(
-        self, matching: dict[tuple[VirtualMachine, Service], int]
+        self, matching: dict[tuple[CloudResource, CloudService], int]
     ) -> Self:
         """Fix the values of the variables defined by the given VM-service matching."""
         self.with_fixed_variable_values(
@@ -171,7 +171,7 @@ class _ExpectFeasible(_ExpectResult):
         return self
 
     def with_vm_service_matching(self, vm_service_matching: VmServiceMatching) -> Self:
-        """Enforce that the virtual machines are matched to the given services."""
+        """Enforce that the virtual machines are matched to the given cloud_services."""
         self._vm_service_matching = vm_service_matching
 
         return self

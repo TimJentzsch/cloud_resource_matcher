@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from pulp import LpProblem, LpBinary, LpVariable, lpSum
 
 from .data import NetworkData
-from ..base.data import Service, VirtualMachine
+from ..base.data import CloudService, CloudResource
 from optimizer.packages.base import BaseData, BaseMipData
 from optiframe import Task
 
@@ -11,7 +11,7 @@ from optiframe import Task
 @dataclass
 class NetworkMipData:
     # Is vm1 deployed to s1 and vm2 deployed to s2?
-    var_vm_pair_services: dict[tuple[VirtualMachine, Service, VirtualMachine, Service], LpVariable]
+    var_vm_pair_services: dict[tuple[CloudResource, CloudService, CloudResource, CloudService], LpVariable]
 
 
 class BuildMipNetworkTask(Task[NetworkMipData]):
@@ -36,7 +36,7 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
         # Pay for VM -> location traffic
         self.problem.objective += lpSum(
             self.base_mip_data.var_vm_matching[vm, s]
-            * self.base_data.virtual_machine_demand[vm, t]
+            * self.base_data.cr_and_time_to_instance_demand[vm, t]
             * traffic
             * self.network_data.location_traffic_cost[self.network_data.service_location[s], loc]
             for (
@@ -51,7 +51,7 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
 
         # Is there a vm1 -> vm2 connection where vm1 is deployed to s1 and vm2 to s2?
         var_vm_pair_services: dict[
-            tuple[VirtualMachine, Service, VirtualMachine, Service],
+            tuple[CloudResource, CloudService, CloudResource, CloudService],
             LpVariable,
         ] = {
             (vm1, s1, vm2, s2): LpVariable(
@@ -81,7 +81,7 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
                 == 1
             )
 
-            # Enforce that the VMs must be deployed to the given services
+            # Enforce that the VMs must be deployed to the given cloud_services
             for s1 in self.base_data.virtual_machine_services[vm1]:
                 for s2 in self.base_data.virtual_machine_services[vm2]:
                     self.problem += (
@@ -125,7 +125,7 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
         # Pay for VM -> location traffic caused by VM -> VM connections
         self.problem.objective += lpSum(
             var_vm_pair_services[vm1, s1, vm2, s2]
-            * self.base_data.virtual_machine_demand[vm1, t]
+            * self.base_data.cr_and_time_to_instance_demand[vm1, t]
             * traffic
             * self.network_data.location_traffic_cost[
                 self.network_data.service_location[s1], self.network_data.service_location[s2]

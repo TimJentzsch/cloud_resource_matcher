@@ -146,7 +146,7 @@ def test_with_multiple_time_points() -> None:
 
 def test_csp_objective() -> None:
     """
-    There are two CSPs, one has cheaper services, but a higher migration cost.
+    There are two CSPs, one has cheaper cloud_services, but a higher migration cost.
     """
     optimizer = OPTIMIZER.initialize(
         BaseData(

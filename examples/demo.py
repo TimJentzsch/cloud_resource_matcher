@@ -149,7 +149,7 @@ def main() -> None:
         "--service-count",
         type=int,
         default=50,
-        help="The number of cloud services in the demo data.",
+        help="The number of cloud cloud_services in the demo data.",
     )
     parser.add_argument(
         "--time-count",
