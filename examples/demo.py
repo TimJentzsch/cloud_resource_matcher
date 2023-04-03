@@ -18,8 +18,8 @@ class SolveSolution:
 
 
 def solve_demo_model(
-    vm_count: int,
-    service_count: int,
+    cr_count: int,
+    cs_count: int,
     time_count: int,
     csp_count: int,
     location_count: int,
@@ -30,40 +30,38 @@ def solve_demo_model(
 ) -> SolveSolution:
     """Create and solve a model based on demo data."""
     base_data = BaseData(
-        virtual_machines=[f"vm_{v}" for v in range(vm_count)],
-        services=[f"service_{s}" for s in range(service_count)],
-        service_base_costs={
-            f"service_{s}": s % 100 + (s % 20) * (s % 5) + 10 for s in range(service_count)
-        },
-        virtual_machine_services={
-            f"vm_{v}": [f"service_{s}" for s in range(service_count) if ((v + s) % 4) == 0]
-            for v in range(vm_count)
+        cloud_resources=[f"cr_{v}" for v in range(cr_count)],
+        cloud_services=[f"cs_{s}" for s in range(cs_count)],
+        cs_to_base_cost={f"cs_{s}": s % 100 + (s % 20) * (s % 5) + 10 for s in range(cs_count)},
+        cr_to_cs_list={
+            f"cr_{v}": [f"cs_{s}" for s in range(cs_count) if ((v + s) % 4) == 0]
+            for v in range(cr_count)
         },
         time=list(range(time_count)),
-        virtual_machine_demand={
-            (f"vm_{v}", t): (v % 2) * (t % 3) + 1
-            for v in range(vm_count)
+        cr_and_time_to_instance_demand={
+            (f"cr_{v}", t): (v % 2) * (t % 3) + 1
+            for v in range(cr_count)
             for t in range(time_count)
         },
-        max_service_instances={},
+        cs_to_instance_limit={},
     )
 
     perf_data = PerformanceData(
         performance_criteria=["vCPUs", "RAM"],
         performance_demand={
-            **{(f"vm_{v}", "vCPUs"): (v + 2) % 3 + 1 for v in range(vm_count)},
-            **{(f"vm_{v}", "RAM"): v % 4 + 1 for v in range(vm_count)},
+            **{(f"cr_{v}", "vCPUs"): (v + 2) % 3 + 1 for v in range(cr_count)},
+            **{(f"cr_{v}", "RAM"): v % 4 + 1 for v in range(cr_count)},
         },
         performance_supply={
-            **{(f"service_{s}", "vCPUs"): (s + 4) % 30 + 5 for s in range(service_count)},
-            **{(f"service_{s}", "RAM"): s % 23 + 1 for s in range(service_count)},
+            **{(f"cs_{s}", "vCPUs"): (s + 4) % 30 + 5 for s in range(cs_count)},
+            **{(f"cs_{s}", "RAM"): s % 23 + 1 for s in range(cs_count)},
         },
     )
 
     multi_data = MultiCloudData(
         cloud_service_providers=[f"csp_{k}" for k in range(csp_count)],
         cloud_service_provider_services={
-            f"csp_{k}": [f"service_{s}" for s in range(service_count) if s % csp_count == k]
+            f"csp_{k}": [f"cs_{s}" for s in range(cs_count) if s % csp_count == k]
             for k in range(csp_count)
         },
         min_cloud_service_provider_count=2,
@@ -73,9 +71,7 @@ def solve_demo_model(
 
     network_data = NetworkData(
         locations=set(f"loc_{loc}" for loc in range(location_count)),
-        service_location={
-            f"service_{s}": f"loc_{s % location_count}" for s in range(service_count)
-        },
+        service_location={f"cs_{s}": f"loc_{s % location_count}" for s in range(cs_count)},
         location_latency={
             (f"loc_{loc1}", f"loc_{loc2}"): abs(loc2 - loc1) * 5
             for loc1 in range(location_count)
@@ -87,13 +83,13 @@ def solve_demo_model(
             for loc2 in range(location_count)
         },
         virtual_machine_location_traffic={
-            (f"vm_{v}", f"loc_{loc}"): abs(loc - v) if loc % 4 == v % 2 else 0
-            for v in range(vm_count)
+            (f"cr_{v}", f"loc_{loc}"): abs(loc - v) if loc % 4 == v % 2 else 0
+            for v in range(cr_count)
             for loc in range(location_count)
         },
         virtual_machine_location_max_latency={
-            (f"vm_{v}", f"loc_{loc}"): v % 20 + 20
-            for v in range(vm_count)
+            (f"cr_{v}", f"loc_{loc}"): v % 20 + 20
+            for v in range(cr_count)
             for loc in range(location_count)
         },
         virtual_machine_virtual_machine_max_latency={},
@@ -140,16 +136,16 @@ def main() -> None:
         help="The solver to use to solve the mixed-integer program.",
     )
     parser.add_argument(
-        "--vm-count",
+        "--cr-count",
         type=int,
         default=50,
         help="The number of virtual machines (VMs) in the demo data.",
     )
     parser.add_argument(
-        "--service-count",
+        "--cs-count",
         type=int,
         default=50,
-        help="The number of cloud cloud_services in the demo data.",
+        help="The number of cloud cloud_cloud_services in the demo data.",
     )
     parser.add_argument(
         "--time-count",
@@ -222,8 +218,8 @@ def main() -> None:
 
     try:
         solution = solve_demo_model(
-            vm_count=args.vm_count,
-            service_count=args.service_count,
+            cr_count=args.cr_count,
+            cs_count=args.cs_count,
             time_count=args.time_count,
             location_count=args.location_count,
             csp_count=args.csp_count,
