@@ -32,6 +32,6 @@ class BuildMipPerformanceTask(Task[None]):
                 if supply is not None:
                     if supply < demand:
                         self.problem += (
-                            self.base_mip_data.var_vm_matching[vm, cs] == 0,
+                            self.base_mip_data.var_cr_to_cs_matching[vm, cs] == 0,
                             f"performance_limit({vm},{cs},{pc})",
                         )

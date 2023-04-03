@@ -37,7 +37,7 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
     def execute(self) -> NetworkMipData:
         # Pay for VM -> location traffic
         self.problem.objective += lpSum(
-            self.base_mip_data.var_vm_matching[vm, s]
+            self.base_mip_data.var_cr_to_cs_matching[vm, s]
             * self.base_data.cr_and_time_to_instance_demand[vm, t]
             * traffic
             * self.network_data.location_traffic_cost[self.network_data.service_location[s], loc]
@@ -88,11 +88,11 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
                 for s2 in self.base_data.cr_to_cs_list[vm2]:
                     self.problem += (
                         var_vm_pair_services[vm1, s1, vm2, s2]
-                        <= self.base_mip_data.var_vm_matching[vm1, s1]
+                        <= self.base_mip_data.var_cr_to_cs_matching[vm1, s1]
                     )
                     self.problem += (
                         var_vm_pair_services[vm1, s1, vm2, s2]
-                        <= self.base_mip_data.var_vm_matching[vm2, s2]
+                        <= self.base_mip_data.var_cr_to_cs_matching[vm2, s2]
                     )
 
         # Respect maximum latencies for VM -> location traffic
@@ -108,7 +108,7 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
                         vm1,
                         loc2,
                     ) in self.network_data.virtual_machine_location_traffic.keys():
-                        self.problem += self.base_mip_data.var_vm_matching[vm1, s] == 0
+                        self.problem += self.base_mip_data.var_cr_to_cs_matching[vm1, s] == 0
 
         # Respect maximum latencies for VM -> VM traffic
         for (

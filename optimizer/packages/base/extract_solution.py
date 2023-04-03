@@ -38,7 +38,7 @@ class ExtractSolutionBaseTask(Task[BaseSolution]):
             for s in self.base_data.cr_to_cs_list[v]:
                 for t in self.base_data.time:
                     value = (
-                        round(pulp.value(self.base_mip_data.var_vm_matching[v, s]))
+                        round(pulp.value(self.base_mip_data.var_cr_to_cs_matching[v, s]))
                         * self.base_data.cr_and_time_to_instance_demand[v, t]
                     )
 
@@ -50,7 +50,7 @@ class ExtractSolutionBaseTask(Task[BaseSolution]):
         for s in self.base_data.cloud_services:
             for t in self.base_data.time:
                 value = sum(
-                    round(pulp.value(self.base_mip_data.var_vm_matching[vm, s]))
+                    round(pulp.value(self.base_mip_data.var_cr_to_cs_matching[vm, s]))
                     * self.base_data.cr_and_time_to_instance_demand[vm, t]
                     for vm in self.base_data.cloud_resources
                     if s in self.base_data.cr_to_cs_list[vm]

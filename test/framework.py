@@ -62,7 +62,7 @@ class Expect:
     ) -> Self:
         """Fix the values of the variables defined by the given VM-service matching."""
         self.with_fixed_variable_values(
-            {f"vm_matching({v},{s})": val for (v, s), val in matching.items()}
+            {f"cr_to_cs_matching({cr},{cs})": val for (cr, cs), val in matching.items()}
         )
         return self
 
