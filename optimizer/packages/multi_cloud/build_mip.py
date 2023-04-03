@@ -43,7 +43,7 @@ class BuildMipMultiCloudTask(Task[MultiCloudMipData]):
                 self.base_mip_data.var_cr_to_cs_matching[v, s]
                 for v in self.base_data.cloud_resources
                 for s in self.base_data.cr_to_cs_list[v]
-                if s in self.multi_cloud_data.cloud_service_provider_services[k]
+                if s in self.multi_cloud_data.csp_to_cs_list[k]
             )
 
             self.problem += (
@@ -53,7 +53,7 @@ class BuildMipMultiCloudTask(Task[MultiCloudMipData]):
 
             for vm in self.base_data.cloud_resources:
                 for s in self.base_data.cr_to_cs_list[vm]:
-                    if s in self.multi_cloud_data.cloud_service_provider_services[k]:
+                    if s in self.multi_cloud_data.csp_to_cs_list[k]:
                         self.problem += (
                             var_csp_used[k] >= self.base_mip_data.var_cr_to_cs_matching[vm, s],
                             f"csp_used_enforce_1({k},{vm},{s})",
@@ -62,18 +62,18 @@ class BuildMipMultiCloudTask(Task[MultiCloudMipData]):
         # Enforce minimum and maximum number of used CSPs
         self.problem.addConstraint(
             lpSum(var_csp_used[k] for k in self.multi_cloud_data.cloud_service_providers)
-            >= self.multi_cloud_data.min_cloud_service_provider_count,
-            "min_cloud_service_provider_count",
+            >= self.multi_cloud_data.min_csp_count,
+            "min_csp_count",
         )
         self.problem.addConstraint(
             lpSum(var_csp_used[k] for k in self.multi_cloud_data.cloud_service_providers)
-            <= self.multi_cloud_data.max_cloud_service_provider_count,
-            "max_cloud_service_provider_count",
+            <= self.multi_cloud_data.max_csp_count,
+            "max_csp_count",
         )
 
         # Add CSP cost to objective
         self.problem.objective += lpSum(
-            var_csp_used[k] * self.multi_cloud_data.cloud_service_provider_costs[k]
+            var_csp_used[k] * self.multi_cloud_data.csp_to_cost[k]
             for k in self.multi_cloud_data.cloud_service_providers
         )
 

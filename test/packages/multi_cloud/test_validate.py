@@ -19,10 +19,10 @@ def test_should_not_raise_error_for_valid_data() -> None:
 
     multi_data = MultiCloudData(
         cloud_service_providers=["csp_0"],
-        cloud_service_provider_services={"csp_0": ["s_0"]},
-        max_cloud_service_provider_count=1,
-        min_cloud_service_provider_count=0,
-        cloud_service_provider_costs={"csp_0": 10},
+        csp_to_cs_list={"csp_0": ["s_0"]},
+        max_csp_count=1,
+        min_csp_count=0,
+        csp_to_cost={"csp_0": 10},
     )
 
     ValidateMultiCloudTask(base_data, multi_data).execute()
@@ -43,10 +43,10 @@ class TestValidateCloudServiceProviderServices:
 
         multi_data = MultiCloudData(
             cloud_service_providers=["csp_0"],
-            cloud_service_provider_services={},
-            max_cloud_service_provider_count=1,
-            min_cloud_service_provider_count=0,
-            cloud_service_provider_costs={"csp_0": 10},
+            csp_to_cs_list={},
+            max_csp_count=1,
+            min_csp_count=0,
+            csp_to_cost={"csp_0": 10},
         )
 
         with pytest.raises(AssertionError):
@@ -66,10 +66,10 @@ class TestValidateCloudServiceProviderServices:
 
         multi_data = MultiCloudData(
             cloud_service_providers=[],
-            cloud_service_provider_services={"csp_0": ["s_0"]},
-            max_cloud_service_provider_count=1,
-            min_cloud_service_provider_count=0,
-            cloud_service_provider_costs={"csp_0": 10},
+            csp_to_cs_list={"csp_0": ["s_0"]},
+            max_csp_count=1,
+            min_csp_count=0,
+            csp_to_cost={"csp_0": 10},
         )
 
         with pytest.raises(AssertionError):
@@ -89,10 +89,10 @@ class TestValidateCloudServiceProviderServices:
 
         multi_data = MultiCloudData(
             cloud_service_providers=["csp_0"],
-            cloud_service_provider_services={"csp_0": ["s_0", "s_1"]},
-            max_cloud_service_provider_count=1,
-            min_cloud_service_provider_count=0,
-            cloud_service_provider_costs={"csp_0": 10},
+            csp_to_cs_list={"csp_0": ["s_0", "s_1"]},
+            max_csp_count=1,
+            min_csp_count=0,
+            csp_to_cost={"csp_0": 10},
         )
 
         with pytest.raises(AssertionError):
@@ -112,10 +112,10 @@ class TestValidateCloudServiceProviderServices:
 
         multi_data = MultiCloudData(
             cloud_service_providers=[],
-            cloud_service_provider_services={},
-            max_cloud_service_provider_count=1,
-            min_cloud_service_provider_count=0,
-            cloud_service_provider_costs={},
+            csp_to_cs_list={},
+            max_csp_count=1,
+            min_csp_count=0,
+            csp_to_cost={},
         )
 
         with pytest.raises(AssertionError):
@@ -124,7 +124,7 @@ class TestValidateCloudServiceProviderServices:
 
 class TestValidateCloudServiceProviderMinMaxCounts:
     def test_should_raise_error_on_negative_min_count(self) -> None:
-        """The min_cloud_service_provider_count is negative."""
+        """The min_csp_count is negative."""
 
         base_data = BaseData(
             cloud_resources=["vm_0"],
@@ -138,17 +138,17 @@ class TestValidateCloudServiceProviderMinMaxCounts:
 
         multi_data = MultiCloudData(
             cloud_service_providers=["csp_0"],
-            cloud_service_provider_services={"csp_0": ["s_0"]},
-            max_cloud_service_provider_count=1,
-            min_cloud_service_provider_count=-1,
-            cloud_service_provider_costs={"csp_0": 10},
+            csp_to_cs_list={"csp_0": ["s_0"]},
+            max_csp_count=1,
+            min_csp_count=-1,
+            csp_to_cost={"csp_0": 10},
         )
 
         with pytest.raises(AssertionError):
             ValidateMultiCloudTask(base_data, multi_data).execute()
 
     def test_should_raise_error_on_negative_max_count(self) -> None:
-        """The max_cloud_service_provider_count is negative."""
+        """The max_csp_count is negative."""
 
         base_data = BaseData(
             cloud_resources=["vm_0"],
@@ -162,10 +162,10 @@ class TestValidateCloudServiceProviderMinMaxCounts:
 
         multi_data = MultiCloudData(
             cloud_service_providers=["csp_0"],
-            cloud_service_provider_services={"csp_0": ["s_0"]},
-            max_cloud_service_provider_count=-1,
-            min_cloud_service_provider_count=0,
-            cloud_service_provider_costs={"csp_0": 10},
+            csp_to_cs_list={"csp_0": ["s_0"]},
+            max_csp_count=-1,
+            min_csp_count=0,
+            csp_to_cost={"csp_0": 10},
         )
 
         with pytest.raises(AssertionError):
@@ -173,8 +173,8 @@ class TestValidateCloudServiceProviderMinMaxCounts:
 
     def test_should_raise_error_on_max_smaller_min_count(self) -> None:
         """
-        The max_cloud_service_provider_count is smaller than
-        max_cloud_service_provider_count.
+        The max_csp_count is smaller than
+        max_csp_count.
         """
 
         base_data = BaseData(
@@ -189,10 +189,10 @@ class TestValidateCloudServiceProviderMinMaxCounts:
 
         multi_data = MultiCloudData(
             cloud_service_providers=["csp_0"],
-            cloud_service_provider_services={"csp_0": ["s_0"]},
-            max_cloud_service_provider_count=1,
-            min_cloud_service_provider_count=2,
-            cloud_service_provider_costs={"csp_0": 10},
+            csp_to_cs_list={"csp_0": ["s_0"]},
+            max_csp_count=1,
+            min_csp_count=2,
+            csp_to_cost={"csp_0": 10},
         )
 
         with pytest.raises(AssertionError):
@@ -214,10 +214,10 @@ class TestValidateCloudServiceProviderCosts:
 
         multi_data = MultiCloudData(
             cloud_service_providers=["csp_0"],
-            cloud_service_provider_services={"csp_0": ["s_0"]},
-            max_cloud_service_provider_count=1,
-            min_cloud_service_provider_count=0,
-            cloud_service_provider_costs={},
+            csp_to_cs_list={"csp_0": ["s_0"]},
+            max_csp_count=1,
+            min_csp_count=0,
+            csp_to_cost={},
         )
 
         with pytest.raises(AssertionError):

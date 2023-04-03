@@ -140,7 +140,7 @@ class TestValidateServiceLocation:
             ValidateNetworkTask(base_data, network_data).execute()
 
     def test_should_raise_error_on_invalid_service(self) -> None:
-        """The max_cloud_service_provider_count is negative."""
+        """The max_csp_count is negative."""
 
         base_data = BaseData(
             cloud_resources=["vm_0"],
