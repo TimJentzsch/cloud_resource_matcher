@@ -8,13 +8,13 @@ from optimizer.packages.multi_cloud.validate import ValidateMultiCloudTask
 def test_should_not_raise_error_for_valid_data() -> None:
     """Validating valid data should not raise an assertion error."""
     base_data = BaseData(
-        virtual_machines=["vm_0"],
-        services=["s_0"],
-        virtual_machine_services={"vm_0": ["s_0"]},
-        service_base_costs={"s_0": 5},
+        cloud_resources=["vm_0"],
+        cloud_services=["s_0"],
+        cr_to_cs_list={"vm_0": ["s_0"]},
+        cs_to_base_cost={"s_0": 5},
         time=[0],
-        virtual_machine_demand={("vm_0", 0): 1},
-        max_service_instances={},
+        cr_and_time_to_instance_demand={("vm_0", 0): 1},
+        cs_to_instance_limit={},
     )
 
     multi_data = MultiCloudData(
@@ -30,15 +30,15 @@ def test_should_not_raise_error_for_valid_data() -> None:
 
 class TestValidateCloudServiceProviderServices:
     def test_should_raise_error_for_missing_cloud_service_provider(self) -> None:
-        """One CSP is missing the definition of cloud_services that belong to it."""
+        """One CSP is missing the definition of cloud_cloud_services that belong to it."""
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         multi_data = MultiCloudData(
@@ -55,13 +55,13 @@ class TestValidateCloudServiceProviderServices:
     def test_should_raise_error_for_invalid_cloud_service_provider(self) -> None:
         """One CSP in the definitions does not exist."""
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         multi_data = MultiCloudData(
@@ -78,13 +78,13 @@ class TestValidateCloudServiceProviderServices:
     def test_should_raise_error_for_invalid_service(self) -> None:
         """One service in the definitions does not exist."""
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         multi_data = MultiCloudData(
@@ -101,13 +101,13 @@ class TestValidateCloudServiceProviderServices:
     def test_should_raise_error_for_unmatched_service(self) -> None:
         """One service has not been matched to a CSP."""
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         multi_data = MultiCloudData(
@@ -127,13 +127,13 @@ class TestValidateCloudServiceProviderMinMaxCounts:
         """The min_cloud_service_provider_count is negative."""
 
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         multi_data = MultiCloudData(
@@ -151,13 +151,13 @@ class TestValidateCloudServiceProviderMinMaxCounts:
         """The max_cloud_service_provider_count is negative."""
 
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         multi_data = MultiCloudData(
@@ -178,13 +178,13 @@ class TestValidateCloudServiceProviderMinMaxCounts:
         """
 
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         multi_data = MultiCloudData(
@@ -203,13 +203,13 @@ class TestValidateCloudServiceProviderCosts:
     def test_should_raise_error_on_missing_csp(self) -> None:
         """One of the CSPs does not have a cost defined."""
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         multi_data = MultiCloudData(

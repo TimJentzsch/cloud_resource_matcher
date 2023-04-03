@@ -8,13 +8,13 @@ from optimizer.packages.network.validate import ValidateNetworkTask
 def test_should_not_raise_error_for_valid_data() -> None:
     """Validating valid data should not raise an assertion error."""
     base_data = BaseData(
-        virtual_machines=["vm_0"],
-        services=["s_0"],
-        virtual_machine_services={"vm_0": ["s_0"]},
-        service_base_costs={"s_0": 5},
+        cloud_resources=["vm_0"],
+        cloud_services=["s_0"],
+        cr_to_cs_list={"vm_0": ["s_0"]},
+        cs_to_base_cost={"s_0": 5},
         time=[0],
-        virtual_machine_demand={("vm_0", 0): 1},
-        max_service_instances={},
+        cr_and_time_to_instance_demand={("vm_0", 0): 1},
+        cs_to_instance_limit={},
     )
 
     network_data = NetworkData(
@@ -35,13 +35,13 @@ class TestValidateLocationLatency:
     def test_should_raise_error_for_missing_location_pair(self) -> None:
         """One location pair does not have a latency defined between them."""
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -61,13 +61,13 @@ class TestValidateLocationLatency:
     def test_should_raise_error_for_invalid_location(self) -> None:
         """One location in the definitions does not exist."""
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -87,13 +87,13 @@ class TestValidateLocationLatency:
     def test_should_raise_error_for_negative_latency(self) -> None:
         """One location pair has a negative latency."""
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -116,13 +116,13 @@ class TestValidateServiceLocation:
         """One service has no location defined."""
 
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -143,13 +143,13 @@ class TestValidateServiceLocation:
         """The max_cloud_service_provider_count is negative."""
 
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -170,13 +170,13 @@ class TestValidateServiceLocation:
         """A specified location does not exist."""
 
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -199,13 +199,13 @@ class TestValidateVirtualMachineMaxLatency:
         """One virtual machine does not exist."""
 
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -226,13 +226,13 @@ class TestValidateVirtualMachineMaxLatency:
         """One location does not exist."""
 
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -253,13 +253,13 @@ class TestValidateVirtualMachineMaxLatency:
         """One of the maximum latencies is negative."""
 
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -282,13 +282,13 @@ class TestValidateVirtualMachineLocationTraffic:
         """One virtual machine does not exist."""
 
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -312,13 +312,13 @@ class TestValidateVirtualMachineLocationTraffic:
         """One location does not exist."""
 
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -342,13 +342,13 @@ class TestValidateVirtualMachineLocationTraffic:
         """One of the traffics is negative."""
 
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -371,13 +371,13 @@ class TestValidateVirtualMachineVirtualMachineTraffic:
         """One virtual machine does not exist."""
 
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -398,13 +398,13 @@ class TestValidateVirtualMachineVirtualMachineTraffic:
         """One location does not exist."""
 
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -427,13 +427,13 @@ class TestValidateLocationTrafficCost:
         """One location does not exist."""
 
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -454,13 +454,13 @@ class TestValidateLocationTrafficCost:
         """One location pair has no costs defined."""
 
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(

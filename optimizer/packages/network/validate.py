@@ -40,7 +40,9 @@ class ValidateNetworkTask(Task[None]):
 
         # Validate service_location
         for s, loc in self.network_data.service_location.items():
-            assert s in self.base_data.cloud_services, f"{s} in service_location is not a valid service"
+            assert (
+                s in self.base_data.cloud_services
+            ), f"{s} in service_location is not a valid service"
             assert (
                 loc in self.network_data.locations
             ), f"{loc} in service_location is not a valid location"

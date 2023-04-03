@@ -14,13 +14,13 @@ def test_min_csp_count_constraint_matching() -> None:
     """
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            virtual_machines=["vm_0", "vm_1"],
-            services=["s_0", "s_1", "s_2"],
-            virtual_machine_services={"vm_0": ["s_0"], "vm_1": ["s_1", "s_2"]},
-            service_base_costs={"s_0": 1, "s_1": 1, "s_2": 10},
+            cloud_resources=["vm_0", "vm_1"],
+            cloud_services=["s_0", "s_1", "s_2"],
+            cr_to_cs_list={"vm_0": ["s_0"], "vm_1": ["s_1", "s_2"]},
+            cs_to_base_cost={"s_0": 1, "s_1": 1, "s_2": 10},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1, ("vm_1", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1, ("vm_1", 0): 1},
+            cs_to_instance_limit={},
         ),
         MultiCloudData(
             cloud_service_providers=["csp_0", "csp_1"],
@@ -45,13 +45,13 @@ def test_max_csp_count_constraint_matching() -> None:
     """
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            virtual_machines=["vm_0", "vm_1"],
-            services=["s_0", "s_1", "s_2"],
-            virtual_machine_services={"vm_0": ["s_0"], "vm_1": ["s_1", "s_2"]},
-            service_base_costs={"s_0": 10, "s_1": 10, "s_2": 1},
+            cloud_resources=["vm_0", "vm_1"],
+            cloud_services=["s_0", "s_1", "s_2"],
+            cr_to_cs_list={"vm_0": ["s_0"], "vm_1": ["s_1", "s_2"]},
+            cs_to_base_cost={"s_0": 10, "s_1": 10, "s_2": 1},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1, ("vm_1", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1, ("vm_1", 0): 1},
+            cs_to_instance_limit={},
         ),
         MultiCloudData(
             cloud_service_providers=["csp_0", "csp_1"],
@@ -74,13 +74,13 @@ def test_min_csp_count_constraint_infeasible() -> None:
     """Two CSPs have to be used, but there is only one CSP."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 10},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 10},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         ),
         MultiCloudData(
             cloud_service_providers=["csp_0"],
@@ -98,13 +98,13 @@ def test_max_csp_count_constraint_infeasible() -> None:
     """Only one CSP must be used, but it's only possible with two."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            virtual_machines=["vm_0", "vm_1"],
-            services=["s_0", "s_1"],
-            virtual_machine_services={"vm_0": ["s_0"], "vm_1": ["s_1"]},
-            service_base_costs={"s_0": 10, "s_1": 10},
+            cloud_resources=["vm_0", "vm_1"],
+            cloud_services=["s_0", "s_1"],
+            cr_to_cs_list={"vm_0": ["s_0"], "vm_1": ["s_1"]},
+            cs_to_base_cost={"s_0": 10, "s_1": 10},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1, ("vm_1", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1, ("vm_1", 0): 1},
+            cs_to_instance_limit={},
         ),
         MultiCloudData(
             cloud_service_providers=["csp_0", "csp_1"],
@@ -122,13 +122,13 @@ def test_with_multiple_time_points() -> None:
     """Make sure that the CSP constraints also work for multiple time points."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 10},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 10},
             time=[0, 1],
-            virtual_machine_demand={("vm_0", 0): 1, ("vm_0", 1): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1, ("vm_0", 1): 1},
+            cs_to_instance_limit={},
         ),
         MultiCloudData(
             cloud_service_providers=["csp_0"],
@@ -146,17 +146,17 @@ def test_with_multiple_time_points() -> None:
 
 def test_csp_objective() -> None:
     """
-    There are two CSPs, one has cheaper cloud_services, but a higher migration cost.
+    There are two CSPs, one has cheaper cloud services, but a higher migration cost.
     """
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0", "s_1"],
-            virtual_machine_services={"vm_0": ["s_0", "s_1"]},
-            service_base_costs={"s_0": 10, "s_1": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0", "s_1"],
+            cr_to_cs_list={"vm_0": ["s_0", "s_1"]},
+            cs_to_base_cost={"s_0": 10, "s_1": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         ),
         MultiCloudData(
             cloud_service_providers=["csp_0", "csp_1"],

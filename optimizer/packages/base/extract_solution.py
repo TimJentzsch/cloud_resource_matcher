@@ -35,7 +35,7 @@ class ExtractSolutionBaseTask(Task[BaseSolution]):
         vm_service_matching: VmServiceMatching = dict()
 
         for v in self.base_data.cloud_resources:
-            for s in self.base_data.virtual_machine_services[v]:
+            for s in self.base_data.cr_to_cs_list[v]:
                 for t in self.base_data.time:
                     value = (
                         round(pulp.value(self.base_mip_data.var_vm_matching[v, s]))
@@ -53,7 +53,7 @@ class ExtractSolutionBaseTask(Task[BaseSolution]):
                     round(pulp.value(self.base_mip_data.var_vm_matching[vm, s]))
                     * self.base_data.cr_and_time_to_instance_demand[vm, t]
                     for vm in self.base_data.cloud_resources
-                    if s in self.base_data.virtual_machine_services[vm]
+                    if s in self.base_data.cr_to_cs_list[vm]
                 )
 
                 if value >= 1:

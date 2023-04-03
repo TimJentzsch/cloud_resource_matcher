@@ -8,13 +8,13 @@ from optimizer.packages.performance.validate import ValidatePerformanceTask
 def test_should_not_raise_error_for_valid_data() -> None:
     """Validating valid data should not raise an assertion error."""
     base_data = BaseData(
-        virtual_machines=["vm_0"],
-        services=["s_0"],
-        virtual_machine_services={"vm_0": ["s_0"]},
-        service_base_costs={"s_0": 5},
+        cloud_resources=["vm_0"],
+        cloud_services=["s_0"],
+        cr_to_cs_list={"vm_0": ["s_0"]},
+        cs_to_base_cost={"s_0": 5},
         time=[0],
-        virtual_machine_demand={("vm_0", 0): 1},
-        max_service_instances={},
+        cr_and_time_to_instance_demand={("vm_0", 0): 1},
+        cs_to_instance_limit={},
     )
 
     performance_data = PerformanceData(
@@ -30,13 +30,13 @@ class TestValidatePerformanceDemand:
     def test_should_raise_error_for_invalid_vm(self) -> None:
         """A demand is defined for a VM that doesn't exist."""
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         performance_data = PerformanceData(
@@ -51,13 +51,13 @@ class TestValidatePerformanceDemand:
     def test_should_raise_error_for_invalid_pc(self) -> None:
         """A demand is defined for a performance criterion that doesn't exist."""
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         performance_data = PerformanceData(
@@ -74,13 +74,13 @@ class TestValidatePerformanceSupply:
     def test_should_raise_error_for_invalid_cs(self) -> None:
         """A supply is defined for a CS that doesn't exist."""
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         performance_data = PerformanceData(
@@ -95,13 +95,13 @@ class TestValidatePerformanceSupply:
     def test_should_raise_error_for_invalid_pc(self) -> None:
         """A supply is defined for a performance criterion that doesn't exist."""
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         performance_data = PerformanceData(
@@ -116,13 +116,13 @@ class TestValidatePerformanceSupply:
     def test_should_raise_error_for_missing_supply(self) -> None:
         """A supply is NOT defined for an existing CS-PC pair."""
         base_data = BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         )
 
         performance_data = PerformanceData(

@@ -12,13 +12,13 @@ def test_with_sufficient_resources() -> None:
     """The service has enough resources to host the VM."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         ),
         PerformanceData(
             performance_criteria=["vCPU", "RAM"],
@@ -36,13 +36,13 @@ def test_with_insufficient_performance() -> None:
     """The only service does not have enough RAM for the VM."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={"s_0": 1},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={"s_0": 1},
         ),
         PerformanceData(
             performance_criteria=["vCPU", "RAM"],
@@ -63,16 +63,14 @@ def test_resource_matching() -> None:
 
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            virtual_machines=[f"vm_{v}" for v in range(count)],
-            services=[f"s_{s}" for s in range(count)],
-            virtual_machine_services={
-                f"vm_{v}": [f"s_{s}" for s in range(count)] for v in range(count)
-            },
+            cloud_resources=[f"vm_{v}" for v in range(count)],
+            cloud_services=[f"s_{s}" for s in range(count)],
+            cr_to_cs_list={f"vm_{v}": [f"s_{s}" for s in range(count)] for v in range(count)},
             # Arbitrary costs to make sure the constraints are actually enforced
-            service_base_costs={f"s_{s}": (s + 4) % 7 + (s % 3) * (s % 10) for s in range(count)},
+            cs_to_base_cost={f"s_{s}": (s + 4) % 7 + (s % 3) * (s % 10) for s in range(count)},
             time=[0],
-            virtual_machine_demand={(f"vm_{v}", 0): 1 for v in range(count)},
-            max_service_instances={f"s_{s}": 1 for s in range(count)},
+            cr_and_time_to_instance_demand={(f"vm_{v}", 0): 1 for v in range(count)},
+            cs_to_instance_limit={f"s_{s}": 1 for s in range(count)},
         ),
         PerformanceData(
             performance_criteria=["RAM"],
@@ -87,17 +85,17 @@ def test_resource_matching() -> None:
 
 
 def test_cheap_insufficient_service() -> None:
-    """There are two cloud_services, but the cheaper one has insufficient resources."""
+    """There are two cloud_cloud_services, but the cheaper one has insufficient resources."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0", "s_1"],
-            virtual_machine_services={"vm_0": ["s_0", "s_1"]},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0", "s_1"],
+            cr_to_cs_list={"vm_0": ["s_0", "s_1"]},
             # Arbitrary costs to make sure the constraints are actually enforced
-            service_base_costs={"s_0": 2, "s_1": 10},
+            cs_to_base_cost={"s_0": 2, "s_1": 10},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={"s_0": 1, "s_1": 1},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={"s_0": 1, "s_1": 1},
         ),
         PerformanceData(
             performance_criteria=["RAM"],
@@ -117,13 +115,13 @@ def test_allowed_incomplete_data() -> None:
     """
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 1},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 1},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         ),
         # Leave min requirements undefined
         PerformanceData(
@@ -136,17 +134,17 @@ def test_allowed_incomplete_data() -> None:
     Expect(optimizer).to_be_feasible()
 
 
-def test_should_work_with_higher_virtual_machine_demand() -> None:
+def test_should_work_with_higher_cr_and_time_to_instance_demand() -> None:
     """Some virtual machines have a demand higher than 1."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 1},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 1},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 2},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 2},
+            cs_to_instance_limit={},
         ),
         PerformanceData(
             performance_criteria=["RAM"],
@@ -164,13 +162,13 @@ def test_should_be_infeasible_if_not_enough_service_instances_can_be_bought() ->
     """
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 1},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 1},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 2},
-            max_service_instances={"s_0": 1},
+            cr_and_time_to_instance_demand={("vm_0", 0): 2},
+            cs_to_instance_limit={"s_0": 1},
         ),
         PerformanceData(
             performance_criteria=["RAM"],

@@ -17,10 +17,10 @@ class ValidateBaseTask(Task[None]):
         # Validate virtual_machine_services
         for v in self.base_data.cloud_resources:
             assert (
-                v in self.base_data.virtual_machine_services.keys()
+                v in self.base_data.cr_to_cs_list.keys()
             ), f"Valid services for VM {v} not defined"
 
-        for v, services in self.base_data.virtual_machine_services.items():
+        for v, services in self.base_data.cr_to_cs_list.items():
             assert (
                 v in self.base_data.cloud_resources
             ), f"{v} in virtual_machine_services is not a valid VM"
@@ -36,7 +36,9 @@ class ValidateBaseTask(Task[None]):
             ), f"Base cost for service {s} not defined"
 
         for s, cost in self.base_data.cs_to_base_cost.items():
-            assert s in self.base_data.cloud_services, f"{s} in service_base_costs is not a valid service"
+            assert (
+                s in self.base_data.cloud_services
+            ), f"{s} in service_base_costs is not a valid service"
             assert cost >= 0, f"Cost {cost} for service {s} is negative"
 
         # Validate cr_and_time_to_instance_demand

@@ -27,7 +27,7 @@ class BuildMipPerformanceTask(Task[None]):
     def execute(self) -> None:
         # Enforce performance limits for every cloud service
         for (vm, pc), demand in self.performance_data.performance_demand.items():
-            for cs in self.base_data.virtual_machine_services[vm]:
+            for cs in self.base_data.cr_to_cs_list[vm]:
                 supply = self.performance_data.performance_supply.get((cs, pc))
                 if supply is not None:
                     if supply < demand:

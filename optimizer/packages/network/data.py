@@ -35,9 +35,7 @@ class NetworkData:
 
     # The maximum latency between two virtual machines
     # There must be traffic between the two virtual machines
-    virtual_machine_virtual_machine_max_latency: dict[
-        tuple[CloudResource, CloudResource], Latency
-    ]
+    virtual_machine_virtual_machine_max_latency: dict[tuple[CloudResource, CloudResource], Latency]
 
     # The cost of network traffic between two locations
     # This must be specified for every pair of locations

@@ -14,13 +14,13 @@ def test_should_pay_for_vm_location_costs() -> None:
     """
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 3},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 3},
+            cs_to_instance_limit={},
         ),
         NetworkData(
             locations={"loc_0"},
@@ -48,13 +48,13 @@ def test_should_be_infeasible_if_max_latency_is_violated() -> None:
 
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0"],
-            virtual_machine_services={"vm_0": ["s_0"]},
-            service_base_costs={"s_0": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0"],
+            cr_to_cs_list={"vm_0": ["s_0"]},
+            cs_to_base_cost={"s_0": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         ),
         NetworkData(
             locations=locations,
@@ -81,13 +81,13 @@ def test_should_choose_matching_that_respects_max_latency() -> None:
 
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            virtual_machines=["vm_0"],
-            services=["s_0", "s_1"],
-            virtual_machine_services={"vm_0": ["s_0", "s_1"]},
-            service_base_costs={"s_0": 5, "s_1": 5},
+            cloud_resources=["vm_0"],
+            cloud_services=["s_0", "s_1"],
+            cr_to_cs_list={"vm_0": ["s_0", "s_1"]},
+            cs_to_base_cost={"s_0": 5, "s_1": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cs_to_instance_limit={},
         ),
         NetworkData(
             locations=locations,
@@ -109,18 +109,18 @@ def test_should_choose_matching_that_respects_max_latency() -> None:
 
 
 def test_should_calculate_service_deployments_for_vm_pairs() -> None:
-    """Two VMs are connected and need to be placed on two different cloud_services."""
+    """Two VMs are connected and need to be placed on two different cloud_cloud_services."""
     locations = {"loc_0", "loc_1"}
 
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            virtual_machines=["vm_0", "vm_1"],
-            services=["s_0", "s_1"],
-            virtual_machine_services={"vm_0": ["s_0"], "vm_1": ["s_1"]},
-            service_base_costs={"s_0": 5, "s_1": 5},
+            cloud_resources=["vm_0", "vm_1"],
+            cloud_services=["s_0", "s_1"],
+            cr_to_cs_list={"vm_0": ["s_0"], "vm_1": ["s_1"]},
+            cs_to_base_cost={"s_0": 5, "s_1": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1, ("vm_1", 0): 3},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1, ("vm_1", 0): 3},
+            cs_to_instance_limit={},
         ),
         NetworkData(
             locations=locations,
@@ -157,13 +157,13 @@ def test_should_consider_latency_for_vm_vm_connections() -> None:
 
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            virtual_machines=["vm_0", "vm_1"],
-            services=["s_0", "s_1"],
-            virtual_machine_services={"vm_0": ["s_0"], "vm_1": ["s_1"]},
-            service_base_costs={"s_0": 5, "s_1": 5},
+            cloud_resources=["vm_0", "vm_1"],
+            cloud_services=["s_0", "s_1"],
+            cr_to_cs_list={"vm_0": ["s_0"], "vm_1": ["s_1"]},
+            cs_to_base_cost={"s_0": 5, "s_1": 5},
             time=[0],
-            virtual_machine_demand={("vm_0", 0): 1, ("vm_1", 0): 1},
-            max_service_instances={},
+            cr_and_time_to_instance_demand={("vm_0", 0): 1, ("vm_1", 0): 1},
+            cs_to_instance_limit={},
         ),
         NetworkData(
             locations=locations,

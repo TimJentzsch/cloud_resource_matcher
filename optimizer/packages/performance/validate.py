@@ -29,7 +29,9 @@ class ValidatePerformanceTask(Task[None]):
 
         # Validate performance_supply
         for (cs, pc) in self.performance_data.performance_supply.keys():
-            assert cs in self.base_data.cloud_services, f"{cs} in performance_supply is not a valid CS"
+            assert (
+                cs in self.base_data.cloud_services
+            ), f"{cs} in performance_supply is not a valid CS"
             assert (
                 pc in self.performance_data.performance_criteria
             ), f"{pc} in performance_supply is not a valid performance criterion"

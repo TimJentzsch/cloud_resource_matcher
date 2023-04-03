@@ -29,9 +29,7 @@ class BuildMipBaseTask(Task[BaseMipData]):
         # Pre-compute which cloud_services can host which VMs
         service_virtual_machines: ServiceVirtualMachines = {
             s: set(
-                vm
-                for vm in self.base_data.cloud_resources
-                if s in self.base_data.virtual_machine_services[vm]
+                vm for vm in self.base_data.cloud_resources if s in self.base_data.cr_to_cs_list[vm]
             )
             for s in self.base_data.cloud_services
         }
@@ -43,14 +41,13 @@ class BuildMipBaseTask(Task[BaseMipData]):
         var_vm_matching: VarVmServiceMatching = {
             (v, s): LpVariable(f"vm_matching({v},{s})", cat=LpBinary)
             for v in self.base_data.cloud_resources
-            for s in self.base_data.virtual_machine_services[v]
+            for s in self.base_data.cr_to_cs_list[v]
         }
 
         # Satisfy VM demands
         for vm in self.base_data.cloud_resources:
             self.problem += (
-                lpSum(var_vm_matching[vm, s] for s in self.base_data.virtual_machine_services[vm])
-                == 1,
+                lpSum(var_vm_matching[vm, s] for s in self.base_data.cr_to_cs_list[vm]) == 1,
                 f"vm_demand({vm})",
             )
 
@@ -64,7 +61,8 @@ class BuildMipBaseTask(Task[BaseMipData]):
             for t in self.base_data.time:
                 self.problem += (
                     lpSum(
-                        var_vm_matching[vm, s] * self.base_data.cr_and_time_to_instance_demand[vm, t]
+                        var_vm_matching[vm, s]
+                        * self.base_data.cr_and_time_to_instance_demand[vm, t]
                         for vm in service_virtual_machines[s]
                     )
                     <= max_instances,
@@ -85,7 +83,7 @@ class BuildMipBaseTask(Task[BaseMipData]):
             * self.base_data.cr_and_time_to_instance_demand[vm, t]
             * self.base_data.cs_to_base_cost[s]
             for vm in self.base_data.cloud_resources
-            for s in self.base_data.virtual_machine_services[vm]
+            for s in self.base_data.cr_to_cs_list[vm]
             for t in self.base_data.time
         )
 

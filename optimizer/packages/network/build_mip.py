@@ -11,7 +11,9 @@ from optiframe import Task
 @dataclass
 class NetworkMipData:
     # Is vm1 deployed to s1 and vm2 deployed to s2?
-    var_vm_pair_services: dict[tuple[CloudResource, CloudService, CloudResource, CloudService], LpVariable]
+    var_vm_pair_services: dict[
+        tuple[CloudResource, CloudService, CloudResource, CloudService], LpVariable
+    ]
 
 
 class BuildMipNetworkTask(Task[NetworkMipData]):
@@ -43,7 +45,7 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
                 vm,
                 loc,
             ), traffic in self.network_data.virtual_machine_location_traffic.items()
-            for s in self.base_data.virtual_machine_services[vm]
+            for s in self.base_data.cr_to_cs_list[vm]
             for t in self.base_data.time
         )
 
@@ -62,8 +64,8 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
                 vm1,
                 vm2,
             ) in self.network_data.virtual_machine_virtual_machine_traffic.keys()
-            for s1 in self.base_data.virtual_machine_services[vm1]
-            for s2 in self.base_data.virtual_machine_services[vm2]
+            for s1 in self.base_data.cr_to_cs_list[vm1]
+            for s2 in self.base_data.cr_to_cs_list[vm2]
         }
 
         # Calculate service pair deployments
@@ -75,15 +77,15 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
             self.problem += (
                 lpSum(
                     var_vm_pair_services[vm1, s1, vm2, s2]
-                    for s1 in self.base_data.virtual_machine_services[vm1]
-                    for s2 in self.base_data.virtual_machine_services[vm2]
+                    for s1 in self.base_data.cr_to_cs_list[vm1]
+                    for s2 in self.base_data.cr_to_cs_list[vm2]
                 )
                 == 1
             )
 
             # Enforce that the VMs must be deployed to the given cloud_services
-            for s1 in self.base_data.virtual_machine_services[vm1]:
-                for s2 in self.base_data.virtual_machine_services[vm2]:
+            for s1 in self.base_data.cr_to_cs_list[vm1]:
+                for s2 in self.base_data.cr_to_cs_list[vm2]:
                     self.problem += (
                         var_vm_pair_services[vm1, s1, vm2, s2]
                         <= self.base_mip_data.var_vm_matching[vm1, s1]
@@ -98,7 +100,7 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
             vm1,
             loc2,
         ), max_latency in self.network_data.virtual_machine_location_max_latency.items():
-            for s in self.base_data.virtual_machine_services[vm1]:
+            for s in self.base_data.cr_to_cs_list[vm1]:
                 loc1 = self.network_data.service_location[s]
 
                 if self.network_data.location_latency[loc1, loc2] > max_latency:
@@ -113,10 +115,10 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
             vm1,
             vm2,
         ), max_latency in self.network_data.virtual_machine_virtual_machine_max_latency.items():
-            for s1 in self.base_data.virtual_machine_services[vm1]:
+            for s1 in self.base_data.cr_to_cs_list[vm1]:
                 loc1 = self.network_data.service_location[s1]
 
-                for s2 in self.base_data.virtual_machine_services[vm2]:
+                for s2 in self.base_data.cr_to_cs_list[vm2]:
                     loc2 = self.network_data.service_location[s2]
 
                     if self.network_data.location_latency[loc1, loc2] > max_latency:
@@ -134,8 +136,8 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
                 vm1,
                 vm2,
             ), traffic in self.network_data.virtual_machine_virtual_machine_traffic.items()
-            for s1 in self.base_data.virtual_machine_services[vm1]
-            for s2 in self.base_data.virtual_machine_services[vm2]
+            for s1 in self.base_data.cr_to_cs_list[vm1]
+            for s2 in self.base_data.cr_to_cs_list[vm2]
             for t in self.base_data.time
         )
 
