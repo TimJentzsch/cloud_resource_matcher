@@ -34,7 +34,8 @@ class BaseData:
     # The discrete units of time when a decision can be made.
     time: list[TimeUnit]
 
-    # A map from a cloud resource and a point in time to the number of instances needed at that time.
+    # A map from a cloud resource and a point in time to the
+    # number of instances needed at that time.
     cr_and_time_to_instance_demand: dict[tuple[CloudResource, TimeUnit], int]
 
     # A map from cloud services to the maximum number of available instances.

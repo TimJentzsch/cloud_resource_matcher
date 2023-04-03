@@ -29,7 +29,9 @@ class BuildMipBaseTask(Task[BaseMipData]):
         # Pre-compute which cloud services can host which cloud resources
         cs_to_cr_list: CsToCrList = {
             cs: set(
-                cr for cr in self.base_data.cloud_resources if cs in self.base_data.cr_to_cs_list[cr]
+                cr
+                for cr in self.base_data.cloud_resources
+                if cs in self.base_data.cr_to_cs_list[cr]
             )
             for cs in self.base_data.cloud_services
         }
@@ -47,13 +49,15 @@ class BuildMipBaseTask(Task[BaseMipData]):
         # Satisfy cloud resource demands
         for cr in self.base_data.cloud_resources:
             self.problem += (
-                lpSum(var_cr_to_cs_matching[cr, cs] for cs in self.base_data.cr_to_cs_list[cr]) == 1,
+                lpSum(var_cr_to_cs_matching[cr, cs] for cs in self.base_data.cr_to_cs_list[cr])
+                == 1,
                 f"cr_demand({cr})",
             )
 
         # Has cloud service cs been purchased at all?
         var_cs_used: dict[CloudService, LpVariable] = {
-            cs: LpVariable(f"service_used({cs})", cat=LpBinary) for cs in self.base_data.cloud_services
+            cs: LpVariable(f"service_used({cs})", cat=LpBinary)
+            for cs in self.base_data.cloud_services
         }
 
         # Enforce limits for cloud service instance count
@@ -72,8 +76,7 @@ class BuildMipBaseTask(Task[BaseMipData]):
         # Calculate var_cs_used
         for cs in self.base_data.cloud_services:
             self.problem += (
-                var_cs_used[cs]
-                <= lpSum(var_cr_to_cs_matching[cr, cs] for cr in cs_to_cr_list[cs]),
+                var_cs_used[cs] <= lpSum(var_cr_to_cs_matching[cr, cs] for cr in cs_to_cr_list[cs]),
                 f"connect_cr_to_cs_matching_and_cs_used({cs})",
             )
 
