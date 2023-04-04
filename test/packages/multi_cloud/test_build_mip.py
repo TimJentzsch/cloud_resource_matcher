@@ -34,7 +34,7 @@ def test_min_csp_count_constraint_matching() -> None:
         ),
     )
 
-    Expect(optimizer).to_be_feasible().with_cost(11).with_vm_service_matching(
+    Expect(optimizer).to_be_feasible().with_cost(11).with_cr_to_cs_matching(
         {("cr_0", "cs_0", 0): 1, ("cr_1", "cs_2", 0): 1}
     ).with_variable_values({"csp_used(csp_0)": 1, "csp_used(csp_1)": 1}).test()
 
@@ -65,7 +65,7 @@ def test_max_csp_count_constraint_matching() -> None:
         ),
     )
 
-    Expect(optimizer).to_be_feasible().with_cost(20).with_vm_service_matching(
+    Expect(optimizer).to_be_feasible().with_cost(20).with_cr_to_cs_matching(
         {("cr_0", "cs_0", 0): 1, ("cr_1", "cs_1", 0): 1}
     ).with_variable_values({"csp_used(csp_0)": 1, "csp_used(csp_1)": 0}).test()
 
@@ -139,7 +139,7 @@ def test_with_multiple_time_points() -> None:
         ),
     )
 
-    Expect(optimizer).to_be_feasible().with_vm_service_matching(
+    Expect(optimizer).to_be_feasible().with_cr_to_cs_matching(
         {("cr_0", "cs_0", 0): 1, ("cr_0", "cs_0", 1): 1}
     ).with_cost(20).test()
 
@@ -170,6 +170,6 @@ def test_csp_objective() -> None:
         ),
     )
 
-    Expect(optimizer).to_be_feasible().with_cost(11).with_vm_service_matching(
+    Expect(optimizer).to_be_feasible().with_cost(11).with_cr_to_cs_matching(
         {("cr_0", "cs_0", 0): 1}
     ).test()

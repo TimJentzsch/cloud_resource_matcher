@@ -19,7 +19,7 @@ def test_one_vm_one_service_trivial_solution() -> None:
         )
     )
 
-    Expect(optimizer).to_be_feasible().with_cost(5).with_vm_service_matching(
+    Expect(optimizer).to_be_feasible().with_cost(5).with_cr_to_cs_matching(
         {("vm_0", "s_0", 0): 1}
     ).test()
 
@@ -40,7 +40,7 @@ def test_only_one_valid_matching() -> None:
         )
     )
 
-    Expect(optimizer).to_be_feasible().with_vm_service_matching(
+    Expect(optimizer).to_be_feasible().with_cr_to_cs_matching(
         {(f"vm_{i}", f"s_{i}", 0): 1 for i in range(count)}
     ).test()
 
@@ -75,7 +75,7 @@ def test_one_vm_multiple_time_units() -> None:
         )
     )
 
-    Expect(optimizer).to_be_feasible().with_cost(10).with_vm_service_matching(
+    Expect(optimizer).to_be_feasible().with_cost(10).with_cr_to_cs_matching(
         {("vm_0", "s_0", 0): 1, ("vm_0", "s_0", 1): 1}
     ).test()
 
@@ -93,6 +93,6 @@ def test_one_vm_multiple_time_units_varying_demand() -> None:
         )
     )
 
-    Expect(optimizer).to_be_feasible().with_cost(5 + 3 + 2).with_vm_service_matching(
+    Expect(optimizer).to_be_feasible().with_cost(5 + 3 + 2).with_cr_to_cs_matching(
         {("vm_0", "s_0", 0): 5, ("vm_0", "s_0", 1): 3, ("vm_0", "s_0", 2): 2}
     ).test()

@@ -170,7 +170,7 @@ class _ExpectFeasible(_ExpectResult):
         self._epsilon = epsilon
         return self
 
-    def with_vm_service_matching(self, vm_service_matching: VmServiceMatching) -> Self:
+    def with_cr_to_cs_matching(self, vm_service_matching: VmServiceMatching) -> Self:
         """Enforce that the virtual machines are matched to the given cloud_services."""
         self._vm_service_matching = vm_service_matching
 

@@ -79,7 +79,7 @@ def test_resource_matching() -> None:
         ),
     )
 
-    Expect(optimizer).to_be_feasible().with_vm_service_matching(
+    Expect(optimizer).to_be_feasible().with_cr_to_cs_matching(
         {(f"vm_{i}", f"s_{i}", 0): 1 for i in range(count)}
     ).test()
 
@@ -104,7 +104,7 @@ def test_cheap_insufficient_service() -> None:
         ),
     )
 
-    Expect(optimizer).to_be_feasible().with_vm_service_matching({("vm_0", "s_1", 0): 1}).with_cost(
+    Expect(optimizer).to_be_feasible().with_cr_to_cs_matching({("vm_0", "s_1", 0): 1}).with_cost(
         10
     ).test()
 
@@ -153,7 +153,7 @@ def test_should_work_with_higher_cr_and_time_to_instance_demand() -> None:
         ),
     )
 
-    Expect(optimizer).to_be_feasible().with_vm_service_matching({("vm_0", "s_0", 0): 2})
+    Expect(optimizer).to_be_feasible().with_cr_to_cs_matching({("vm_0", "s_0", 0): 2})
 
 
 def test_should_be_infeasible_if_not_enough_service_instances_can_be_bought() -> None:
