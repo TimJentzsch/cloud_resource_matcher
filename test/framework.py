@@ -9,7 +9,7 @@ from pulp import LpVariable, LpProblem
 
 from optiframe.framework import InitializedOptimizer, BuiltOptimizer
 from optimizer.packages.base import BaseSolution
-from optimizer.packages.base.extract_solution import VmServiceMatching, ServiceInstanceCount
+from optimizer.packages.base.extract_solution import CrToCsMatching, ServiceInstanceCount
 from optiframe import SolutionObjValue, InfeasibleError
 from optimizer.packages.base.data import CloudService, CloudResource, Cost
 
@@ -57,10 +57,10 @@ class Expect:
 
         return self
 
-    def with_fixed_vm_service_matching(
+    def with_fixed_cr_to_cs_matching(
         self, matching: dict[tuple[CloudResource, CloudService], int]
     ) -> Self:
-        """Fix the values of the variables defined by the given VM-service matching."""
+        """Fix the values of the variables defined by the given CR-CS matching."""
         self.with_fixed_variable_values(
             {f"cr_to_cs_matching({cr},{cs})": val for (cr, cs), val in matching.items()}
         )
@@ -151,8 +151,8 @@ class _ExpectFeasible(_ExpectResult):
     _cost: Optional[float] = None
     _epsilon: Optional[float] = None
 
-    _vm_service_matching: Optional[VmServiceMatching] = None
-    _service_instance_count: Optional[ServiceInstanceCount] = None
+    _cr_to_cs_matching: Optional[CrToCsMatching] = None
+    _cs_instance_count: Optional[ServiceInstanceCount] = None
 
     _variable_values: Dict[str, float]
 
@@ -170,15 +170,15 @@ class _ExpectFeasible(_ExpectResult):
         self._epsilon = epsilon
         return self
 
-    def with_cr_to_cs_matching(self, vm_service_matching: VmServiceMatching) -> Self:
-        """Enforce that the virtual machines are matched to the given cloud_services."""
-        self._vm_service_matching = vm_service_matching
+    def with_cr_to_cs_matching(self, cr_to_cs_matching: CrToCsMatching) -> Self:
+        """Enforce that the cloud resources are matched to the given cloud services."""
+        self._cr_to_cs_matching = cr_to_cs_matching
 
         return self
 
-    def with_service_instance_count(self, service_instance_count: ServiceInstanceCount) -> Self:
-        """Enforce that the right amount of instances are bought for each service."""
-        self._service_instance_count = service_instance_count
+    def with_cs_instance_count(self, cs_instance_count: ServiceInstanceCount) -> Self:
+        """Enforce that the right amount of instances are bought for each cloud service."""
+        self._cs_instance_count = cs_instance_count
 
         return self
 
@@ -207,8 +207,8 @@ class _ExpectFeasible(_ExpectResult):
             solution = self._solve()
 
             self._test_variable_values()
-            self._test_vm_service_matching(solution)
-            self._test_service_instance_count(solution)
+            self._test_cr_to_cs_matching(solution)
+            self._test_cs_instance_count(solution)
             self._test_cost(solution)
         except InfeasibleError:
             self._print_model()
@@ -221,27 +221,27 @@ class _ExpectFeasible(_ExpectResult):
         if math.fabs(solution.cost - self._cost) > self._epsilon:
             pytest.fail(f"Expected cost of {self._cost}, got {solution.cost}")
 
-    def _test_vm_service_matching(self, solution: SolveSolution) -> None:
-        if self._vm_service_matching is None:
+    def _test_cr_to_cs_matching(self, solution: SolveSolution) -> None:
+        if self._cr_to_cs_matching is None:
             return
 
-        actual = solution.base.vm_service_matching
-        expected = self._vm_service_matching
+        actual = solution.base.cr_to_cs_matching
+        expected = self._cr_to_cs_matching
 
         assert (
             actual == expected
-        ), f"Different VM/Service matching than expected\n{actual}\n!= {expected}"
+        ), f"Different CR to CS matching than expected\n{actual}\n!= {expected}"
 
-    def _test_service_instance_count(self, solution: SolveSolution) -> None:
-        if self._service_instance_count is None:
+    def _test_cs_instance_count(self, solution: SolveSolution) -> None:
+        if self._cs_instance_count is None:
             return
 
-        actual = solution.base.service_instance_count
-        expected = self._service_instance_count
+        actual = solution.base.cs_instance_count
+        expected = self._cs_instance_count
 
         assert (
             actual == expected
-        ), "Different service instance counts than expected\n{actual}\n!= {expected}"
+        ), "Different CS instance counts than expected\n{actual}\n!= {expected}"
 
     def _test_variable_values(self) -> None:
         actual_values = {

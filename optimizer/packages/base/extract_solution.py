@@ -6,7 +6,7 @@ from .data import BaseData, CloudService, CloudResource, TimeUnit
 from .build_mip import BaseMipData
 from optiframe import Task
 
-VmServiceMatching = dict[tuple[CloudResource, CloudService, TimeUnit], int]
+CrToCsMatching = dict[tuple[CloudResource, CloudService, TimeUnit], int]
 ServiceInstanceCount = dict[tuple[CloudService, TimeUnit], int]
 
 
@@ -14,13 +14,13 @@ ServiceInstanceCount = dict[tuple[CloudService, TimeUnit], int]
 class BaseSolution:
     """
     The most important parts of the solution, including the assignment
-    of VMs to cloud_services and the number of service instances to buy.
+    of CRs to CSs and the number of CS instances to buy.
     """
 
-    # Which VM should be deployed on which service?
-    vm_service_matching: VmServiceMatching
+    # Which cloud resource should be deployed on which cloud service?
+    cr_to_cs_matching: CrToCsMatching
     # How many instances of each service should be bought?
-    service_instance_count: ServiceInstanceCount
+    cs_instance_count: ServiceInstanceCount
 
 
 class ExtractSolutionBaseTask(Task[BaseSolution]):
@@ -32,34 +32,34 @@ class ExtractSolutionBaseTask(Task[BaseSolution]):
         self.base_mip_data = base_mip_data
 
     def execute(self) -> BaseSolution:
-        vm_service_matching: VmServiceMatching = dict()
+        cr_to_cs_matching: CrToCsMatching = dict()
 
-        for v in self.base_data.cloud_resources:
-            for s in self.base_data.cr_to_cs_list[v]:
+        for cr in self.base_data.cloud_resources:
+            for cs in self.base_data.cr_to_cs_list[cr]:
                 for t in self.base_data.time:
                     value = (
-                        round(pulp.value(self.base_mip_data.var_cr_to_cs_matching[v, s]))
-                        * self.base_data.cr_and_time_to_instance_demand[v, t]
+                        round(pulp.value(self.base_mip_data.var_cr_to_cs_matching[cr, cs]))
+                        * self.base_data.cr_and_time_to_instance_demand[cr, t]
                     )
 
                     if value >= 1:
-                        vm_service_matching[v, s, t] = value
+                        cr_to_cs_matching[cr, cs, t] = value
 
-        service_instance_count: ServiceInstanceCount = {}
+        cs_instance_count: ServiceInstanceCount = {}
 
-        for s in self.base_data.cloud_services:
+        for cs in self.base_data.cloud_services:
             for t in self.base_data.time:
                 value = sum(
-                    round(pulp.value(self.base_mip_data.var_cr_to_cs_matching[vm, s]))
-                    * self.base_data.cr_and_time_to_instance_demand[vm, t]
-                    for vm in self.base_data.cloud_resources
-                    if s in self.base_data.cr_to_cs_list[vm]
+                    round(pulp.value(self.base_mip_data.var_cr_to_cs_matching[cr, cs]))
+                    * self.base_data.cr_and_time_to_instance_demand[cr, t]
+                    for cr in self.base_data.cloud_resources
+                    if cs in self.base_data.cr_to_cs_list[cr]
                 )
 
                 if value >= 1:
-                    service_instance_count[s, t] = value
+                    cs_instance_count[cs, t] = value
 
         return BaseSolution(
-            vm_service_matching=vm_service_matching,
-            service_instance_count=service_instance_count,
+            cr_to_cs_matching=cr_to_cs_matching,
+            cs_instance_count=cs_instance_count,
         )

@@ -27,9 +27,7 @@ def test_with_sufficient_resources() -> None:
         ),
     )
 
-    Expect(optimizer).to_be_feasible().with_cost(5).with_service_instance_count(
-        {("cs_0", 0): 1}
-    ).test()
+    Expect(optimizer).to_be_feasible().with_cost(5).with_cs_instance_count({("cs_0", 0): 1}).test()
 
 
 def test_with_insufficient_performance() -> None:
