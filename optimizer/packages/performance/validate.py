@@ -19,10 +19,10 @@ class ValidatePerformanceTask(Task[None]):
         :raises AssertionError: When the data is not valid.
         """
         # Validate performance_demand
-        for (vm, pc) in self.performance_data.performance_demand.keys():
+        for (cr, pc) in self.performance_data.performance_demand.keys():
             assert (
-                vm in self.base_data.cloud_resources
-            ), f"{vm} in performance_demand is not a valid VM"
+                cr in self.base_data.cloud_resources
+            ), f"{cr} in performance_demand is not a valid CR"
             assert (
                 pc in self.performance_data.performance_criteria
             ), f"{pc} in performance_demand is not a valid performance criterion"

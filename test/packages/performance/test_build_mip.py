@@ -9,45 +9,45 @@ OPTIMIZER = Optimizer("test_performance").add_package(base_package).add_package(
 
 
 def test_with_sufficient_resources() -> None:
-    """The service has enough resources to host the VM."""
+    """The CS has enough resources to host the CR."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            cloud_resources=["vm_0"],
-            cloud_services=["s_0"],
-            cr_to_cs_list={"vm_0": ["s_0"]},
-            cs_to_base_cost={"s_0": 5},
+            cloud_resources=["cr_0"],
+            cloud_services=["cs_0"],
+            cr_to_cs_list={"cr_0": ["cs_0"]},
+            cs_to_base_cost={"cs_0": 5},
             time=[0],
-            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cr_and_time_to_instance_demand={("cr_0", 0): 1},
             cs_to_instance_limit={},
         ),
         PerformanceData(
             performance_criteria=["vCPU", "RAM"],
-            performance_demand={("vm_0", "vCPU"): 8, ("vm_0", "RAM"): 3},
-            performance_supply={("s_0", "vCPU"): 8, ("s_0", "RAM"): 4},
+            performance_demand={("cr_0", "vCPU"): 8, ("cr_0", "RAM"): 3},
+            performance_supply={("cs_0", "vCPU"): 8, ("cs_0", "RAM"): 4},
         ),
     )
 
     Expect(optimizer).to_be_feasible().with_cost(5).with_service_instance_count(
-        {("s_0", 0): 1}
+        {("cs_0", 0): 1}
     ).test()
 
 
 def test_with_insufficient_performance() -> None:
-    """The only service does not have enough RAM for the VM."""
+    """The only CS does not have enough RAM for the CR."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            cloud_resources=["vm_0"],
-            cloud_services=["s_0"],
-            cr_to_cs_list={"vm_0": ["s_0"]},
-            cs_to_base_cost={"s_0": 5},
+            cloud_resources=["cr_0"],
+            cloud_services=["cs_0"],
+            cr_to_cs_list={"cr_0": ["cs_0"]},
+            cs_to_base_cost={"cs_0": 5},
             time=[0],
-            cr_and_time_to_instance_demand={("vm_0", 0): 1},
-            cs_to_instance_limit={"s_0": 1},
+            cr_and_time_to_instance_demand={("cr_0", 0): 1},
+            cs_to_instance_limit={"cs_0": 1},
         ),
         PerformanceData(
             performance_criteria=["vCPU", "RAM"],
-            performance_demand={("vm_0", "vCPU"): 8, ("vm_0", "RAM"): 3},
-            performance_supply={("s_0", "vCPU"): 8, ("s_0", "RAM"): 2},
+            performance_demand={("cr_0", "vCPU"): 8, ("cr_0", "RAM"): 3},
+            performance_supply={("cs_0", "vCPU"): 8, ("cs_0", "RAM"): 2},
         ),
     )
 
@@ -55,56 +55,58 @@ def test_with_insufficient_performance() -> None:
 
 
 def test_resource_matching() -> None:
-    """Each VM has one service matching its requirements exactly.
+    """Each CR has one CS matching its requirements exactly.
 
-    There is only one valid matching: Assigning each VM to their matching service.
+    There is only one valid matching: Assigning each CR to their matching CS.
     """
     count = 100
 
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            cloud_resources=[f"vm_{v}" for v in range(count)],
-            cloud_services=[f"s_{s}" for s in range(count)],
-            cr_to_cs_list={f"vm_{v}": [f"s_{s}" for s in range(count)] for v in range(count)},
+            cloud_resources=[f"cr_{cr}" for cr in range(count)],
+            cloud_services=[f"cs_{cs}" for cs in range(count)],
+            cr_to_cs_list={f"cr_{cr}": [f"cs_{cs}" for cs in range(count)] for cr in range(count)},
             # Arbitrary costs to make sure the constraints are actually enforced
-            cs_to_base_cost={f"s_{s}": (s + 4) % 7 + (s % 3) * (s % 10) for s in range(count)},
+            cs_to_base_cost={
+                f"cs_{cs}": (cs + 4) % 7 + (cs % 3) * (cs % 10) for cs in range(count)
+            },
             time=[0],
-            cr_and_time_to_instance_demand={(f"vm_{v}", 0): 1 for v in range(count)},
-            cs_to_instance_limit={f"s_{s}": 1 for s in range(count)},
+            cr_and_time_to_instance_demand={(f"cr_{cr}", 0): 1 for cr in range(count)},
+            cs_to_instance_limit={f"cs_{cs}": 1 for cs in range(count)},
         ),
         PerformanceData(
             performance_criteria=["RAM"],
-            performance_demand={(f"vm_{v}", "RAM"): v for v in range(count)},
-            performance_supply={(f"s_{s}", "RAM"): s for s in range(count)},
+            performance_demand={(f"cr_{cr}", "RAM"): cr for cr in range(count)},
+            performance_supply={(f"cs_{cs}", "RAM"): cs for cs in range(count)},
         ),
     )
 
     Expect(optimizer).to_be_feasible().with_cr_to_cs_matching(
-        {(f"vm_{i}", f"s_{i}", 0): 1 for i in range(count)}
+        {(f"cr_{i}", f"cs_{i}", 0): 1 for i in range(count)}
     ).test()
 
 
-def test_cheap_insufficient_service() -> None:
-    """There are two cloud_cloud_services, but the cheaper one has insufficient resources."""
+def test_cheap_insufficient_cs() -> None:
+    """There are two CSs, but the cheaper one has insufficient resources."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            cloud_resources=["vm_0"],
-            cloud_services=["s_0", "s_1"],
-            cr_to_cs_list={"vm_0": ["s_0", "s_1"]},
+            cloud_resources=["cr_0"],
+            cloud_services=["cs_0", "cs_1"],
+            cr_to_cs_list={"cr_0": ["cs_0", "cs_1"]},
             # Arbitrary costs to make sure the constraints are actually enforced
-            cs_to_base_cost={"s_0": 2, "s_1": 10},
+            cs_to_base_cost={"cs_0": 2, "cs_1": 10},
             time=[0],
-            cr_and_time_to_instance_demand={("vm_0", 0): 1},
-            cs_to_instance_limit={"s_0": 1, "s_1": 1},
+            cr_and_time_to_instance_demand={("cr_0", 0): 1},
+            cs_to_instance_limit={"cs_0": 1, "cs_1": 1},
         ),
         PerformanceData(
             performance_criteria=["RAM"],
-            performance_demand={("vm_0", "RAM"): 3},
-            performance_supply={("s_0", "RAM"): 2, ("s_1", "RAM"): 3},
+            performance_demand={("cr_0", "RAM"): 3},
+            performance_supply={("cs_0", "RAM"): 2, ("cs_1", "RAM"): 3},
         ),
     )
 
-    Expect(optimizer).to_be_feasible().with_cr_to_cs_matching({("vm_0", "s_1", 0): 1}).with_cost(
+    Expect(optimizer).to_be_feasible().with_cr_to_cs_matching({("cr_0", "cs_1", 0): 1}).with_cost(
         10
     ).test()
 
@@ -115,19 +117,19 @@ def test_allowed_incomplete_data() -> None:
     """
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            cloud_resources=["vm_0"],
-            cloud_services=["s_0"],
-            cr_to_cs_list={"vm_0": ["s_0"]},
-            cs_to_base_cost={"s_0": 1},
+            cloud_resources=["cr_0"],
+            cloud_services=["cs_0"],
+            cr_to_cs_list={"cr_0": ["cs_0"]},
+            cs_to_base_cost={"cs_0": 1},
             time=[0],
-            cr_and_time_to_instance_demand={("vm_0", 0): 1},
+            cr_and_time_to_instance_demand={("cr_0", 0): 1},
             cs_to_instance_limit={},
         ),
         # Leave min requirements undefined
         PerformanceData(
             performance_criteria=["RAM"],
             performance_demand={},
-            performance_supply={("s_0", "RAM"): 1},
+            performance_supply={("cs_0", "RAM"): 1},
         ),
     )
 
@@ -135,45 +137,45 @@ def test_allowed_incomplete_data() -> None:
 
 
 def test_should_work_with_higher_cr_and_time_to_instance_demand() -> None:
-    """Some virtual machines have a demand higher than 1."""
+    """Some cloud resources have a demand higher than 1."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            cloud_resources=["vm_0"],
-            cloud_services=["s_0"],
-            cr_to_cs_list={"vm_0": ["s_0"]},
-            cs_to_base_cost={"s_0": 1},
+            cloud_resources=["cr_0"],
+            cloud_services=["cs_0"],
+            cr_to_cs_list={"cr_0": ["cs_0"]},
+            cs_to_base_cost={"cs_0": 1},
             time=[0],
-            cr_and_time_to_instance_demand={("vm_0", 0): 2},
+            cr_and_time_to_instance_demand={("cr_0", 0): 2},
             cs_to_instance_limit={},
         ),
         PerformanceData(
             performance_criteria=["RAM"],
-            performance_demand={("vm_0", "RAM"): 3},
-            performance_supply={("s_0", "RAM"): 3},
+            performance_demand={("cr_0", "RAM"): 3},
+            performance_supply={("cs_0", "RAM"): 3},
         ),
     )
 
-    Expect(optimizer).to_be_feasible().with_cr_to_cs_matching({("vm_0", "s_0", 0): 2})
+    Expect(optimizer).to_be_feasible().with_cr_to_cs_matching({("cr_0", "cs_0", 0): 2})
 
 
-def test_should_be_infeasible_if_not_enough_service_instances_can_be_bought() -> None:
-    """There is demand for two VMs, which each occupy the service fully.
-    But only one instance of the service may be bought.
+def test_should_be_infeasible_if_not_enough_cs_instances_can_be_bought() -> None:
+    """There is demand for two CRs, which each occupy the CS fully.
+    But only one instance of the CS may be bought.
     """
     optimizer = OPTIMIZER.initialize(
         BaseData(
-            cloud_resources=["vm_0"],
-            cloud_services=["s_0"],
-            cr_to_cs_list={"vm_0": ["s_0"]},
-            cs_to_base_cost={"s_0": 1},
+            cloud_resources=["cr_0"],
+            cloud_services=["cs_0"],
+            cr_to_cs_list={"cr_0": ["cs_0"]},
+            cs_to_base_cost={"cs_0": 1},
             time=[0],
-            cr_and_time_to_instance_demand={("vm_0", 0): 2},
-            cs_to_instance_limit={"s_0": 1},
+            cr_and_time_to_instance_demand={("cr_0", 0): 2},
+            cs_to_instance_limit={"cs_0": 1},
         ),
         PerformanceData(
             performance_criteria=["RAM"],
-            performance_demand={("vm_0", "RAM"): 1},
-            performance_supply={("s_0", "RAM"): 1},
+            performance_demand={("cr_0", "RAM"): 1},
+            performance_supply={("cs_0", "RAM"): 1},
         ),
     )
 
