@@ -24,13 +24,13 @@ def test_should_pay_for_vm_location_costs() -> None:
         ),
         NetworkData(
             locations={"loc_0"},
-            location_latency={("loc_0", "loc_0"): 0},
-            service_location={"s_0": "loc_0"},
-            virtual_machine_location_max_latency={},
-            virtual_machine_virtual_machine_max_latency={},
-            virtual_machine_virtual_machine_traffic={},
-            virtual_machine_location_traffic={("vm_0", "loc_0"): 3},
-            location_traffic_cost={("loc_0", "loc_0"): 2},
+            loc_and_loc_to_latency={("loc_0", "loc_0"): 0},
+            cs_to_loc={"s_0": "loc_0"},
+            cr_and_loc_to_max_latency={},
+            cr_and_cr_to_max_latency={},
+            cr_and_cr_to_traffic={},
+            cr_and_loc_to_traffic={("vm_0", "loc_0"): 3},
+            loc_and_loc_to_cost={("loc_0", "loc_0"): 2},
         ),
     )
 
@@ -58,15 +58,15 @@ def test_should_be_infeasible_if_max_latency_is_violated() -> None:
         ),
         NetworkData(
             locations=locations,
-            location_latency={
+            loc_and_loc_to_latency={
                 (loc1, loc2): 0 if loc1 == loc2 else 10 for loc1 in locations for loc2 in locations
             },
-            service_location={"s_0": "loc_0"},
-            virtual_machine_location_max_latency={("vm_0", "loc_1"): 5},
-            virtual_machine_virtual_machine_max_latency={},
-            virtual_machine_virtual_machine_traffic={},
-            virtual_machine_location_traffic={("vm_0", "loc_1"): 1},
-            location_traffic_cost={
+            cs_to_loc={"s_0": "loc_0"},
+            cr_and_loc_to_max_latency={("vm_0", "loc_1"): 5},
+            cr_and_cr_to_max_latency={},
+            cr_and_cr_to_traffic={},
+            cr_and_loc_to_traffic={("vm_0", "loc_1"): 1},
+            loc_and_loc_to_cost={
                 (loc1, loc2): 0 if loc1 == loc2 else 10 for loc1 in locations for loc2 in locations
             },
         ),
@@ -91,15 +91,15 @@ def test_should_choose_matching_that_respects_max_latency() -> None:
         ),
         NetworkData(
             locations=locations,
-            location_latency={
+            loc_and_loc_to_latency={
                 (loc1, loc2): 0 if loc1 == loc2 else 10 for loc1 in locations for loc2 in locations
             },
-            service_location={"s_0": "loc_0", "s_1": "loc_1"},
-            virtual_machine_location_max_latency={("vm_0", "loc_0"): 5},
-            virtual_machine_virtual_machine_max_latency={},
-            virtual_machine_virtual_machine_traffic={},
-            virtual_machine_location_traffic={("vm_0", "loc_0"): 1},
-            location_traffic_cost={
+            cs_to_loc={"s_0": "loc_0", "s_1": "loc_1"},
+            cr_and_loc_to_max_latency={("vm_0", "loc_0"): 5},
+            cr_and_cr_to_max_latency={},
+            cr_and_cr_to_traffic={},
+            cr_and_loc_to_traffic={("vm_0", "loc_0"): 1},
+            loc_and_loc_to_cost={
                 (loc1, loc2): 0 if loc1 == loc2 else 10 for loc1 in locations for loc2 in locations
             },
         ),
@@ -124,18 +124,18 @@ def test_should_calculate_service_deployments_for_vm_pairs() -> None:
         ),
         NetworkData(
             locations=locations,
-            location_latency={
+            loc_and_loc_to_latency={
                 (loc1, loc2): 0 if loc1 == loc2 else 5 for loc1 in locations for loc2 in locations
             },
-            service_location={"s_0": "loc_0", "s_1": "loc_1"},
-            virtual_machine_location_max_latency={},
-            virtual_machine_virtual_machine_max_latency={},
-            virtual_machine_virtual_machine_traffic={
+            cs_to_loc={"s_0": "loc_0", "s_1": "loc_1"},
+            cr_and_loc_to_max_latency={},
+            cr_and_cr_to_max_latency={},
+            cr_and_cr_to_traffic={
                 ("vm_0", "vm_1"): 2,
                 ("vm_1", "vm_0"): 1,
             },
-            virtual_machine_location_traffic={},
-            location_traffic_cost={
+            cr_and_loc_to_traffic={},
+            loc_and_loc_to_cost={
                 (loc1, loc2): 0 if loc1 == loc2 else 10 for loc1 in locations for loc2 in locations
             },
         ),
@@ -167,17 +167,17 @@ def test_should_consider_latency_for_vm_vm_connections() -> None:
         ),
         NetworkData(
             locations=locations,
-            location_latency={
+            loc_and_loc_to_latency={
                 (loc1, loc2): 0 if loc1 == loc2 else 10 for loc1 in locations for loc2 in locations
             },
-            service_location={"s_0": "loc_0", "s_1": "loc_1"},
-            virtual_machine_location_max_latency={},
-            virtual_machine_virtual_machine_max_latency={("vm_0", "vm_1"): 5},
-            virtual_machine_virtual_machine_traffic={
+            cs_to_loc={"s_0": "loc_0", "s_1": "loc_1"},
+            cr_and_loc_to_max_latency={},
+            cr_and_cr_to_max_latency={("vm_0", "vm_1"): 5},
+            cr_and_cr_to_traffic={
                 ("vm_0", "vm_1"): 1,
             },
-            virtual_machine_location_traffic={},
-            location_traffic_cost={
+            cr_and_loc_to_traffic={},
+            loc_and_loc_to_cost={
                 (loc1, loc2): 0 if loc1 == loc2 else 10 for loc1 in locations for loc2 in locations
             },
         ),

@@ -40,16 +40,16 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
             self.base_mip_data.var_cr_to_cs_matching[vm, s]
             * self.base_data.cr_and_time_to_instance_demand[vm, t]
             * traffic
-            * self.network_data.location_traffic_cost[self.network_data.service_location[s], loc]
+            * self.network_data.loc_and_loc_to_cost[self.network_data.cs_to_loc[s], loc]
             for (
                 vm,
                 loc,
-            ), traffic in self.network_data.virtual_machine_location_traffic.items()
+            ), traffic in self.network_data.cr_and_loc_to_traffic.items()
             for s in self.base_data.cr_to_cs_list[vm]
             for t in self.base_data.time
         )
 
-        # === virtual_machine_virtual_machine_traffic ===
+        # === cr_and_cr_to_traffic ===
 
         # Is there a vm1 -> vm2 connection where vm1 is deployed to s1 and vm2 to s2?
         var_vm_pair_services: dict[
@@ -63,7 +63,7 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
             for (
                 vm1,
                 vm2,
-            ) in self.network_data.virtual_machine_virtual_machine_traffic.keys()
+            ) in self.network_data.cr_and_cr_to_traffic.keys()
             for s1 in self.base_data.cr_to_cs_list[vm1]
             for s2 in self.base_data.cr_to_cs_list[vm2]
         }
@@ -72,7 +72,7 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
         for (
             vm1,
             vm2,
-        ) in self.network_data.virtual_machine_virtual_machine_traffic.keys():
+        ) in self.network_data.cr_and_cr_to_traffic.keys():
             # Every VM pair has one pair of service connections
             self.problem += (
                 lpSum(
@@ -99,29 +99,29 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
         for (
             vm1,
             loc2,
-        ), max_latency in self.network_data.virtual_machine_location_max_latency.items():
+        ), max_latency in self.network_data.cr_and_loc_to_max_latency.items():
             for s in self.base_data.cr_to_cs_list[vm1]:
-                loc1 = self.network_data.service_location[s]
+                loc1 = self.network_data.cs_to_loc[s]
 
-                if self.network_data.location_latency[loc1, loc2] > max_latency:
+                if self.network_data.loc_and_loc_to_latency[loc1, loc2] > max_latency:
                     if (
                         vm1,
                         loc2,
-                    ) in self.network_data.virtual_machine_location_traffic.keys():
+                    ) in self.network_data.cr_and_loc_to_traffic.keys():
                         self.problem += self.base_mip_data.var_cr_to_cs_matching[vm1, s] == 0
 
         # Respect maximum latencies for VM -> VM traffic
         for (
             vm1,
             vm2,
-        ), max_latency in self.network_data.virtual_machine_virtual_machine_max_latency.items():
+        ), max_latency in self.network_data.cr_and_cr_to_max_latency.items():
             for s1 in self.base_data.cr_to_cs_list[vm1]:
-                loc1 = self.network_data.service_location[s1]
+                loc1 = self.network_data.cs_to_loc[s1]
 
                 for s2 in self.base_data.cr_to_cs_list[vm2]:
-                    loc2 = self.network_data.service_location[s2]
+                    loc2 = self.network_data.cs_to_loc[s2]
 
-                    if self.network_data.location_latency[loc1, loc2] > max_latency:
+                    if self.network_data.loc_and_loc_to_latency[loc1, loc2] > max_latency:
                         self.problem += var_vm_pair_services[vm1, s1, vm2, s2] == 0
 
         # Pay for VM -> location traffic caused by VM -> VM connections
@@ -129,13 +129,13 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
             var_vm_pair_services[vm1, s1, vm2, s2]
             * self.base_data.cr_and_time_to_instance_demand[vm1, t]
             * traffic
-            * self.network_data.location_traffic_cost[
-                self.network_data.service_location[s1], self.network_data.service_location[s2]
+            * self.network_data.loc_and_loc_to_cost[
+                self.network_data.cs_to_loc[s1], self.network_data.cs_to_loc[s2]
             ]
             for (
                 vm1,
                 vm2,
-            ), traffic in self.network_data.virtual_machine_virtual_machine_traffic.items()
+            ), traffic in self.network_data.cr_and_cr_to_traffic.items()
             for s1 in self.base_data.cr_to_cs_list[vm1]
             for s2 in self.base_data.cr_to_cs_list[vm2]
             for t in self.base_data.time

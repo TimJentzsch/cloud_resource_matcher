@@ -19,13 +19,13 @@ def test_should_not_raise_error_for_valid_data() -> None:
 
     network_data = NetworkData(
         locations={"loc_0"},
-        location_latency={("loc_0", "loc_0"): 0},
-        service_location={"s_0": "loc_0"},
-        virtual_machine_location_max_latency={("vm_0", "loc_0"): 10},
-        virtual_machine_virtual_machine_traffic={},
-        virtual_machine_virtual_machine_max_latency={},
-        virtual_machine_location_traffic={("vm_0", "loc_0"): 10},
-        location_traffic_cost={("loc_0", "loc_0"): 0},
+        loc_and_loc_to_latency={("loc_0", "loc_0"): 0},
+        cs_to_loc={"s_0": "loc_0"},
+        cr_and_loc_to_max_latency={("vm_0", "loc_0"): 10},
+        cr_and_cr_to_traffic={},
+        cr_and_cr_to_max_latency={},
+        cr_and_loc_to_traffic={("vm_0", "loc_0"): 10},
+        loc_and_loc_to_cost={("loc_0", "loc_0"): 0},
     )
 
     ValidateNetworkTask(base_data, network_data).execute()
@@ -46,13 +46,13 @@ class TestValidateLocationLatency:
 
         network_data = NetworkData(
             locations={"loc_0"},
-            location_latency={},
-            service_location={"s_0": "loc_0"},
-            virtual_machine_location_max_latency={("vm_0", "loc_0"): 10},
-            virtual_machine_virtual_machine_max_latency={},
-            virtual_machine_virtual_machine_traffic={},
-            virtual_machine_location_traffic={("vm_0", "loc_0"): 10},
-            location_traffic_cost={("loc_0", "loc_0"): 0},
+            loc_and_loc_to_latency={},
+            cs_to_loc={"s_0": "loc_0"},
+            cr_and_loc_to_max_latency={("vm_0", "loc_0"): 10},
+            cr_and_cr_to_max_latency={},
+            cr_and_cr_to_traffic={},
+            cr_and_loc_to_traffic={("vm_0", "loc_0"): 10},
+            loc_and_loc_to_cost={("loc_0", "loc_0"): 0},
         )
 
         with pytest.raises(AssertionError):
@@ -72,13 +72,13 @@ class TestValidateLocationLatency:
 
         network_data = NetworkData(
             locations={"loc_0"},
-            location_latency={("loc_0", "loc_0"): 0, ("loc_0", "loc_1"): 0},
-            service_location={"s_0": "loc_0"},
-            virtual_machine_location_max_latency={("vm_0", "loc_0"): 10},
-            virtual_machine_virtual_machine_max_latency={},
-            virtual_machine_virtual_machine_traffic={},
-            virtual_machine_location_traffic={("vm_0", "loc_0"): 10},
-            location_traffic_cost={("loc_0", "loc_0"): 0},
+            loc_and_loc_to_latency={("loc_0", "loc_0"): 0, ("loc_0", "loc_1"): 0},
+            cs_to_loc={"s_0": "loc_0"},
+            cr_and_loc_to_max_latency={("vm_0", "loc_0"): 10},
+            cr_and_cr_to_max_latency={},
+            cr_and_cr_to_traffic={},
+            cr_and_loc_to_traffic={("vm_0", "loc_0"): 10},
+            loc_and_loc_to_cost={("loc_0", "loc_0"): 0},
         )
 
         with pytest.raises(AssertionError):
@@ -98,13 +98,13 @@ class TestValidateLocationLatency:
 
         network_data = NetworkData(
             locations={"loc_0"},
-            location_latency={("loc_0", "loc_0"): -1},
-            service_location={"s_0": "loc_0"},
-            virtual_machine_location_max_latency={("vm_0", "loc_0"): 10},
-            virtual_machine_virtual_machine_max_latency={},
-            virtual_machine_virtual_machine_traffic={},
-            virtual_machine_location_traffic={("vm_0", "loc_0"): 10},
-            location_traffic_cost={("loc_0", "loc_0"): 0},
+            loc_and_loc_to_latency={("loc_0", "loc_0"): -1},
+            cs_to_loc={"s_0": "loc_0"},
+            cr_and_loc_to_max_latency={("vm_0", "loc_0"): 10},
+            cr_and_cr_to_max_latency={},
+            cr_and_cr_to_traffic={},
+            cr_and_loc_to_traffic={("vm_0", "loc_0"): 10},
+            loc_and_loc_to_cost={("loc_0", "loc_0"): 0},
         )
 
         with pytest.raises(AssertionError):
@@ -127,13 +127,13 @@ class TestValidateServiceLocation:
 
         network_data = NetworkData(
             locations={"loc_0"},
-            location_latency={("loc_0", "loc_0"): 0},
-            service_location={},
-            virtual_machine_location_max_latency={("vm_0", "loc_0"): 10},
-            virtual_machine_virtual_machine_max_latency={},
-            virtual_machine_virtual_machine_traffic={},
-            virtual_machine_location_traffic={("vm_0", "loc_0"): 10},
-            location_traffic_cost={("loc_0", "loc_0"): 0},
+            loc_and_loc_to_latency={("loc_0", "loc_0"): 0},
+            cs_to_loc={},
+            cr_and_loc_to_max_latency={("vm_0", "loc_0"): 10},
+            cr_and_cr_to_max_latency={},
+            cr_and_cr_to_traffic={},
+            cr_and_loc_to_traffic={("vm_0", "loc_0"): 10},
+            loc_and_loc_to_cost={("loc_0", "loc_0"): 0},
         )
 
         with pytest.raises(AssertionError):
@@ -154,13 +154,13 @@ class TestValidateServiceLocation:
 
         network_data = NetworkData(
             locations={"loc_0"},
-            location_latency={("loc_0", "loc_0"): 0},
-            service_location={"s_0": "loc_0", "s_1": "loc_0"},
-            virtual_machine_location_max_latency={("vm_0", "loc_0"): 10},
-            virtual_machine_virtual_machine_max_latency={},
-            virtual_machine_virtual_machine_traffic={},
-            virtual_machine_location_traffic={("vm_0", "loc_0"): 10},
-            location_traffic_cost={("loc_0", "loc_0"): 0},
+            loc_and_loc_to_latency={("loc_0", "loc_0"): 0},
+            cs_to_loc={"s_0": "loc_0", "s_1": "loc_0"},
+            cr_and_loc_to_max_latency={("vm_0", "loc_0"): 10},
+            cr_and_cr_to_max_latency={},
+            cr_and_cr_to_traffic={},
+            cr_and_loc_to_traffic={("vm_0", "loc_0"): 10},
+            loc_and_loc_to_cost={("loc_0", "loc_0"): 0},
         )
 
         with pytest.raises(AssertionError):
@@ -181,13 +181,13 @@ class TestValidateServiceLocation:
 
         network_data = NetworkData(
             locations={"loc_0"},
-            location_latency={("loc_0", "loc_0"): 0},
-            service_location={"s_0": "loc_1"},
-            virtual_machine_location_max_latency={("vm_0", "loc_0"): 10},
-            virtual_machine_virtual_machine_max_latency={},
-            virtual_machine_virtual_machine_traffic={},
-            virtual_machine_location_traffic={("vm_0", "loc_0"): 10},
-            location_traffic_cost={("loc_0", "loc_0"): 0},
+            loc_and_loc_to_latency={("loc_0", "loc_0"): 0},
+            cs_to_loc={"s_0": "loc_1"},
+            cr_and_loc_to_max_latency={("vm_0", "loc_0"): 10},
+            cr_and_cr_to_max_latency={},
+            cr_and_cr_to_traffic={},
+            cr_and_loc_to_traffic={("vm_0", "loc_0"): 10},
+            loc_and_loc_to_cost={("loc_0", "loc_0"): 0},
         )
 
         with pytest.raises(AssertionError):
@@ -210,13 +210,13 @@ class TestValidateVirtualMachineMaxLatency:
 
         network_data = NetworkData(
             locations={"loc_0"},
-            location_latency={("loc_0", "loc_0"): 0},
-            service_location={"s_0": "loc_0"},
-            virtual_machine_location_max_latency={("vm_1", "loc_0"): 10},
-            virtual_machine_virtual_machine_max_latency={},
-            virtual_machine_virtual_machine_traffic={},
-            virtual_machine_location_traffic={("vm_0", "loc_0"): 10},
-            location_traffic_cost={("loc_0", "loc_0"): 0},
+            loc_and_loc_to_latency={("loc_0", "loc_0"): 0},
+            cs_to_loc={"s_0": "loc_0"},
+            cr_and_loc_to_max_latency={("vm_1", "loc_0"): 10},
+            cr_and_cr_to_max_latency={},
+            cr_and_cr_to_traffic={},
+            cr_and_loc_to_traffic={("vm_0", "loc_0"): 10},
+            loc_and_loc_to_cost={("loc_0", "loc_0"): 0},
         )
 
         with pytest.raises(AssertionError):
@@ -237,13 +237,13 @@ class TestValidateVirtualMachineMaxLatency:
 
         network_data = NetworkData(
             locations={"loc_0"},
-            location_latency={("loc_0", "loc_0"): 0},
-            service_location={"s_0": "loc_0"},
-            virtual_machine_location_max_latency={("vm_0", "loc_1"): 10},
-            virtual_machine_virtual_machine_max_latency={},
-            virtual_machine_virtual_machine_traffic={},
-            virtual_machine_location_traffic={("vm_0", "loc_0"): 10},
-            location_traffic_cost={("loc_0", "loc_0"): 0},
+            loc_and_loc_to_latency={("loc_0", "loc_0"): 0},
+            cs_to_loc={"s_0": "loc_0"},
+            cr_and_loc_to_max_latency={("vm_0", "loc_1"): 10},
+            cr_and_cr_to_max_latency={},
+            cr_and_cr_to_traffic={},
+            cr_and_loc_to_traffic={("vm_0", "loc_0"): 10},
+            loc_and_loc_to_cost={("loc_0", "loc_0"): 0},
         )
 
         with pytest.raises(AssertionError):
@@ -264,13 +264,13 @@ class TestValidateVirtualMachineMaxLatency:
 
         network_data = NetworkData(
             locations={"loc_0"},
-            location_latency={("loc_0", "loc_0"): 0},
-            service_location={"s_0": "loc_0"},
-            virtual_machine_location_max_latency={("vm_0", "loc_0"): -1},
-            virtual_machine_virtual_machine_max_latency={},
-            virtual_machine_virtual_machine_traffic={},
-            virtual_machine_location_traffic={("vm_0", "loc_0"): 10},
-            location_traffic_cost={("loc_0", "loc_0"): 0},
+            loc_and_loc_to_latency={("loc_0", "loc_0"): 0},
+            cs_to_loc={"s_0": "loc_0"},
+            cr_and_loc_to_max_latency={("vm_0", "loc_0"): -1},
+            cr_and_cr_to_max_latency={},
+            cr_and_cr_to_traffic={},
+            cr_and_loc_to_traffic={("vm_0", "loc_0"): 10},
+            loc_and_loc_to_cost={("loc_0", "loc_0"): 0},
         )
 
         with pytest.raises(AssertionError):
@@ -293,16 +293,16 @@ class TestValidateVirtualMachineLocationTraffic:
 
         network_data = NetworkData(
             locations={"loc_0"},
-            location_latency={("loc_0", "loc_0"): 0},
-            service_location={"s_0": "loc_0"},
-            virtual_machine_location_max_latency={("vm_0", "loc_0"): 10},
-            virtual_machine_virtual_machine_max_latency={},
-            virtual_machine_virtual_machine_traffic={},
-            virtual_machine_location_traffic={
+            loc_and_loc_to_latency={("loc_0", "loc_0"): 0},
+            cs_to_loc={"s_0": "loc_0"},
+            cr_and_loc_to_max_latency={("vm_0", "loc_0"): 10},
+            cr_and_cr_to_max_latency={},
+            cr_and_cr_to_traffic={},
+            cr_and_loc_to_traffic={
                 ("vm_0", "loc_0"): 10,
                 ("vm_1", "loc_0"): 5,
             },
-            location_traffic_cost={("loc_0", "loc_0"): 0},
+            loc_and_loc_to_cost={("loc_0", "loc_0"): 0},
         )
 
         with pytest.raises(AssertionError):
@@ -323,16 +323,16 @@ class TestValidateVirtualMachineLocationTraffic:
 
         network_data = NetworkData(
             locations={"loc_0"},
-            location_latency={("loc_0", "loc_0"): 0},
-            service_location={"s_0": "loc_0"},
-            virtual_machine_location_max_latency={("vm_0", "loc_0"): 10},
-            virtual_machine_virtual_machine_max_latency={},
-            virtual_machine_virtual_machine_traffic={},
-            virtual_machine_location_traffic={
+            loc_and_loc_to_latency={("loc_0", "loc_0"): 0},
+            cs_to_loc={"s_0": "loc_0"},
+            cr_and_loc_to_max_latency={("vm_0", "loc_0"): 10},
+            cr_and_cr_to_max_latency={},
+            cr_and_cr_to_traffic={},
+            cr_and_loc_to_traffic={
                 ("vm_0", "loc_0"): 10,
                 ("vm_0", "loc_1"): 3,
             },
-            location_traffic_cost={("loc_0", "loc_0"): 0},
+            loc_and_loc_to_cost={("loc_0", "loc_0"): 0},
         )
 
         with pytest.raises(AssertionError):
@@ -353,13 +353,13 @@ class TestValidateVirtualMachineLocationTraffic:
 
         network_data = NetworkData(
             locations={"loc_0"},
-            location_latency={("loc_0", "loc_0"): 0},
-            service_location={"s_0": "loc_0"},
-            virtual_machine_location_max_latency={("vm_0", "loc_0"): 10},
-            virtual_machine_virtual_machine_max_latency={},
-            virtual_machine_virtual_machine_traffic={},
-            virtual_machine_location_traffic={("vm_0", "loc_0"): -1},
-            location_traffic_cost={("loc_0", "loc_0"): 0},
+            loc_and_loc_to_latency={("loc_0", "loc_0"): 0},
+            cs_to_loc={"s_0": "loc_0"},
+            cr_and_loc_to_max_latency={("vm_0", "loc_0"): 10},
+            cr_and_cr_to_max_latency={},
+            cr_and_cr_to_traffic={},
+            cr_and_loc_to_traffic={("vm_0", "loc_0"): -1},
+            loc_and_loc_to_cost={("loc_0", "loc_0"): 0},
         )
 
         with pytest.raises(AssertionError):
@@ -382,13 +382,13 @@ class TestValidateVirtualMachineVirtualMachineTraffic:
 
         network_data = NetworkData(
             locations={"loc_0"},
-            location_latency={("loc_0", "loc_0"): 0},
-            service_location={"s_0": "loc_0"},
-            virtual_machine_location_max_latency={("vm_0", "loc_0"): 10},
-            virtual_machine_virtual_machine_max_latency={},
-            virtual_machine_virtual_machine_traffic={("vm_0", "vm_1"): 5},
-            virtual_machine_location_traffic={("vm_0", "loc_0"): 10},
-            location_traffic_cost={("loc_0", "loc_0"): 0},
+            loc_and_loc_to_latency={("loc_0", "loc_0"): 0},
+            cs_to_loc={"s_0": "loc_0"},
+            cr_and_loc_to_max_latency={("vm_0", "loc_0"): 10},
+            cr_and_cr_to_max_latency={},
+            cr_and_cr_to_traffic={("vm_0", "vm_1"): 5},
+            cr_and_loc_to_traffic={("vm_0", "loc_0"): 10},
+            loc_and_loc_to_cost={("loc_0", "loc_0"): 0},
         )
 
         with pytest.raises(AssertionError):
@@ -409,13 +409,13 @@ class TestValidateVirtualMachineVirtualMachineTraffic:
 
         network_data = NetworkData(
             locations={"loc_0"},
-            location_latency={("loc_0", "loc_0"): 0},
-            service_location={"s_0": "loc_0"},
-            virtual_machine_location_max_latency={("vm_0", "loc_0"): 10},
-            virtual_machine_virtual_machine_max_latency={},
-            virtual_machine_virtual_machine_traffic={("vm_0", "vm_0"): -1},
-            virtual_machine_location_traffic={("vm_0", "loc_0"): 10},
-            location_traffic_cost={("loc_0", "loc_0"): 0},
+            loc_and_loc_to_latency={("loc_0", "loc_0"): 0},
+            cs_to_loc={"s_0": "loc_0"},
+            cr_and_loc_to_max_latency={("vm_0", "loc_0"): 10},
+            cr_and_cr_to_max_latency={},
+            cr_and_cr_to_traffic={("vm_0", "vm_0"): -1},
+            cr_and_loc_to_traffic={("vm_0", "loc_0"): 10},
+            loc_and_loc_to_cost={("loc_0", "loc_0"): 0},
         )
 
         with pytest.raises(AssertionError):
@@ -438,13 +438,13 @@ class TestValidateLocationTrafficCost:
 
         network_data = NetworkData(
             locations={"loc_0"},
-            location_latency={("loc_0", "loc_0"): 0},
-            service_location={"s_0": "loc_0"},
-            virtual_machine_location_max_latency={("vm_0", "loc_0"): 10},
-            virtual_machine_virtual_machine_max_latency={},
-            virtual_machine_virtual_machine_traffic={},
-            virtual_machine_location_traffic={("vm_0", "loc_0"): 10},
-            location_traffic_cost={("loc_0", "loc_0"): 0, ("loc_0", "loc_1"): 3},
+            loc_and_loc_to_latency={("loc_0", "loc_0"): 0},
+            cs_to_loc={"s_0": "loc_0"},
+            cr_and_loc_to_max_latency={("vm_0", "loc_0"): 10},
+            cr_and_cr_to_max_latency={},
+            cr_and_cr_to_traffic={},
+            cr_and_loc_to_traffic={("vm_0", "loc_0"): 10},
+            loc_and_loc_to_cost={("loc_0", "loc_0"): 0, ("loc_0", "loc_1"): 3},
         )
 
         with pytest.raises(AssertionError):
@@ -465,13 +465,13 @@ class TestValidateLocationTrafficCost:
 
         network_data = NetworkData(
             locations={"loc_0"},
-            location_latency={("loc_0", "loc_0"): 0},
-            service_location={"s_0": "loc_0"},
-            virtual_machine_location_max_latency={},
-            virtual_machine_virtual_machine_max_latency={},
-            virtual_machine_virtual_machine_traffic={},
-            virtual_machine_location_traffic={("vm_0", "loc_0"): 10},
-            location_traffic_cost={},
+            loc_and_loc_to_latency={("loc_0", "loc_0"): 0},
+            cs_to_loc={"s_0": "loc_0"},
+            cr_and_loc_to_max_latency={},
+            cr_and_cr_to_max_latency={},
+            cr_and_cr_to_traffic={},
+            cr_and_loc_to_traffic={("vm_0", "loc_0"): 10},
+            loc_and_loc_to_cost={},
         )
 
         with pytest.raises(AssertionError):

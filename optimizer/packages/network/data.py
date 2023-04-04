@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from optimizer.packages.base.data import CloudService, CloudResource
+from optimizer.packages.base.data import CloudService, CloudResource, Cost
 
 Location = str
 Latency = int
@@ -9,34 +9,32 @@ NetworkTraffic = int
 
 @dataclass
 class NetworkData:
-    # A locations that affect latency and network prices
-    # Can be physical or virtual locations
+    # A locations that affect latency and network prices.
+    # Can be physical or virtual locations.
     locations: set[Location]
 
-    # The latency between two locations
-    # This must be specified for every pair of locations
-    location_latency: dict[tuple[Location, Location], Latency]
+    # A map from a loc -> loc connection to the latency that is expected for that connection.
+    # This must be defined for every pair of locations.
+    loc_and_loc_to_latency: dict[tuple[Location, Location], Latency]
 
-    # The location that a service is placed in
-    # This must be specified for every service
-    service_location: dict[CloudService, Location]
+    # A map from a cloud service to the location it is placed in.
+    cs_to_loc: dict[CloudService, Location]
 
-    # The network traffic between a virtual machine and a given location
-    virtual_machine_location_traffic: dict[tuple[CloudResource, Location], NetworkTraffic]
+    # A map from a CR -> loc connection to the network traffic of that connection.
+    # The traffic is given per CR instance and per unit of time.
+    cr_and_loc_to_traffic: dict[tuple[CloudResource, Location], NetworkTraffic]
 
-    # The maximum latency a virtual machine can have to a given location
-    # There must be traffic between the VM and the location
-    virtual_machine_location_max_latency: dict[tuple[CloudResource, Location], Latency]
+    # A map from a CR -> loc connection to the maximum latency allowed on that connection.
+    # This can be used to enforce a maximum latency to end users in a given region.
+    cr_and_loc_to_max_latency: dict[tuple[CloudResource, Location], Latency]
 
-    # The network traffic between two virtual machines
-    virtual_machine_virtual_machine_traffic: dict[
-        tuple[CloudResource, CloudResource], NetworkTraffic
-    ]
+    # A map from a CR -> CR connection to the network traffic of that connection.
+    # The traffic is given per (starting) CR instance and per unit of time.
+    cr_and_cr_to_traffic: dict[tuple[CloudResource, CloudResource], NetworkTraffic]
 
-    # The maximum latency between two virtual machines
-    # There must be traffic between the two virtual machines
-    virtual_machine_virtual_machine_max_latency: dict[tuple[CloudResource, CloudResource], Latency]
+    # A map from a CR -> CR connection to the maximum latency allowed on that connection.
+    cr_and_cr_to_max_latency: dict[tuple[CloudResource, CloudResource], Latency]
 
-    # The cost of network traffic between two locations
-    # This must be specified for every pair of locations
-    location_traffic_cost: dict[tuple[Location, Location], float]
+    # A map from a loc -> loc connection to the cost of that connection.
+    # The cost is given per connection, per unit of network traffic, per unit of time.
+    loc_and_loc_to_cost: dict[tuple[Location, Location], Cost]

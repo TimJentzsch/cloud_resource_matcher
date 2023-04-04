@@ -18,14 +18,14 @@ class ValidateNetworkTask(Task[None]):
 
         :raises AssertionError: When the data is not valid.
         """
-        # Validate location_latency
-        for (loc1, loc2), latency in self.network_data.location_latency.items():
+        # Validate loc_and_loc_to_latency
+        for (loc1, loc2), latency in self.network_data.loc_and_loc_to_latency.items():
             assert (
                 loc1 in self.network_data.locations
-            ), f"{loc1} in location_latency is not a valid location"
+            ), f"{loc1} in loc_and_loc_to_latency is not a valid location"
             assert (
                 loc2 in self.network_data.locations
-            ), f"{loc2} in location_latency is not a valid location"
+            ), f"{loc2} in loc_and_loc_to_latency is not a valid location"
 
             assert latency >= 0, "Latency must not be negative"
 
@@ -34,71 +34,65 @@ class ValidateNetworkTask(Task[None]):
                 assert (
                     loc1,
                     loc2,
-                ) in self.network_data.location_latency.keys(), (
+                ) in self.network_data.loc_and_loc_to_latency.keys(), (
                     f"No definition for location latency between {loc1} and {loc2}"
                 )
 
-        # Validate service_location
-        for s, loc in self.network_data.service_location.items():
+        # Validate cs_to_loc
+        for cs, loc in self.network_data.cs_to_loc.items():
+            assert cs in self.base_data.cloud_services, f"{cs} in cs_to_loc is not a valid service"
+            assert loc in self.network_data.locations, f"{loc} in cs_to_loc is not a valid location"
+
+        for cs in self.base_data.cloud_services:
+            assert cs in self.network_data.cs_to_loc.keys(), f"No location defined for service {cs}"
+
+        # Validate cr_and_loc_to_max_latency
+        for (cr, loc), latency in self.network_data.cr_and_loc_to_max_latency.items():
             assert (
-                s in self.base_data.cloud_services
-            ), f"{s} in service_location is not a valid service"
+                cr in self.base_data.cloud_resources
+            ), f"{cr} in cr_and_loc_to_max_latency is not a valid VM"
             assert (
                 loc in self.network_data.locations
-            ), f"{loc} in service_location is not a valid location"
-
-        for s in self.base_data.cloud_services:
-            assert (
-                s in self.network_data.service_location.keys()
-            ), f"No location defined for service {s}"
-
-        # Validate virtual_machine_max_latency
-        for (v, loc), latency in self.network_data.virtual_machine_location_max_latency.items():
-            assert (
-                v in self.base_data.cloud_resources
-            ), f"{v} in virtual_machine_max_latency is not a valid VM"
-            assert (
-                loc in self.network_data.locations
-            ), f"{loc} in virtual_machine_max_latency is not a valid location"
+            ), f"{loc} in cr_and_loc_to_max_latency is not a valid location"
 
             assert latency >= 0, "The maximum latency must not be negative"
 
-        # Validate virtual_machine_location_traffic
-        for (v, loc), traffic in self.network_data.virtual_machine_location_traffic.items():
+        # Validate cr_and_loc_to_traffic
+        for (cr, loc), traffic in self.network_data.cr_and_loc_to_traffic.items():
             assert (
-                v in self.base_data.cloud_resources
-            ), f"{v} in virtual_machine_location_traffic is not a valid VM"
+                cr in self.base_data.cloud_resources
+            ), f"{cr} in cr_and_loc_to_traffic is not a valid CR"
             assert (
                 loc in self.network_data.locations
-            ), f"{loc} in virtual_machine_location_traffic is not a valid location"
+            ), f"{loc} in cr_and_loc_to_traffic is not a valid location"
 
-            assert traffic >= 0, f"Traffic for VM {v} and location {loc} must not be negative"
+            assert traffic >= 0, f"Traffic from CR {cr} to location {loc} must not be negative"
 
-        # Validate virtual_machine_virtual_machine_traffic
-        for (v1, v2), traffic in self.network_data.virtual_machine_virtual_machine_traffic.items():
+        # Validate cr_and_cr_to_traffic
+        for (cr1, cr2), traffic in self.network_data.cr_and_cr_to_traffic.items():
             assert (
-                v1 in self.base_data.cloud_resources
-            ), f"{v1} in virtual_machine_virtual_machine_traffic is not a valid VM"
+                cr1 in self.base_data.cloud_resources
+            ), f"{cr1} in cr_and_cr_to_traffic is not a valid CR"
             assert (
-                v2 in self.base_data.cloud_resources
-            ), f"{v2} in virtual_machine_virtual_machine_traffic is not a valid VM"
+                cr2 in self.base_data.cloud_resources
+            ), f"{cr2} in cr_and_cr_to_traffic is not a valid CR"
 
-            assert traffic >= 0, f"Traffic for VM {v1} and VM {v2} must not be negative"
+            assert traffic >= 0, f"Traffic from CR {cr1} to CR {cr2} must not be negative"
 
-        # Validate location_traffic_cost
-        for loc1, loc2 in self.network_data.location_traffic_cost:
+        # Validate loc_and_loc_to_cost
+        for loc1, loc2 in self.network_data.loc_and_loc_to_cost:
             assert (
                 loc1 in self.network_data.locations
-            ), f"{loc1} in location_traffic_cost is not a valid location"
+            ), f"{loc1} in loc_and_loc_to_cost is not a valid location"
             assert (
                 loc2 in self.network_data.locations
-            ), f"{loc2} in location_traffic_cost is not a valid location"
+            ), f"{loc2} in loc_and_loc_to_cost is not a valid location"
 
         for loc1 in self.network_data.locations:
             for loc2 in self.network_data.locations:
                 assert (
                     loc1,
                     loc2,
-                ) in self.network_data.location_traffic_cost.keys(), (
+                ) in self.network_data.loc_and_loc_to_cost.keys(), (
                     f"No network traffic costs specified for ({loc1}, {loc2})"
                 )
