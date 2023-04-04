@@ -31,7 +31,7 @@ def test_should_not_raise_error_for_valid_data() -> None:
     ValidateNetworkTask(base_data, network_data).execute()
 
 
-class TestValidateLocationLatency:
+class TestLocAndLocToLatency:
     def test_should_raise_error_for_missing_location_pair(self) -> None:
         """One location pair does not have a latency defined between them."""
         base_data = BaseData(
@@ -111,7 +111,7 @@ class TestValidateLocationLatency:
             ValidateNetworkTask(base_data, network_data).execute()
 
 
-class TestValidateServiceLocation:
+class TestCsToLoc:
     def test_should_raise_error_on_missing_service(self) -> None:
         """One cloud service has no location defined."""
 
@@ -194,7 +194,7 @@ class TestValidateServiceLocation:
             ValidateNetworkTask(base_data, network_data).execute()
 
 
-class TestValidateVirtualMachineMaxLatency:
+class TestCrAndLocToMaxLatency:
     def test_should_raise_error_on_invalid_virtual_machine(self) -> None:
         """One cloud resource does not exist."""
 
@@ -277,7 +277,7 @@ class TestValidateVirtualMachineMaxLatency:
             ValidateNetworkTask(base_data, network_data).execute()
 
 
-class TestValidateVirtualMachineLocationTraffic:
+class TestCrAndLocToTraffic:
     def test_should_raise_error_on_invalid_virtual_machine(self) -> None:
         """One cloud resource does not exist."""
 
@@ -366,7 +366,7 @@ class TestValidateVirtualMachineLocationTraffic:
             ValidateNetworkTask(base_data, network_data).execute()
 
 
-class TestValidateVirtualMachineVirtualMachineTraffic:
+class TestCrAndCrToTraffic:
     def test_should_raise_error_on_invalid_virtual_machine(self) -> None:
         """One cloud resource does not exist."""
 
@@ -422,7 +422,7 @@ class TestValidateVirtualMachineVirtualMachineTraffic:
             ValidateNetworkTask(base_data, network_data).execute()
 
 
-class TestValidateLocationTrafficCost:
+class TestLocAndLocToCost:
     def test_should_raise_error_on_invalid_location(self) -> None:
         """One location does not exist."""
 
