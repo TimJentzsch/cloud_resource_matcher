@@ -3,15 +3,17 @@ from dataclasses import dataclass
 from pulp import LpProblem, LpBinary, LpVariable, lpSum
 
 from .data import NetworkData
-from ..base.data import Service, VirtualMachine
+from ..base.data import CloudService, CloudResource
 from optimizer.packages.base import BaseData, BaseMipData
 from optiframe import Task
 
 
 @dataclass
 class NetworkMipData:
-    # Is vm1 deployed to s1 and vm2 deployed to s2?
-    var_vm_pair_services: dict[tuple[VirtualMachine, Service, VirtualMachine, Service], LpVariable]
+    # Is cr1 deployed to cs1 and cr2 deployed to cs2?
+    var_cr_pair_cs_deployment: dict[
+        tuple[CloudResource, CloudService, CloudResource, CloudService], LpVariable
+    ]
 
 
 class BuildMipNetworkTask(Task[NetworkMipData]):
@@ -33,110 +35,110 @@ class BuildMipNetworkTask(Task[NetworkMipData]):
         self.problem = problem
 
     def execute(self) -> NetworkMipData:
-        # Pay for VM -> location traffic
+        # Pay for CR -> loc traffic
         self.problem.objective += lpSum(
-            self.base_mip_data.var_vm_matching[vm, s]
-            * self.base_data.virtual_machine_demand[vm, t]
+            self.base_mip_data.var_cr_to_cs_matching[cr, cs]
+            * self.base_data.cr_and_time_to_instance_demand[cr, t]
             * traffic
-            * self.network_data.location_traffic_cost[self.network_data.service_location[s], loc]
+            * self.network_data.loc_and_loc_to_cost[self.network_data.cs_to_loc[cs], loc]
             for (
-                vm,
+                cr,
                 loc,
-            ), traffic in self.network_data.virtual_machine_location_traffic.items()
-            for s in self.base_data.virtual_machine_services[vm]
+            ), traffic in self.network_data.cr_and_loc_to_traffic.items()
+            for cs in self.base_data.cr_to_cs_list[cr]
             for t in self.base_data.time
         )
 
-        # === virtual_machine_virtual_machine_traffic ===
+        # === cr_and_cr_to_traffic ===
 
-        # Is there a vm1 -> vm2 connection where vm1 is deployed to s1 and vm2 to s2?
-        var_vm_pair_services: dict[
-            tuple[VirtualMachine, Service, VirtualMachine, Service],
+        # Is there a cr1 -> cr2 connection where cr1 is deployed to cs1 and cr2 to cs2?
+        var_cr_pair_cs_deployment: dict[
+            tuple[CloudResource, CloudService, CloudResource, CloudService],
             LpVariable,
         ] = {
-            (vm1, s1, vm2, s2): LpVariable(
-                f"vm_pair_services({vm1},{s1},{vm2},{s2})",
+            (cr1, cs1, cr2, cs2): LpVariable(
+                f"cr_pair_cs_deployment({cr1},{cs1},{cr2},{cs2})",
                 cat=LpBinary,
             )
             for (
-                vm1,
-                vm2,
-            ) in self.network_data.virtual_machine_virtual_machine_traffic.keys()
-            for s1 in self.base_data.virtual_machine_services[vm1]
-            for s2 in self.base_data.virtual_machine_services[vm2]
+                cr1,
+                cr2,
+            ) in self.network_data.cr_and_cr_to_traffic.keys()
+            for cs1 in self.base_data.cr_to_cs_list[cr1]
+            for cs2 in self.base_data.cr_to_cs_list[cr2]
         }
 
-        # Calculate service pair deployments
+        # Calculate deployments of cloud resource pairs
         for (
-            vm1,
-            vm2,
-        ) in self.network_data.virtual_machine_virtual_machine_traffic.keys():
-            # Every VM pair has one pair of service connections
+            cr1,
+            cr2,
+        ) in self.network_data.cr_and_cr_to_traffic.keys():
+            # Every CR pair has one pair of cloud service connections
             self.problem += (
                 lpSum(
-                    var_vm_pair_services[vm1, s1, vm2, s2]
-                    for s1 in self.base_data.virtual_machine_services[vm1]
-                    for s2 in self.base_data.virtual_machine_services[vm2]
+                    var_cr_pair_cs_deployment[cr1, cs1, cr2, cs2]
+                    for cs1 in self.base_data.cr_to_cs_list[cr1]
+                    for cs2 in self.base_data.cr_to_cs_list[cr2]
                 )
                 == 1
             )
 
-            # Enforce that the VMs must be deployed to the given services
-            for s1 in self.base_data.virtual_machine_services[vm1]:
-                for s2 in self.base_data.virtual_machine_services[vm2]:
+            # If a CR has been deployed to a given CS, enforce this for the pair as well
+            for cs1 in self.base_data.cr_to_cs_list[cr1]:
+                for cs2 in self.base_data.cr_to_cs_list[cr2]:
                     self.problem += (
-                        var_vm_pair_services[vm1, s1, vm2, s2]
-                        <= self.base_mip_data.var_vm_matching[vm1, s1]
+                        var_cr_pair_cs_deployment[cr1, cs1, cr2, cs2]
+                        <= self.base_mip_data.var_cr_to_cs_matching[cr1, cs1]
                     )
                     self.problem += (
-                        var_vm_pair_services[vm1, s1, vm2, s2]
-                        <= self.base_mip_data.var_vm_matching[vm2, s2]
+                        var_cr_pair_cs_deployment[cr1, cs1, cr2, cs2]
+                        <= self.base_mip_data.var_cr_to_cs_matching[cr2, cs2]
                     )
 
-        # Respect maximum latencies for VM -> location traffic
+        # Respect maximum latencies for CR -> loc traffic
         for (
-            vm1,
+            cr1,
             loc2,
-        ), max_latency in self.network_data.virtual_machine_location_max_latency.items():
-            for s in self.base_data.virtual_machine_services[vm1]:
-                loc1 = self.network_data.service_location[s]
+        ), max_latency in self.network_data.cr_and_loc_to_max_latency.items():
+            for cs in self.base_data.cr_to_cs_list[cr1]:
+                loc1 = self.network_data.cs_to_loc[cs]
 
-                if self.network_data.location_latency[loc1, loc2] > max_latency:
+                if self.network_data.loc_and_loc_to_latency[loc1, loc2] > max_latency:
                     if (
-                        vm1,
+                        cr1,
                         loc2,
-                    ) in self.network_data.virtual_machine_location_traffic.keys():
-                        self.problem += self.base_mip_data.var_vm_matching[vm1, s] == 0
+                    ) in self.network_data.cr_and_loc_to_traffic.keys():
+                        self.problem += self.base_mip_data.var_cr_to_cs_matching[cr1, cs] == 0
 
-        # Respect maximum latencies for VM -> VM traffic
+        # Respect maximum latencies for CR -> CR traffic
         for (
-            vm1,
-            vm2,
-        ), max_latency in self.network_data.virtual_machine_virtual_machine_max_latency.items():
-            for s1 in self.base_data.virtual_machine_services[vm1]:
-                loc1 = self.network_data.service_location[s1]
+            cr1,
+            cr2,
+        ), max_latency in self.network_data.cr_and_cr_to_max_latency.items():
+            for cs1 in self.base_data.cr_to_cs_list[cr1]:
+                loc1 = self.network_data.cs_to_loc[cs1]
 
-                for s2 in self.base_data.virtual_machine_services[vm2]:
-                    loc2 = self.network_data.service_location[s2]
+                for cs2 in self.base_data.cr_to_cs_list[cr2]:
+                    loc2 = self.network_data.cs_to_loc[cs2]
 
-                    if self.network_data.location_latency[loc1, loc2] > max_latency:
-                        self.problem += var_vm_pair_services[vm1, s1, vm2, s2] == 0
+                    if self.network_data.loc_and_loc_to_latency[loc1, loc2] > max_latency:
+                        self.problem += var_cr_pair_cs_deployment[cr1, cs1, cr2, cs2] == 0
 
-        # Pay for VM -> location traffic caused by VM -> VM connections
+        # Pay for CR -> loc traffic caused by CR -> CR connections
         self.problem.objective += lpSum(
-            var_vm_pair_services[vm1, s1, vm2, s2]
-            * self.base_data.virtual_machine_demand[vm1, t]
+            var_cr_pair_cs_deployment[cr1, cs1, cr2, cs2]
+            * self.base_data.cr_and_time_to_instance_demand[cr1, t]
             * traffic
-            * self.network_data.location_traffic_cost[
-                self.network_data.service_location[s1], self.network_data.service_location[s2]
+            * self.network_data.loc_and_loc_to_cost[
+                self.network_data.cs_to_loc[cs1], self.network_data.cs_to_loc[cs2]
             ]
             for (
-                vm1,
-                vm2,
-            ), traffic in self.network_data.virtual_machine_virtual_machine_traffic.items()
-            for s1 in self.base_data.virtual_machine_services[vm1]
-            for s2 in self.base_data.virtual_machine_services[vm2]
+                cr1,
+                cr2,
+            ), traffic in self.network_data.cr_and_cr_to_traffic.items()
+            for cs1 in self.base_data.cr_to_cs_list[cr1]
+            for cs2 in self.base_data.cr_to_cs_list[cr2]
             for t in self.base_data.time
         )
 
-        return NetworkMipData(var_vm_pair_services)
+        return NetworkMipData(var_cr_pair_cs_deployment)

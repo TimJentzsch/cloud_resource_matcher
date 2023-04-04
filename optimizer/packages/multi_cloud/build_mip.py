@@ -31,50 +31,50 @@ class BuildMipMultiCloudTask(Task[MultiCloudMipData]):
         self.problem = problem
 
     def execute(self) -> MultiCloudMipData:
-        # Is cloud service provider k used at all?
+        # Is cloud service provider csp used at all?
         var_csp_used: dict[CloudServiceProvider, LpVariable] = {
-            k: LpVariable(f"csp_used({k})", cat=LpBinary)
-            for k in self.multi_cloud_data.cloud_service_providers
+            csp: LpVariable(f"csp_used({csp})", cat=LpBinary)
+            for csp in self.multi_cloud_data.cloud_service_providers
         }
 
         # Calculate csp_used values
-        for k in self.multi_cloud_data.cloud_service_providers:
+        for csp in self.multi_cloud_data.cloud_service_providers:
             used_service_count = lpSum(
-                self.base_mip_data.var_vm_matching[v, s]
-                for v in self.base_data.virtual_machines
-                for s in self.base_data.virtual_machine_services[v]
-                if s in self.multi_cloud_data.cloud_service_provider_services[k]
+                self.base_mip_data.var_cr_to_cs_matching[cr, cs]
+                for cr in self.base_data.cloud_resources
+                for cs in self.base_data.cr_to_cs_list[cr]
+                if cs in self.multi_cloud_data.csp_to_cs_list[csp]
             )
 
             self.problem += (
-                var_csp_used[k] <= used_service_count,
-                f"csp_used_enforce_0({k})",
+                var_csp_used[csp] <= used_service_count,
+                f"csp_used_enforce_0({csp})",
             )
 
-            for vm in self.base_data.virtual_machines:
-                for s in self.base_data.virtual_machine_services[vm]:
-                    if s in self.multi_cloud_data.cloud_service_provider_services[k]:
+            for cr in self.base_data.cloud_resources:
+                for cs in self.base_data.cr_to_cs_list[cr]:
+                    if cs in self.multi_cloud_data.csp_to_cs_list[csp]:
                         self.problem += (
-                            var_csp_used[k] >= self.base_mip_data.var_vm_matching[vm, s],
-                            f"csp_used_enforce_1({k},{vm},{s})",
+                            var_csp_used[csp] >= self.base_mip_data.var_cr_to_cs_matching[cr, cs],
+                            f"csp_used_enforce_1({csp},{cr},{cs})",
                         )
 
         # Enforce minimum and maximum number of used CSPs
         self.problem.addConstraint(
-            lpSum(var_csp_used[k] for k in self.multi_cloud_data.cloud_service_providers)
-            >= self.multi_cloud_data.min_cloud_service_provider_count,
-            "min_cloud_service_provider_count",
+            lpSum(var_csp_used[csp] for csp in self.multi_cloud_data.cloud_service_providers)
+            >= self.multi_cloud_data.min_csp_count,
+            "min_csp_count",
         )
         self.problem.addConstraint(
-            lpSum(var_csp_used[k] for k in self.multi_cloud_data.cloud_service_providers)
-            <= self.multi_cloud_data.max_cloud_service_provider_count,
-            "max_cloud_service_provider_count",
+            lpSum(var_csp_used[csp] for csp in self.multi_cloud_data.cloud_service_providers)
+            <= self.multi_cloud_data.max_csp_count,
+            "max_csp_count",
         )
 
         # Add CSP cost to objective
         self.problem.objective += lpSum(
-            var_csp_used[k] * self.multi_cloud_data.cloud_service_provider_costs[k]
-            for k in self.multi_cloud_data.cloud_service_providers
+            var_csp_used[csp] * self.multi_cloud_data.csp_to_cost[csp]
+            for csp in self.multi_cloud_data.cloud_service_providers
         )
 
         return MultiCloudMipData(var_csp_used)

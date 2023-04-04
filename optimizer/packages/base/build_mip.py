@@ -2,19 +2,19 @@ from dataclasses import dataclass
 
 from pulp import LpVariable, LpProblem, LpBinary, lpSum
 
-from .data import BaseData, Service, VirtualMachine
+from .data import BaseData, CloudService, CloudResource
 from optiframe import Task
 
-VarVmServiceMatching = dict[tuple[VirtualMachine, Service], LpVariable]
-ServiceVirtualMachines = dict[Service, set[VirtualMachine]]
+VarCrToCsMatching = dict[tuple[CloudResource, CloudService], LpVariable]
+CsToCrList = dict[CloudService, set[CloudResource]]
 
 
 @dataclass
 class BaseMipData:
-    # Which VM should be deployed on which service?
-    var_vm_matching: VarVmServiceMatching
-    # Which services are used at all?
-    var_service_used: dict[Service, LpVariable]
+    # Which cloud resource should be deployed on which cloud service?
+    var_cr_to_cs_matching: VarCrToCsMatching
+    # Which cloud services are used at all?
+    var_cs_used: dict[CloudService, LpVariable]
 
 
 class BuildMipBaseTask(Task[BaseMipData]):
@@ -26,70 +26,71 @@ class BuildMipBaseTask(Task[BaseMipData]):
         self.problem = problem
 
     def execute(self) -> BaseMipData:
-        # Pre-compute which services can host which VMs
-        service_virtual_machines: ServiceVirtualMachines = {
-            s: set(
-                vm
-                for vm in self.base_data.virtual_machines
-                if s in self.base_data.virtual_machine_services[vm]
+        # Pre-compute which cloud services can host which cloud resources
+        cs_to_cr_list: CsToCrList = {
+            cs: set(
+                cr
+                for cr in self.base_data.cloud_resources
+                if cs in self.base_data.cr_to_cs_list[cr]
             )
-            for s in self.base_data.services
+            for cs in self.base_data.cloud_services
         }
 
-        # Assign virtual machine v to cloud service s at time t?
-        # ASSUMPTION: Each service instance can only be used by one VM instance
-        # ASSUMPTION: All instances of one VM have to be deployed
-        # on the same service type
-        var_vm_matching: VarVmServiceMatching = {
-            (v, s): LpVariable(f"vm_matching({v},{s})", cat=LpBinary)
-            for v in self.base_data.virtual_machines
-            for s in self.base_data.virtual_machine_services[v]
+        # Assign cloud resource cr to cloud service cs at time t?
+        # ASSUMPTION: Each cloud service instance can only be used by one cloud resource instance
+        # ASSUMPTION: All instances of one cloud resource have to be deployed
+        #   on the same service type
+        var_cr_to_cs_matching: VarCrToCsMatching = {
+            (cr, cs): LpVariable(f"cr_to_cs_matching({cr},{cs})", cat=LpBinary)
+            for cr in self.base_data.cloud_resources
+            for cs in self.base_data.cr_to_cs_list[cr]
         }
 
-        # Satisfy VM demands
-        for vm in self.base_data.virtual_machines:
+        # Satisfy cloud resource demands
+        for cr in self.base_data.cloud_resources:
             self.problem += (
-                lpSum(var_vm_matching[vm, s] for s in self.base_data.virtual_machine_services[vm])
+                lpSum(var_cr_to_cs_matching[cr, cs] for cs in self.base_data.cr_to_cs_list[cr])
                 == 1,
-                f"vm_demand({vm})",
+                f"cr_demand({cr})",
             )
 
-        # Has service s been purchased at all?
-        var_service_used: dict[Service, LpVariable] = {
-            s: LpVariable(f"service_used({s})", cat=LpBinary) for s in self.base_data.services
+        # Has cloud service cs been purchased at all?
+        var_cs_used: dict[CloudService, LpVariable] = {
+            cs: LpVariable(f"service_used({cs})", cat=LpBinary)
+            for cs in self.base_data.cloud_services
         }
 
-        # Enforce limits for service instance count
-        for s, max_instances in self.base_data.max_service_instances.items():
+        # Enforce limits for cloud service instance count
+        for cs, max_instances in self.base_data.cs_to_instance_limit.items():
             for t in self.base_data.time:
                 self.problem += (
                     lpSum(
-                        var_vm_matching[vm, s] * self.base_data.virtual_machine_demand[vm, t]
-                        for vm in service_virtual_machines[s]
+                        var_cr_to_cs_matching[vm, cs]
+                        * self.base_data.cr_and_time_to_instance_demand[vm, t]
+                        for vm in cs_to_cr_list[cs]
                     )
                     <= max_instances,
-                    f"max_service_instances({s},{t})",
+                    f"cs_instance_limit({cs},{t})",
                 )
 
-        # Calculate service_used
-        for s in self.base_data.services:
+        # Calculate var_cs_used
+        for cs in self.base_data.cloud_services:
             self.problem += (
-                var_service_used[s]
-                <= lpSum(var_vm_matching[vm, s] for vm in service_virtual_machines[s]),
-                f"connect_service_instances_and_service_used({s})",
+                var_cs_used[cs] <= lpSum(var_cr_to_cs_matching[cr, cs] for cr in cs_to_cr_list[cs]),
+                f"connect_cr_to_cs_matching_and_cs_used({cs})",
             )
 
-        # Base costs for used services
+        # Base costs for used cloud services
         self.problem.objective += lpSum(
-            var_vm_matching[vm, s]
-            * self.base_data.virtual_machine_demand[vm, t]
-            * self.base_data.service_base_costs[s]
-            for vm in self.base_data.virtual_machines
-            for s in self.base_data.virtual_machine_services[vm]
+            var_cr_to_cs_matching[cr, cs]
+            * self.base_data.cr_and_time_to_instance_demand[cr, t]
+            * self.base_data.cs_to_base_cost[cs]
+            for cr in self.base_data.cloud_resources
+            for cs in self.base_data.cr_to_cs_list[cr]
             for t in self.base_data.time
         )
 
         return BaseMipData(
-            var_vm_matching=var_vm_matching,
-            var_service_used=var_service_used,
+            var_cr_to_cs_matching=var_cr_to_cs_matching,
+            var_cs_used=var_cs_used,
         )

@@ -18,49 +18,41 @@ class ValidateMultiCloudTask(Task[None]):
 
         :raises AssertionError: When the data is not valid.
         """
-        # Validate cloud_service_provider_services
+        # Validate csp_to_cs_list
         for csp in self.multi_cloud_data.cloud_service_providers:
             assert (
-                csp in self.multi_cloud_data.cloud_service_provider_services.keys()
+                csp in self.multi_cloud_data.csp_to_cs_list.keys()
             ), f"CSP {csp} is missing in cloud_service_provider_services"
 
-        for csp, services in self.multi_cloud_data.cloud_service_provider_services.items():
+        for csp, services in self.multi_cloud_data.csp_to_cs_list.items():
             assert (
                 csp in self.multi_cloud_data.cloud_service_providers
             ), f"{csp} in cloud_service_provider_services is not a valid CSP"
 
-            for s in services:
+            for cs in services:
                 assert (
-                    s in self.base_data.services
-                ), f"{s} in cloud_service_provider_services is not a valid service"
+                    cs in self.base_data.cloud_services
+                ), f"{cs} in cloud_service_provider_services is not a valid service"
 
-        for s in self.base_data.services:
+        for cs in self.base_data.cloud_services:
             matched_to_csp = False
 
-            for services in self.multi_cloud_data.cloud_service_provider_services.values():
-                if s in services:
+            for services in self.multi_cloud_data.csp_to_cs_list.values():
+                if cs in services:
                     matched_to_csp = True
                     break
 
             assert matched_to_csp is True
 
         # Validate min/max counts
-        assert (
-            self.multi_cloud_data.min_cloud_service_provider_count >= 0
-        ), "min_cloud_service_provider_count is negative"
-        assert (
-            self.multi_cloud_data.max_cloud_service_provider_count >= 0
-        ), "max_cloud_service_provider_count is negative"
-        assert (
-            self.multi_cloud_data.min_cloud_service_provider_count
-            <= self.multi_cloud_data.max_cloud_service_provider_count
-        ), (
-            "min_cloud_service_provider_count must be smaller or equal"
-            "than max_cloud_service_provider_count"
+        assert self.multi_cloud_data.min_csp_count >= 0, "min_csp_count is negative"
+        assert self.multi_cloud_data.max_csp_count >= 0, "max_csp_count is negative"
+        assert self.multi_cloud_data.min_csp_count <= self.multi_cloud_data.max_csp_count, (
+            "min_csp_count must be smaller or equal" "than max_csp_count"
         )
 
         # Validate costs
         for csp in self.multi_cloud_data.cloud_service_providers:
             assert (
-                csp in self.multi_cloud_data.cloud_service_provider_costs
+                csp in self.multi_cloud_data.csp_to_cost
             ), f"CSP {csp} does not have a cost defined"

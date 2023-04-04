@@ -14,51 +14,47 @@ class ValidateBaseTask(Task[None]):
 
         :raises AssertionError: When the data is not valid.
         """
-        # Validate virtual_machine_services
-        for v in self.base_data.virtual_machines:
-            assert (
-                v in self.base_data.virtual_machine_services.keys()
-            ), f"Valid services for VM {v} not defined"
+        # Validate cr_to_cs_list
+        for cr in self.base_data.cloud_resources:
+            assert cr in self.base_data.cr_to_cs_list.keys(), f"Valid CSs for CR {cr} not defined"
 
-        for v, services in self.base_data.virtual_machine_services.items():
-            assert (
-                v in self.base_data.virtual_machines
-            ), f"{v} in virtual_machine_services is not a valid VM"
-            for s in services:
+        for cr, services in self.base_data.cr_to_cs_list.items():
+            assert cr in self.base_data.cloud_resources, f"{cr} in cr_to_cs_list is not a valid CR"
+            for cs in services:
                 assert (
-                    s in self.base_data.services
-                ), f"{s} in virtual_machine_services is not a valid service"
+                    cs in self.base_data.cloud_services
+                ), f"{cs} in cr_to_cs_list is not a valid CS"
 
-        # Validate service_base_costs
-        for s in self.base_data.services:
-            assert (
-                s in self.base_data.service_base_costs.keys()
-            ), f"Base cost for service {s} not defined"
+        # Validate cs_to_base_cost
+        for cs in self.base_data.cloud_services:
+            assert cs in self.base_data.cs_to_base_cost.keys(), f"Base cost for CS {cs} not defined"
 
-        for s, cost in self.base_data.service_base_costs.items():
-            assert s in self.base_data.services, f"{s} in service_base_costs is not a valid service"
-            assert cost >= 0, f"Cost {cost} for service {s} is negative"
+        for cs, cost in self.base_data.cs_to_base_cost.items():
+            assert cs in self.base_data.cloud_services, f"{cs} in cs_to_base_cost is not a valid CS"
+            assert cost >= 0, f"Cost {cost} for CS {cs} is negative"
 
-        # Validate virtual_machine_demand
-        for v in self.base_data.virtual_machines:
+        # Validate cr_and_time_to_instance_demand
+        for cr in self.base_data.cloud_resources:
             for t in self.base_data.time:
                 assert (
-                    v,
+                    cr,
                     t,
-                ) in self.base_data.virtual_machine_demand.keys(), (
-                    f"No demand defined for VM {v} at time {t}"
+                ) in self.base_data.cr_and_time_to_instance_demand.keys(), (
+                    f"No demand defined for CR {cr} at time {t}"
                 )
 
-        for (v, t), demand in self.base_data.virtual_machine_demand.items():
+        for (cr, t), demand in self.base_data.cr_and_time_to_instance_demand.items():
             assert (
-                v in self.base_data.virtual_machines
-            ), f"{v} in virtual_machine_demand is not a valid VM"
-            assert t in self.base_data.time, f"{t} in virtual_machine_demand is not a valid time"
-            assert demand >= 0, f"Demand {demand} for VM {v} at time {t} is negative"
+                cr in self.base_data.cloud_resources
+            ), f"{cr} in cr_and_time_to_instance_demand is not a valid CR"
+            assert (
+                t in self.base_data.time
+            ), f"{t} in cr_and_time_to_instance_demand is not a valid time"
+            assert demand >= 0, f"Demand {demand} for CR {cr} at time {t} is negative"
 
-        # Validate max_service_instances
-        for (s, instances) in self.base_data.max_service_instances.items():
+        # Validate cs_to_instance_limit
+        for (cs, instances) in self.base_data.cs_to_instance_limit.items():
             assert (
-                s in self.base_data.services
-            ), f"{s} in max_service_instances is not a valid service"
-            assert instances >= 0, f"Negative max instance count {instances} for service {s}"
+                cs in self.base_data.cloud_services
+            ), f"{cs} in cs_to_instance_limit is not a valid CS"
+            assert instances >= 0, f"Negative max instance count {instances} for CS {cs}"
