@@ -1,11 +1,16 @@
 from optiframe import Optimizer
+from pulp import LpMinimize
 
 from optimizer.packages.base import BaseData, base_package
 from optimizer.packages.multi_cloud import MultiCloudData, multi_cloud_package
 from test.framework import Expect
 
 
-OPTIMIZER = Optimizer("test_multi_cloud").add_package(base_package).add_package(multi_cloud_package)
+OPTIMIZER = (
+    Optimizer("test_multi_cloud", sense=LpMinimize)
+    .add_package(base_package)
+    .add_package(multi_cloud_package)
+)
 
 
 def test_min_csp_count_constraint_matching() -> None:

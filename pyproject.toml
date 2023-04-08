@@ -12,7 +12,7 @@ demo = "examples.demo:main"
 python = "^3.11"
 # Git dependency needed for a bugfix, see <https://github.com/coin-or/pulp/pull/627>
 PuLP = { git = "https://github.com/TimJentzsch/pulp.git", rev = "ff1f470320ecbe43afce48253e50b14cbc125757" }
-optiframe = "^0.1.0"
+optiframe = "^0.2.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.12.0"

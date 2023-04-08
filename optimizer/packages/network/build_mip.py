@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 
+from optiframe.framework.tasks import BuildMipTask
 from pulp import LpProblem, LpBinary, LpVariable, lpSum
 
 from .data import NetworkData
 from ..base.data import CloudService, CloudResource
 from optimizer.packages.base import BaseData, BaseMipData
-from optiframe import Task
 
 
 @dataclass
@@ -16,7 +16,7 @@ class NetworkMipData:
     ]
 
 
-class BuildMipNetworkTask(Task[NetworkMipData]):
+class BuildMipNetworkTask(BuildMipTask[NetworkMipData]):
     base_data: BaseData
     network_data: NetworkData
     base_mip_data: BaseMipData

@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 
+from optiframe.framework.tasks import BuildMipTask
 from pulp import LpProblem, LpBinary, LpVariable, lpSum
 
 from .data import MultiCloudData, CloudServiceProvider
 from optimizer.packages.base import BaseData, BaseMipData
-from optiframe import Task
 
 
 @dataclass
@@ -12,7 +12,7 @@ class MultiCloudMipData:
     var_csp_used: dict[CloudServiceProvider, LpVariable]
 
 
-class BuildMipMultiCloudTask(Task[MultiCloudMipData]):
+class BuildMipMultiCloudTask(BuildMipTask[MultiCloudMipData]):
     base_data: BaseData
     multi_cloud_data: MultiCloudData
     base_mip_data: BaseMipData

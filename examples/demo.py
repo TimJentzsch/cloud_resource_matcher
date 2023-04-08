@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from datetime import timedelta, datetime
 from typing import Optional
 
+from pulp import LpMinimize
+
 from optimizer.packages.base.data import Cost
 from optiframe import Optimizer, SolutionObjValue, InfeasibleError
 from optimizer.packages.base import BaseSolution, BaseData, base_package
@@ -99,13 +101,14 @@ def solve_demo_model(
     )
 
     data = (
-        Optimizer("cloud_cost_optimization")
+        Optimizer("cloud_cost_optimization", sense=LpMinimize)
         .add_package(base_package)
         .add_package(performance_package)
         .add_package(network_package)
         .add_package(multi_cloud_package)
         .initialize(base_data, perf_data, network_data, multi_data)
         .validate()
+        .pre_processing()
         .build_mip()
         .solve(
             get_pulp_solver(

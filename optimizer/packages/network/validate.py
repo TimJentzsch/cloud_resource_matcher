@@ -1,10 +1,10 @@
-from optiframe import Task
+from optiframe.framework.tasks import ValidateTask
 
 from optimizer.packages.base import BaseData
 from .data import NetworkData
 
 
-class ValidateNetworkTask(Task[None]):
+class ValidateNetworkTask(ValidateTask):
     base_data: BaseData
     network_data: NetworkData
 

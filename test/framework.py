@@ -29,7 +29,7 @@ class Expect:
     _fixed_variable_values: dict[str, float]
 
     def __init__(self, optimizer: InitializedOptimizer):
-        self._optimizer = optimizer.validate().build_mip()
+        self._optimizer = optimizer.validate().pre_processing().build_mip()
         self._variables = set()
         self._fixed_variable_values = dict()
 

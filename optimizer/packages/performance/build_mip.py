@@ -1,12 +1,12 @@
+from optiframe.framework.tasks import BuildMipTask
 from pulp import LpProblem
 
 from optimizer.packages.base import BaseData, BaseMipData
-from optiframe import Task
 
 from .data import PerformanceData
 
 
-class BuildMipPerformanceTask(Task[None]):
+class BuildMipPerformanceTask(BuildMipTask[None]):
     base_data: BaseData
     performance_data: PerformanceData
     base_mip_data: BaseMipData

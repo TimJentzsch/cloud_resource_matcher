@@ -1,10 +1,10 @@
-from optiframe import Task
+from optiframe.framework.tasks import ValidateTask
 
 from optimizer.packages.base import BaseData
 from .data import MultiCloudData
 
 
-class ValidateMultiCloudTask(Task[None]):
+class ValidateMultiCloudTask(ValidateTask):
     base_data: BaseData
     multi_cloud_data: MultiCloudData
 
