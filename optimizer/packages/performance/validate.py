@@ -1,10 +1,10 @@
-from optiframe import Task
+from optiframe.framework.tasks import ValidateTask
 
 from optimizer.packages.base import BaseData
 from .data import PerformanceData
 
 
-class ValidatePerformanceTask(Task[None]):
+class ValidatePerformanceTask(ValidateTask):
     base_data: BaseData
     performance_data: PerformanceData
 

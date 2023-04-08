@@ -1,11 +1,16 @@
 from optiframe import Optimizer
+from pulp import LpMinimize
 
 from optimizer.packages.base import BaseData, base_package
 from optimizer.packages.performance import PerformanceData, performance_package
 from test.framework import Expect
 
 
-OPTIMIZER = Optimizer("test_performance").add_package(base_package).add_package(performance_package)
+OPTIMIZER = (
+    Optimizer("test_performance", sense=LpMinimize)
+    .add_package(base_package)
+    .add_package(performance_package)
+)
 
 
 def test_with_sufficient_resources() -> None:

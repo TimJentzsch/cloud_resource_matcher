@@ -1,8 +1,9 @@
+from optiframe.framework.tasks import ValidateTask
+
 from .data import BaseData
-from optiframe import Task
 
 
-class ValidateBaseTask(Task[None]):
+class ValidateBaseTask(ValidateTask):
     base_data: BaseData
 
     def __init__(self, base_data: BaseData):
