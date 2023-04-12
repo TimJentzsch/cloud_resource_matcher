@@ -36,7 +36,7 @@ class BuildMipServiceLimitsTask(BuildMipTask[None]):
         }
 
         # Enforce limits for cloud service instance count
-        for cs, max_instances in self.base_data.cs_to_instance_limit.items():
+        for cs, max_instances in self.service_limits_data.cs_to_instance_limit.items():
             for t in self.base_data.time:
                 self.problem += (
                     lpSum(
