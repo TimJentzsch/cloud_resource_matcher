@@ -19,7 +19,7 @@ class ValidateServiceLimitsTask(ValidateTask):
         :raises AssertionError: When the data is not valid.
         """
         # Validate cs_to_instance_limit
-        for (cs, instances) in self.base_data.cs_to_instance_limit.items():
+        for (cs, instances) in self.service_limits_data.cs_to_instance_limit.items():
             assert (
                 cs in self.base_data.cloud_services
             ), f"{cs} in cs_to_instance_limit is not a valid CS"
