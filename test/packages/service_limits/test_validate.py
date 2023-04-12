@@ -14,7 +14,6 @@ def test_should_not_raise_error_for_valid_data() -> None:
         cs_to_base_cost={"cs_0": 5},
         time=[0],
         cr_and_time_to_instance_demand={("cr_0", 0): 1},
-        cs_to_instance_limit={},
     )
 
     service_limits_data = ServiceLimitsData(
@@ -34,7 +33,6 @@ class TestCsToInstanceLimit:
             cs_to_base_cost={"cs_0": 1},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         service_limits_data = ServiceLimitsData(
@@ -53,7 +51,6 @@ class TestCsToInstanceLimit:
             cs_to_base_cost={"cs_0": 1},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         service_limits_data = ServiceLimitsData(

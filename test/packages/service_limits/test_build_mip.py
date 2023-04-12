@@ -22,7 +22,6 @@ def test_one_cr_one_cs_trivial_solution() -> None:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         ),
         ServiceLimitsData(cs_to_instance_limit={"cs_0": 1}),
     )
@@ -42,7 +41,6 @@ def test_infeasible_not_enough_cs_instances() -> None:
             cs_to_base_cost={"cs_0": 1},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 2},
-            cs_to_instance_limit={},
         ),
         ServiceLimitsData(cs_to_instance_limit={"cs_0": 1}),
     )

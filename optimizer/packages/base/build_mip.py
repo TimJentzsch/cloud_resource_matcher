@@ -60,19 +60,6 @@ class BuildMipBaseTask(BuildMipTask[BaseMipData]):
             for cs in self.base_data.cloud_services
         }
 
-        # Enforce limits for cloud service instance count
-        for cs, max_instances in self.base_data.cs_to_instance_limit.items():
-            for t in self.base_data.time:
-                self.problem += (
-                    lpSum(
-                        var_cr_to_cs_matching[vm, cs]
-                        * self.base_data.cr_and_time_to_instance_demand[vm, t]
-                        for vm in cs_to_cr_list[cs]
-                    )
-                    <= max_instances,
-                    f"cs_instance_limit({cs},{t})",
-                )
-
         # Calculate var_cs_used
         for cs in self.base_data.cloud_services:
             self.problem += (

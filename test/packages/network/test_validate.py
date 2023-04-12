@@ -14,7 +14,6 @@ def test_should_not_raise_error_for_valid_data() -> None:
         cs_to_base_cost={"cs_0": 5},
         time=[0],
         cr_and_time_to_instance_demand={("cr_0", 0): 1},
-        cs_to_instance_limit={},
     )
 
     network_data = NetworkData(
@@ -41,7 +40,6 @@ class TestLocAndLocToLatency:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -67,7 +65,6 @@ class TestLocAndLocToLatency:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -93,7 +90,6 @@ class TestLocAndLocToLatency:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -122,7 +118,6 @@ class TestCsToLoc:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -149,7 +144,6 @@ class TestCsToLoc:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -176,7 +170,6 @@ class TestCsToLoc:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -205,7 +198,6 @@ class TestCrAndLocToMaxLatency:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -232,7 +224,6 @@ class TestCrAndLocToMaxLatency:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -259,7 +250,6 @@ class TestCrAndLocToMaxLatency:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -288,7 +278,6 @@ class TestCrAndLocToTraffic:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -318,7 +307,6 @@ class TestCrAndLocToTraffic:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -348,7 +336,6 @@ class TestCrAndLocToTraffic:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -377,7 +364,6 @@ class TestCrAndCrToTraffic:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -404,7 +390,6 @@ class TestCrAndCrToTraffic:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -433,7 +418,6 @@ class TestLocAndLocToCost:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(
@@ -460,7 +444,6 @@ class TestLocAndLocToCost:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         network_data = NetworkData(

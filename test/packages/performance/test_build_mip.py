@@ -3,6 +3,7 @@ from pulp import LpMinimize
 
 from optimizer.packages.base import BaseData, base_package
 from optimizer.packages.performance import PerformanceData, performance_package
+from optimizer.packages.service_limits import service_limits_package, ServiceLimitsData
 from test.framework import Expect
 
 
@@ -23,7 +24,6 @@ def test_with_sufficient_resources() -> None:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         ),
         PerformanceData(
             performance_criteria=["vCPU", "RAM"],
@@ -45,7 +45,6 @@ def test_with_insufficient_performance() -> None:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={"cs_0": 1},
         ),
         PerformanceData(
             performance_criteria=["vCPU", "RAM"],
@@ -64,24 +63,32 @@ def test_resource_matching() -> None:
     """
     count = 100
 
-    optimizer = OPTIMIZER.initialize(
-        BaseData(
-            cloud_resources=[f"cr_{cr}" for cr in range(count)],
-            cloud_services=[f"cs_{cs}" for cs in range(count)],
-            cr_to_cs_list={f"cr_{cr}": [f"cs_{cs}" for cs in range(count)] for cr in range(count)},
-            # Arbitrary costs to make sure the constraints are actually enforced
-            cs_to_base_cost={
-                f"cs_{cs}": (cs + 4) % 7 + (cs % 3) * (cs % 10) for cs in range(count)
-            },
-            time=[0],
-            cr_and_time_to_instance_demand={(f"cr_{cr}", 0): 1 for cr in range(count)},
-            cs_to_instance_limit={f"cs_{cs}": 1 for cs in range(count)},
-        ),
-        PerformanceData(
-            performance_criteria=["RAM"],
-            performance_demand={(f"cr_{cr}", "RAM"): cr for cr in range(count)},
-            performance_supply={(f"cs_{cs}", "RAM"): cs for cs in range(count)},
-        ),
+    optimizer = (
+        Optimizer("test_performance", sense=LpMinimize)
+        .add_package(base_package)
+        .add_package(performance_package)
+        .add_package(service_limits_package)
+        .initialize(
+            BaseData(
+                cloud_resources=[f"cr_{cr}" for cr in range(count)],
+                cloud_services=[f"cs_{cs}" for cs in range(count)],
+                cr_to_cs_list={
+                    f"cr_{cr}": [f"cs_{cs}" for cs in range(count)] for cr in range(count)
+                },
+                # Arbitrary costs to make sure the constraints are actually enforced
+                cs_to_base_cost={
+                    f"cs_{cs}": (cs + 4) % 7 + (cs % 3) * (cs % 10) for cs in range(count)
+                },
+                time=[0],
+                cr_and_time_to_instance_demand={(f"cr_{cr}", 0): 1 for cr in range(count)},
+            ),
+            PerformanceData(
+                performance_criteria=["RAM"],
+                performance_demand={(f"cr_{cr}", "RAM"): cr for cr in range(count)},
+                performance_supply={(f"cs_{cs}", "RAM"): cs for cs in range(count)},
+            ),
+            ServiceLimitsData(cs_to_instance_limit={f"cs_{cs}": 1 for cs in range(count)}),
+        )
     )
 
     Expect(optimizer).to_be_feasible().with_cr_to_cs_matching(
@@ -100,7 +107,6 @@ def test_cheap_insufficient_cs() -> None:
             cs_to_base_cost={"cs_0": 2, "cs_1": 10},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={"cs_0": 1, "cs_1": 1},
         ),
         PerformanceData(
             performance_criteria=["RAM"],
@@ -126,7 +132,6 @@ def test_allowed_incomplete_data() -> None:
             cs_to_base_cost={"cs_0": 1},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         ),
         # Leave min requirements undefined
         PerformanceData(
@@ -149,7 +154,6 @@ def test_should_work_with_higher_cr_and_time_to_instance_demand() -> None:
             cs_to_base_cost={"cs_0": 1},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 2},
-            cs_to_instance_limit={},
         ),
         PerformanceData(
             performance_criteria=["RAM"],
@@ -165,21 +169,27 @@ def test_should_be_infeasible_if_not_enough_cs_instances_can_be_bought() -> None
     """There is demand for two CRs, which each occupy the CS fully.
     But only one instance of the CS may be bought.
     """
-    optimizer = OPTIMIZER.initialize(
-        BaseData(
-            cloud_resources=["cr_0"],
-            cloud_services=["cs_0"],
-            cr_to_cs_list={"cr_0": ["cs_0"]},
-            cs_to_base_cost={"cs_0": 1},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 2},
-            cs_to_instance_limit={"cs_0": 1},
-        ),
-        PerformanceData(
-            performance_criteria=["RAM"],
-            performance_demand={("cr_0", "RAM"): 1},
-            performance_supply={("cs_0", "RAM"): 1},
-        ),
+    optimizer = (
+        Optimizer("test_performance", sense=LpMinimize)
+        .add_package(base_package)
+        .add_package(performance_package)
+        .add_package(service_limits_package)
+        .initialize(
+            BaseData(
+                cloud_resources=["cr_0"],
+                cloud_services=["cs_0"],
+                cr_to_cs_list={"cr_0": ["cs_0"]},
+                cs_to_base_cost={"cs_0": 1},
+                time=[0],
+                cr_and_time_to_instance_demand={("cr_0", 0): 2},
+            ),
+            PerformanceData(
+                performance_criteria=["RAM"],
+                performance_demand={("cr_0", "RAM"): 1},
+                performance_supply={("cs_0", "RAM"): 1},
+            ),
+            ServiceLimitsData(cs_to_instance_limit={"cs_0": 1}),
+        )
     )
 
     Expect(optimizer).to_be_infeasible().test()

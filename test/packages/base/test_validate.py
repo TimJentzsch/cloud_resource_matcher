@@ -13,7 +13,6 @@ def test_should_not_raise_error_for_valid_data() -> None:
         cs_to_base_cost={"cs_0": 5},
         time=[0],
         cr_and_time_to_instance_demand={("cr_0", 0): 1},
-        cs_to_instance_limit={"cs_0": 1},
     )
 
     ValidateBaseTask(data).execute()
@@ -29,7 +28,6 @@ class TestCrToCsList:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         with pytest.raises(AssertionError):
@@ -44,7 +42,6 @@ class TestCrToCsList:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={},
-            cs_to_instance_limit={},
         )
 
         with pytest.raises(AssertionError):
@@ -59,7 +56,6 @@ class TestCrToCsList:
             cs_to_base_cost={},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         with pytest.raises(AssertionError):
@@ -76,7 +72,6 @@ class TestCrToBaseCost:
             cs_to_base_cost={},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         with pytest.raises(AssertionError):
@@ -91,7 +86,6 @@ class TestCrToBaseCost:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         with pytest.raises(AssertionError):
@@ -108,7 +102,6 @@ class TestCrAndTimeToInstanceDemand:
             cs_to_base_cost={"cs_0": 1},
             time=[0],
             cr_and_time_to_instance_demand={},
-            cs_to_instance_limit={},
         )
 
         with pytest.raises(AssertionError):
@@ -123,7 +116,6 @@ class TestCrAndTimeToInstanceDemand:
             cs_to_base_cost={"cs_0": 1},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         with pytest.raises(AssertionError):
@@ -138,7 +130,6 @@ class TestCrAndTimeToInstanceDemand:
             cs_to_base_cost={"cs_0": 1},
             time=[],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         )
 
         with pytest.raises(AssertionError):
@@ -153,39 +144,6 @@ class TestCrAndTimeToInstanceDemand:
             cs_to_base_cost={"cs_0": 1},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): -1},
-            cs_to_instance_limit={},
-        )
-
-        with pytest.raises(AssertionError):
-            ValidateBaseTask(data).execute()
-
-
-class TestCsToInstanceLimit:
-    def test_should_raise_error_for_invalid_service(self) -> None:
-        """One of the CSs does not exist."""
-        data = BaseData(
-            cloud_resources=["cr_0"],
-            cloud_services=["cs_0"],
-            cr_to_cs_list={"cr_0": ["cs_0"]},
-            cs_to_base_cost={"cs_0": 1},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={"cs_0": 1, "cs_1": 1},
-        )
-
-        with pytest.raises(AssertionError):
-            ValidateBaseTask(data).execute()
-
-    def test_should_raise_error_for_negative_instance_count(self) -> None:
-        """A maximum instance count is negative."""
-        data = BaseData(
-            cloud_resources=["cr_0"],
-            cloud_services=["cs_0"],
-            cr_to_cs_list={"cr_0": ["cs_0"]},
-            cs_to_base_cost={"cs_0": 1},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={"cs_0": -1},
         )
 
         with pytest.raises(AssertionError):

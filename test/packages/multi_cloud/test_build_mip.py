@@ -25,7 +25,6 @@ def test_min_csp_count_constraint_matching() -> None:
             cs_to_base_cost={"cs_0": 1, "cs_1": 1, "cs_2": 10},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1, ("cr_1", 0): 1},
-            cs_to_instance_limit={},
         ),
         MultiCloudData(
             cloud_service_providers=["csp_0", "csp_1"],
@@ -56,7 +55,6 @@ def test_max_csp_count_constraint_matching() -> None:
             cs_to_base_cost={"cs_0": 10, "cs_1": 10, "cs_2": 1},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1, ("cr_1", 0): 1},
-            cs_to_instance_limit={},
         ),
         MultiCloudData(
             cloud_service_providers=["csp_0", "csp_1"],
@@ -85,7 +83,6 @@ def test_min_csp_count_constraint_infeasible() -> None:
             cs_to_base_cost={"cs_0": 10},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         ),
         MultiCloudData(
             cloud_service_providers=["csp_0"],
@@ -109,7 +106,6 @@ def test_max_csp_count_constraint_infeasible() -> None:
             cs_to_base_cost={"cs_0": 10, "cs_1": 10},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1, ("cr_1", 0): 1},
-            cs_to_instance_limit={},
         ),
         MultiCloudData(
             cloud_service_providers=["csp_0", "csp_1"],
@@ -133,7 +129,6 @@ def test_with_multiple_time_points() -> None:
             cs_to_base_cost={"cs_0": 10},
             time=[0, 1],
             cr_and_time_to_instance_demand={("cr_0", 0): 1, ("cr_0", 1): 1},
-            cs_to_instance_limit={},
         ),
         MultiCloudData(
             cloud_service_providers=["csp_0"],
@@ -161,7 +156,6 @@ def test_csp_objective() -> None:
             cs_to_base_cost={"cs_0": 10, "cs_1": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         ),
         MultiCloudData(
             cloud_service_providers=["csp_0", "csp_1"],

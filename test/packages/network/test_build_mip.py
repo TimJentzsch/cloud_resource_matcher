@@ -25,7 +25,6 @@ def test_should_pay_for_cr_location_costs() -> None:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 3},
-            cs_to_instance_limit={},
         ),
         NetworkData(
             locations={"loc_0"},
@@ -59,7 +58,6 @@ def test_should_be_infeasible_if_max_latency_is_violated() -> None:
             cs_to_base_cost={"cs_0": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         ),
         NetworkData(
             locations=locations,
@@ -92,7 +90,6 @@ def test_should_choose_matching_that_respects_max_latency() -> None:
             cs_to_base_cost={"cs_0": 5, "cs_1": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1},
-            cs_to_instance_limit={},
         ),
         NetworkData(
             locations=locations,
@@ -125,7 +122,6 @@ def test_should_calculate_service_deployments_for_cr_pairs() -> None:
             cs_to_base_cost={"cs_0": 5, "cs_1": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1, ("cr_1", 0): 3},
-            cs_to_instance_limit={},
         ),
         NetworkData(
             locations=locations,
@@ -168,7 +164,6 @@ def test_should_consider_latency_for_cr_to_cr_connections() -> None:
             cs_to_base_cost={"cs_0": 5, "cs_1": 5},
             time=[0],
             cr_and_time_to_instance_demand={("cr_0", 0): 1, ("cr_1", 0): 1},
-            cs_to_instance_limit={},
         ),
         NetworkData(
             locations=locations,
