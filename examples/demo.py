@@ -47,7 +47,6 @@ def solve_demo_model(
             for cr in range(cr_count)
             for t in range(time_count)
         },
-        cs_to_instance_limit={},
     )
 
     perf_data = PerformanceData(
