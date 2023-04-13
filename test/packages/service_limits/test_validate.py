@@ -16,7 +16,7 @@ def test_should_not_raise_error_for_valid_data() -> None:
     )
 
     service_limits_data = ServiceLimitsData(
-        cs_to_instance_limit={"cs_0": 1},
+        cs_to_instance_limit={"cs_0": 1}, cr_to_max_instance_demand={"cr_0": 1}
     )
 
     ValidateServiceLimitsTask(base_data, service_limits_data).execute()
@@ -35,6 +35,7 @@ class TestCsToInstanceLimit:
 
         service_limits_data = ServiceLimitsData(
             cs_to_instance_limit={"cs_0": 1, "cs_1": 1},
+            cr_to_max_instance_demand={"cr_0": 1},
         )
 
         with pytest.raises(AssertionError):
@@ -52,6 +53,7 @@ class TestCsToInstanceLimit:
 
         service_limits_data = ServiceLimitsData(
             cs_to_instance_limit={"cs_0": -1},
+            cr_to_max_instance_demand={"cr_0": 1},
         )
 
         with pytest.raises(AssertionError):
