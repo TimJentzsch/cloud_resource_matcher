@@ -20,14 +20,13 @@ def test_one_cr_one_cs_trivial_solution() -> None:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 5},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 1},
+            cr_to_instance_demand={"cr_0": 1},
         ),
-        ServiceLimitsData(cs_to_instance_limit={"cs_0": 1}),
+        ServiceLimitsData(cs_to_instance_limit={"cs_0": 1}, cr_to_max_instance_demand={"cr_0": 1}),
     )
 
     Expect(optimizer).to_be_feasible().with_cost(5).with_cr_to_cs_matching(
-        {("cr_0", "cs_0", 0): 1}
+        {("cr_0", "cs_0"): 1}
     ).test()
 
 
@@ -39,10 +38,9 @@ def test_infeasible_not_enough_cs_instances() -> None:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 1},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 2},
+            cr_to_instance_demand={"cr_0": 2},
         ),
-        ServiceLimitsData(cs_to_instance_limit={"cs_0": 1}),
+        ServiceLimitsData(cs_to_instance_limit={"cs_0": 1}, cr_to_max_instance_demand={"cr_0": 2}),
     )
 
     Expect(optimizer).to_be_infeasible().test()

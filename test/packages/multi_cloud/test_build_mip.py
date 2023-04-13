@@ -23,8 +23,7 @@ def test_min_csp_count_constraint_matching() -> None:
             cloud_services=["cs_0", "cs_1", "cs_2"],
             cr_to_cs_list={"cr_0": ["cs_0"], "cr_1": ["cs_1", "cs_2"]},
             cs_to_base_cost={"cs_0": 1, "cs_1": 1, "cs_2": 10},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 1, ("cr_1", 0): 1},
+            cr_to_instance_demand={"cr_0": 1, "cr_1": 1},
         ),
         MultiCloudData(
             cloud_service_providers=["csp_0", "csp_1"],
@@ -39,7 +38,7 @@ def test_min_csp_count_constraint_matching() -> None:
     )
 
     Expect(optimizer).to_be_feasible().with_cost(11).with_cr_to_cs_matching(
-        {("cr_0", "cs_0", 0): 1, ("cr_1", "cs_2", 0): 1}
+        {("cr_0", "cs_0"): 1, ("cr_1", "cs_2"): 1}
     ).with_variable_values({"csp_used(csp_0)": 1, "csp_used(csp_1)": 1}).test()
 
 
@@ -53,8 +52,7 @@ def test_max_csp_count_constraint_matching() -> None:
             cloud_services=["cs_0", "cs_1", "cs_2"],
             cr_to_cs_list={"cr_0": ["cs_0"], "cr_1": ["cs_1", "cs_2"]},
             cs_to_base_cost={"cs_0": 10, "cs_1": 10, "cs_2": 1},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 1, ("cr_1", 0): 1},
+            cr_to_instance_demand={"cr_0": 1, "cr_1": 1},
         ),
         MultiCloudData(
             cloud_service_providers=["csp_0", "csp_1"],
@@ -69,7 +67,7 @@ def test_max_csp_count_constraint_matching() -> None:
     )
 
     Expect(optimizer).to_be_feasible().with_cost(20).with_cr_to_cs_matching(
-        {("cr_0", "cs_0", 0): 1, ("cr_1", "cs_1", 0): 1}
+        {("cr_0", "cs_0"): 1, ("cr_1", "cs_1"): 1}
     ).with_variable_values({"csp_used(csp_0)": 1, "csp_used(csp_1)": 0}).test()
 
 
@@ -81,8 +79,7 @@ def test_min_csp_count_constraint_infeasible() -> None:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 10},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 1},
+            cr_to_instance_demand={"cr_0": 1},
         ),
         MultiCloudData(
             cloud_service_providers=["csp_0"],
@@ -104,8 +101,7 @@ def test_max_csp_count_constraint_infeasible() -> None:
             cloud_services=["cs_0", "cs_1"],
             cr_to_cs_list={"cr_0": ["cs_0"], "cr_1": ["cs_1"]},
             cs_to_base_cost={"cs_0": 10, "cs_1": 10},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 1, ("cr_1", 0): 1},
+            cr_to_instance_demand={"cr_0": 1, "cr_1": 1},
         ),
         MultiCloudData(
             cloud_service_providers=["csp_0", "csp_1"],
@@ -119,31 +115,6 @@ def test_max_csp_count_constraint_infeasible() -> None:
     Expect(optimizer).to_be_infeasible().test()
 
 
-def test_with_multiple_time_points() -> None:
-    """Make sure that the CSP constraints also work for multiple time points."""
-    optimizer = OPTIMIZER.initialize(
-        BaseData(
-            cloud_resources=["cr_0"],
-            cloud_services=["cs_0"],
-            cr_to_cs_list={"cr_0": ["cs_0"]},
-            cs_to_base_cost={"cs_0": 10},
-            time=[0, 1],
-            cr_and_time_to_instance_demand={("cr_0", 0): 1, ("cr_0", 1): 1},
-        ),
-        MultiCloudData(
-            cloud_service_providers=["csp_0"],
-            csp_to_cs_list={"csp_0": ["cs_0"]},
-            min_csp_count=1,
-            max_csp_count=1,
-            csp_to_cost={"csp_0": 0},
-        ),
-    )
-
-    Expect(optimizer).to_be_feasible().with_cr_to_cs_matching(
-        {("cr_0", "cs_0", 0): 1, ("cr_0", "cs_0", 1): 1}
-    ).with_cost(20).test()
-
-
 def test_csp_objective() -> None:
     """
     There are two CSPs, one has cheaper cloud services, but a higher migration cost.
@@ -154,8 +125,7 @@ def test_csp_objective() -> None:
             cloud_services=["cs_0", "cs_1"],
             cr_to_cs_list={"cr_0": ["cs_0", "cs_1"]},
             cs_to_base_cost={"cs_0": 10, "cs_1": 5},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 1},
+            cr_to_instance_demand={"cr_0": 1},
         ),
         MultiCloudData(
             cloud_service_providers=["csp_0", "csp_1"],
@@ -170,5 +140,5 @@ def test_csp_objective() -> None:
     )
 
     Expect(optimizer).to_be_feasible().with_cost(11).with_cr_to_cs_matching(
-        {("cr_0", "cs_0", 0): 1}
+        {("cr_0", "cs_0"): 1}
     ).test()

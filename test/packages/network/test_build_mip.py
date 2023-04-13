@@ -23,8 +23,7 @@ def test_should_pay_for_cr_location_costs() -> None:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 5},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 3},
+            cr_to_instance_demand={"cr_0": 3},
         ),
         NetworkData(
             locations={"loc_0"},
@@ -56,8 +55,7 @@ def test_should_be_infeasible_if_max_latency_is_violated() -> None:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 5},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 1},
+            cr_to_instance_demand={"cr_0": 1},
         ),
         NetworkData(
             locations=locations,
@@ -88,8 +86,7 @@ def test_should_choose_matching_that_respects_max_latency() -> None:
             cloud_services=["cs_0", "cs_1"],
             cr_to_cs_list={"cr_0": ["cs_0", "cs_1"]},
             cs_to_base_cost={"cs_0": 5, "cs_1": 5},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 1},
+            cr_to_instance_demand={"cr_0": 1},
         ),
         NetworkData(
             locations=locations,
@@ -107,7 +104,7 @@ def test_should_choose_matching_that_respects_max_latency() -> None:
         ),
     )
 
-    Expect(optimizer).to_be_feasible().with_cr_to_cs_matching({("cr_0", "cs_0", 0): 1}).test()
+    Expect(optimizer).to_be_feasible().with_cr_to_cs_matching({("cr_0", "cs_0"): 1}).test()
 
 
 def test_should_calculate_service_deployments_for_cr_pairs() -> None:
@@ -120,8 +117,7 @@ def test_should_calculate_service_deployments_for_cr_pairs() -> None:
             cloud_services=["cs_0", "cs_1"],
             cr_to_cs_list={"cr_0": ["cs_0"], "cr_1": ["cs_1"]},
             cs_to_base_cost={"cs_0": 5, "cs_1": 5},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 1, ("cr_1", 0): 3},
+            cr_to_instance_demand={"cr_0": 1, "cr_1": 3},
         ),
         NetworkData(
             locations=locations,
@@ -143,7 +139,7 @@ def test_should_calculate_service_deployments_for_cr_pairs() -> None:
     )
 
     Expect(optimizer).to_be_feasible().with_cr_to_cs_matching(
-        {("cr_0", "cs_0", 0): 1, ("cr_1", "cs_1", 0): 3}
+        {("cr_0", "cs_0"): 1, ("cr_1", "cs_1"): 3}
     ).with_variable_values(
         {
             "cr_pair_cs_deployment(cr_0,cs_0,cr_1,cs_1)": 1,
@@ -162,8 +158,7 @@ def test_should_consider_latency_for_cr_to_cr_connections() -> None:
             cloud_services=["cs_0", "cs_1"],
             cr_to_cs_list={"cr_0": ["cs_0"], "cr_1": ["cs_1"]},
             cs_to_base_cost={"cs_0": 5, "cs_1": 5},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 1, ("cr_1", 0): 1},
+            cr_to_instance_demand={"cr_0": 1, "cr_1": 1},
         ),
         NetworkData(
             locations=locations,

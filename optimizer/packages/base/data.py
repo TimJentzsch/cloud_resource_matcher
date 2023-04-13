@@ -9,9 +9,6 @@ CloudResource = str
 # Often abbreviated as 'CS'.
 CloudService = str
 
-# The number of time units (e.g. hours)
-TimeUnit = int
-
 # A cost unit, e.g. € or $.
 Cost = float
 
@@ -28,12 +25,9 @@ class BaseData:
     cr_to_cs_list: dict[CloudResource, list[CloudService]]
 
     # A map from cloud services to their fixed base cost.
-    # The cost is given per instance and per time unit.
+    # The cost is given per instance and per billing unit.
     cs_to_base_cost: dict[CloudService, Cost]
 
-    # The discrete units of time when a decision can be made.
-    time: list[TimeUnit]
-
-    # A map from a cloud resource and a point in time to the
-    # number of instances needed at that time.
-    cr_and_time_to_instance_demand: dict[tuple[CloudResource, TimeUnit], int]
+    # A map from a cloud resource to the number of instances needed
+    # over the optimization time range.
+    cr_to_instance_demand: dict[CloudResource, int]

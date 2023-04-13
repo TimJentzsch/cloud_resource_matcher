@@ -22,8 +22,7 @@ def test_with_sufficient_resources() -> None:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 5},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 1},
+            cr_to_instance_demand={"cr_0": 1},
         ),
         PerformanceData(
             performance_criteria=["vCPU", "RAM"],
@@ -32,7 +31,7 @@ def test_with_sufficient_resources() -> None:
         ),
     )
 
-    Expect(optimizer).to_be_feasible().with_cost(5).with_cs_instance_count({("cs_0", 0): 1}).test()
+    Expect(optimizer).to_be_feasible().with_cost(5).with_cs_instance_count({"cs_0": 1}).test()
 
 
 def test_with_insufficient_performance() -> None:
@@ -43,8 +42,7 @@ def test_with_insufficient_performance() -> None:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 5},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 1},
+            cr_to_instance_demand={"cr_0": 1},
         ),
         PerformanceData(
             performance_criteria=["vCPU", "RAM"],
@@ -79,20 +77,22 @@ def test_resource_matching() -> None:
                 cs_to_base_cost={
                     f"cs_{cs}": (cs + 4) % 7 + (cs % 3) * (cs % 10) for cs in range(count)
                 },
-                time=[0],
-                cr_and_time_to_instance_demand={(f"cr_{cr}", 0): 1 for cr in range(count)},
+                cr_to_instance_demand={f"cr_{cr}": 1 for cr in range(count)},
             ),
             PerformanceData(
                 performance_criteria=["RAM"],
                 performance_demand={(f"cr_{cr}", "RAM"): cr for cr in range(count)},
                 performance_supply={(f"cs_{cs}", "RAM"): cs for cs in range(count)},
             ),
-            ServiceLimitsData(cs_to_instance_limit={f"cs_{cs}": 1 for cs in range(count)}),
+            ServiceLimitsData(
+                cs_to_instance_limit={f"cs_{cs}": 1 for cs in range(count)},
+                cr_to_max_instance_demand={f"cr_{cr}": 1 for cr in range(count)},
+            ),
         )
     )
 
     Expect(optimizer).to_be_feasible().with_cr_to_cs_matching(
-        {(f"cr_{i}", f"cs_{i}", 0): 1 for i in range(count)}
+        {(f"cr_{i}", f"cs_{i}"): 1 for i in range(count)}
     ).test()
 
 
@@ -105,8 +105,7 @@ def test_cheap_insufficient_cs() -> None:
             cr_to_cs_list={"cr_0": ["cs_0", "cs_1"]},
             # Arbitrary costs to make sure the constraints are actually enforced
             cs_to_base_cost={"cs_0": 2, "cs_1": 10},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 1},
+            cr_to_instance_demand={"cr_0": 1},
         ),
         PerformanceData(
             performance_criteria=["RAM"],
@@ -115,7 +114,7 @@ def test_cheap_insufficient_cs() -> None:
         ),
     )
 
-    Expect(optimizer).to_be_feasible().with_cr_to_cs_matching({("cr_0", "cs_1", 0): 1}).with_cost(
+    Expect(optimizer).to_be_feasible().with_cr_to_cs_matching({("cr_0", "cs_1"): 1}).with_cost(
         10
     ).test()
 
@@ -130,8 +129,7 @@ def test_allowed_incomplete_data() -> None:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 1},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 1},
+            cr_to_instance_demand={"cr_0": 1},
         ),
         # Leave min requirements undefined
         PerformanceData(
@@ -152,8 +150,7 @@ def test_should_work_with_higher_cr_and_time_to_instance_demand() -> None:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 1},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 2},
+            cr_to_instance_demand={"cr_0": 2},
         ),
         PerformanceData(
             performance_criteria=["RAM"],
@@ -162,7 +159,7 @@ def test_should_work_with_higher_cr_and_time_to_instance_demand() -> None:
         ),
     )
 
-    Expect(optimizer).to_be_feasible().with_cr_to_cs_matching({("cr_0", "cs_0", 0): 2})
+    Expect(optimizer).to_be_feasible().with_cr_to_cs_matching({("cr_0", "cs_0"): 2})
 
 
 def test_should_be_infeasible_if_not_enough_cs_instances_can_be_bought() -> None:
@@ -180,15 +177,16 @@ def test_should_be_infeasible_if_not_enough_cs_instances_can_be_bought() -> None
                 cloud_services=["cs_0"],
                 cr_to_cs_list={"cr_0": ["cs_0"]},
                 cs_to_base_cost={"cs_0": 1},
-                time=[0],
-                cr_and_time_to_instance_demand={("cr_0", 0): 2},
+                cr_to_instance_demand={"cr_0": 2},
             ),
             PerformanceData(
                 performance_criteria=["RAM"],
                 performance_demand={("cr_0", "RAM"): 1},
                 performance_supply={("cs_0", "RAM"): 1},
             ),
-            ServiceLimitsData(cs_to_instance_limit={"cs_0": 1}),
+            ServiceLimitsData(
+                cs_to_instance_limit={"cs_0": 1}, cr_to_max_instance_demand={"cr_0": 2}
+            ),
         )
     )
 
