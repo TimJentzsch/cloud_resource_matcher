@@ -48,8 +48,6 @@ class BuildMipNetworkTask(BuildMipTask[NetworkMipData]):
             for cs in self.base_data.cr_to_cs_list[cr]
         )
 
-        # === cr_and_cr_to_traffic ===
-
         # Is there a cr1 -> cr2 connection where cr1 is deployed to cs1 and cr2 to cs2?
         var_cr_pair_cs_deployment: dict[
             tuple[CloudResource, CloudService, CloudResource, CloudService],
@@ -93,21 +91,6 @@ class BuildMipNetworkTask(BuildMipTask[NetworkMipData]):
                         var_cr_pair_cs_deployment[cr1, cs1, cr2, cs2]
                         <= self.base_mip_data.var_cr_to_cs_matching[cr2, cs2]
                     )
-
-        # Respect maximum latencies for CR -> loc traffic
-        for (
-            cr1,
-            loc2,
-        ), max_latency in self.network_data.cr_and_loc_to_max_latency.items():
-            for cs in self.base_data.cr_to_cs_list[cr1]:
-                loc1 = self.network_data.cs_to_loc[cs]
-
-                if self.network_data.loc_and_loc_to_latency[loc1, loc2] > max_latency:
-                    if (
-                        cr1,
-                        loc2,
-                    ) in self.network_data.cr_and_loc_to_traffic.keys():
-                        self.problem += self.base_mip_data.var_cr_to_cs_matching[cr1, cs] == 0
 
         # Respect maximum latencies for CR -> CR traffic
         for (
