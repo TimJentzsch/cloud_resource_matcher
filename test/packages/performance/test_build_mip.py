@@ -22,7 +22,7 @@ def test_with_sufficient_resources() -> None:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 5},
-            cr_and_time_to_instance_demand={"cr_0": 1},
+            cr_to_instance_demand={"cr_0": 1},
         ),
         PerformanceData(
             performance_criteria=["vCPU", "RAM"],
@@ -42,7 +42,7 @@ def test_with_insufficient_performance() -> None:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 5},
-            cr_and_time_to_instance_demand={"cr_0": 1},
+            cr_to_instance_demand={"cr_0": 1},
         ),
         PerformanceData(
             performance_criteria=["vCPU", "RAM"],
@@ -77,7 +77,7 @@ def test_resource_matching() -> None:
                 cs_to_base_cost={
                     f"cs_{cs}": (cs + 4) % 7 + (cs % 3) * (cs % 10) for cs in range(count)
                 },
-                cr_and_time_to_instance_demand={f"cr_{cr}": 1 for cr in range(count)},
+                cr_to_instance_demand={f"cr_{cr}": 1 for cr in range(count)},
             ),
             PerformanceData(
                 performance_criteria=["RAM"],
@@ -102,7 +102,7 @@ def test_cheap_insufficient_cs() -> None:
             cr_to_cs_list={"cr_0": ["cs_0", "cs_1"]},
             # Arbitrary costs to make sure the constraints are actually enforced
             cs_to_base_cost={"cs_0": 2, "cs_1": 10},
-            cr_and_time_to_instance_demand={"cr_0": 1},
+            cr_to_instance_demand={"cr_0": 1},
         ),
         PerformanceData(
             performance_criteria=["RAM"],
@@ -126,7 +126,7 @@ def test_allowed_incomplete_data() -> None:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 1},
-            cr_and_time_to_instance_demand={"cr_0": 1},
+            cr_to_instance_demand={"cr_0": 1},
         ),
         # Leave min requirements undefined
         PerformanceData(
@@ -147,7 +147,7 @@ def test_should_work_with_higher_cr_and_time_to_instance_demand() -> None:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 1},
-            cr_and_time_to_instance_demand={"cr_0": 2},
+            cr_to_instance_demand={"cr_0": 2},
         ),
         PerformanceData(
             performance_criteria=["RAM"],
@@ -174,7 +174,7 @@ def test_should_be_infeasible_if_not_enough_cs_instances_can_be_bought() -> None
                 cloud_services=["cs_0"],
                 cr_to_cs_list={"cr_0": ["cs_0"]},
                 cs_to_base_cost={"cs_0": 1},
-                cr_and_time_to_instance_demand={"cr_0": 2},
+                cr_to_instance_demand={"cr_0": 2},
             ),
             PerformanceData(
                 performance_criteria=["RAM"],

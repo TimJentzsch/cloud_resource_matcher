@@ -11,7 +11,7 @@ def test_should_not_raise_error_for_valid_data() -> None:
         cloud_services=["cs_0"],
         cr_to_cs_list={"cr_0": ["cs_0"]},
         cs_to_base_cost={"cs_0": 5},
-        cr_and_time_to_instance_demand={"cr_0": 1},
+        cr_to_instance_demand={"cr_0": 1},
     )
 
     ValidateBaseTask(data).execute()
@@ -25,7 +25,7 @@ class TestCrToCsList:
             cloud_services=["cs_0"],
             cr_to_cs_list={},
             cs_to_base_cost={"cs_0": 5},
-            cr_and_time_to_instance_demand={"cr_0": 1},
+            cr_to_instance_demand={"cr_0": 1},
         )
 
         with pytest.raises(AssertionError):
@@ -38,7 +38,7 @@ class TestCrToCsList:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 5},
-            cr_and_time_to_instance_demand={},
+            cr_to_instance_demand={},
         )
 
         with pytest.raises(AssertionError):
@@ -51,7 +51,7 @@ class TestCrToCsList:
             cloud_services=[],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={},
-            cr_and_time_to_instance_demand={"cr_0": 1},
+            cr_to_instance_demand={"cr_0": 1},
         )
 
         with pytest.raises(AssertionError):
@@ -66,7 +66,7 @@ class TestCrToBaseCost:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={},
-            cr_and_time_to_instance_demand={"cr_0": 1},
+            cr_to_instance_demand={"cr_0": 1},
         )
 
         with pytest.raises(AssertionError):
@@ -79,7 +79,7 @@ class TestCrToBaseCost:
             cloud_services=[],
             cr_to_cs_list={"cr_0": []},
             cs_to_base_cost={"cs_0": 5},
-            cr_and_time_to_instance_demand={"cr_0": 1},
+            cr_to_instance_demand={"cr_0": 1},
         )
 
         with pytest.raises(AssertionError):
@@ -94,7 +94,7 @@ class TestCrAndTimeToInstanceDemand:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 1},
-            cr_and_time_to_instance_demand={},
+            cr_to_instance_demand={},
         )
 
         with pytest.raises(AssertionError):
@@ -107,7 +107,7 @@ class TestCrAndTimeToInstanceDemand:
             cloud_services=["cs_0"],
             cr_to_cs_list={},
             cs_to_base_cost={"cs_0": 1},
-            cr_and_time_to_instance_demand={"cr_0": 1},
+            cr_to_instance_demand={"cr_0": 1},
         )
 
         with pytest.raises(AssertionError):
@@ -120,7 +120,7 @@ class TestCrAndTimeToInstanceDemand:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 1},
-            cr_and_time_to_instance_demand={"cr_0": -1},
+            cr_to_instance_demand={"cr_0": -1},
         )
 
         with pytest.raises(AssertionError):

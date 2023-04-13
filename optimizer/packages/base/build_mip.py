@@ -70,7 +70,7 @@ class BuildMipBaseTask(BuildMipTask[BaseMipData]):
         # Base costs for used cloud services
         self.problem.objective += lpSum(
             var_cr_to_cs_matching[cr, cs]
-            * self.base_data.cr_and_time_to_instance_demand[cr]
+            * self.base_data.cr_to_instance_demand[cr]
             * self.base_data.cs_to_base_cost[cs]
             for cr in self.base_data.cloud_resources
             for cs in self.base_data.cr_to_cs_list[cr]

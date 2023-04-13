@@ -23,7 +23,7 @@ def test_should_pay_for_cr_location_costs() -> None:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 5},
-            cr_and_time_to_instance_demand={"cr_0": 3},
+            cr_to_instance_demand={"cr_0": 3},
         ),
         NetworkData(
             locations={"loc_0"},
@@ -55,7 +55,7 @@ def test_should_be_infeasible_if_max_latency_is_violated() -> None:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 5},
-            cr_and_time_to_instance_demand={"cr_0": 1},
+            cr_to_instance_demand={"cr_0": 1},
         ),
         NetworkData(
             locations=locations,
@@ -86,7 +86,7 @@ def test_should_choose_matching_that_respects_max_latency() -> None:
             cloud_services=["cs_0", "cs_1"],
             cr_to_cs_list={"cr_0": ["cs_0", "cs_1"]},
             cs_to_base_cost={"cs_0": 5, "cs_1": 5},
-            cr_and_time_to_instance_demand={"cr_0": 1},
+            cr_to_instance_demand={"cr_0": 1},
         ),
         NetworkData(
             locations=locations,
@@ -117,7 +117,7 @@ def test_should_calculate_service_deployments_for_cr_pairs() -> None:
             cloud_services=["cs_0", "cs_1"],
             cr_to_cs_list={"cr_0": ["cs_0"], "cr_1": ["cs_1"]},
             cs_to_base_cost={"cs_0": 5, "cs_1": 5},
-            cr_and_time_to_instance_demand={"cr_0": 1, "cr_1": 3},
+            cr_to_instance_demand={"cr_0": 1, "cr_1": 3},
         ),
         NetworkData(
             locations=locations,
@@ -158,7 +158,7 @@ def test_should_consider_latency_for_cr_to_cr_connections() -> None:
             cloud_services=["cs_0", "cs_1"],
             cr_to_cs_list={"cr_0": ["cs_0"], "cr_1": ["cs_1"]},
             cs_to_base_cost={"cs_0": 5, "cs_1": 5},
-            cr_and_time_to_instance_demand={"cr_0": 1, "cr_1": 1},
+            cr_to_instance_demand={"cr_0": 1, "cr_1": 1},
         ),
         NetworkData(
             locations=locations,

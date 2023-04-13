@@ -40,7 +40,7 @@ def solve_demo_model(
             f"cr_{cr}": [f"cs_{cs}" for cs in range(cs_count) if ((cr + cs) % 4) == 0]
             for cr in range(cr_count)
         },
-        cr_and_time_to_instance_demand={f"cr_{cr}": (cr % 4) + 1 for cr in range(cr_count)},
+        cr_to_instance_demand={f"cr_{cr}": (cr % 4) + 1 for cr in range(cr_count)},
     )
 
     perf_data = PerformanceData(

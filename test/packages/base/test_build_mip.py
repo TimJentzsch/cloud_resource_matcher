@@ -15,7 +15,7 @@ def test_one_cr_one_cs_trivial_solution() -> None:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 5},
-            cr_and_time_to_instance_demand={"cr_0": 1},
+            cr_to_instance_demand={"cr_0": 1},
         )
     )
 
@@ -34,7 +34,7 @@ def test_only_one_valid_matching() -> None:
             cloud_services=[f"cs_{s}" for s in range(count)],
             cr_to_cs_list={f"cr_{i}": [f"cs_{i}"] for i in range(count)},
             cs_to_base_cost={f"cs_{s}": s for s in range(count)},
-            cr_and_time_to_instance_demand={f"cr_{v}": 1 for v in range(count)},
+            cr_to_instance_demand={f"cr_{v}": 1 for v in range(count)},
         )
     )
 
@@ -51,7 +51,7 @@ def test_no_valid_cs_for_cr() -> None:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": []},
             cs_to_base_cost={"cs_0": 5},
-            cr_and_time_to_instance_demand={"cr_0": 1},
+            cr_to_instance_demand={"cr_0": 1},
         )
     )
 

@@ -23,7 +23,7 @@ def test_min_csp_count_constraint_matching() -> None:
             cloud_services=["cs_0", "cs_1", "cs_2"],
             cr_to_cs_list={"cr_0": ["cs_0"], "cr_1": ["cs_1", "cs_2"]},
             cs_to_base_cost={"cs_0": 1, "cs_1": 1, "cs_2": 10},
-            cr_and_time_to_instance_demand={"cr_0": 1, "cr_1": 1},
+            cr_to_instance_demand={"cr_0": 1, "cr_1": 1},
         ),
         MultiCloudData(
             cloud_service_providers=["csp_0", "csp_1"],
@@ -52,7 +52,7 @@ def test_max_csp_count_constraint_matching() -> None:
             cloud_services=["cs_0", "cs_1", "cs_2"],
             cr_to_cs_list={"cr_0": ["cs_0"], "cr_1": ["cs_1", "cs_2"]},
             cs_to_base_cost={"cs_0": 10, "cs_1": 10, "cs_2": 1},
-            cr_and_time_to_instance_demand={"cr_0": 1, "cr_1": 1},
+            cr_to_instance_demand={"cr_0": 1, "cr_1": 1},
         ),
         MultiCloudData(
             cloud_service_providers=["csp_0", "csp_1"],
@@ -79,7 +79,7 @@ def test_min_csp_count_constraint_infeasible() -> None:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 10},
-            cr_and_time_to_instance_demand={"cr_0": 1},
+            cr_to_instance_demand={"cr_0": 1},
         ),
         MultiCloudData(
             cloud_service_providers=["csp_0"],
@@ -101,7 +101,7 @@ def test_max_csp_count_constraint_infeasible() -> None:
             cloud_services=["cs_0", "cs_1"],
             cr_to_cs_list={"cr_0": ["cs_0"], "cr_1": ["cs_1"]},
             cs_to_base_cost={"cs_0": 10, "cs_1": 10},
-            cr_and_time_to_instance_demand={"cr_0": 1, "cr_1": 1},
+            cr_to_instance_demand={"cr_0": 1, "cr_1": 1},
         ),
         MultiCloudData(
             cloud_service_providers=["csp_0", "csp_1"],
@@ -125,7 +125,7 @@ def test_csp_objective() -> None:
             cloud_services=["cs_0", "cs_1"],
             cr_to_cs_list={"cr_0": ["cs_0", "cs_1"]},
             cs_to_base_cost={"cs_0": 10, "cs_1": 5},
-            cr_and_time_to_instance_demand={"cr_0": 1},
+            cr_to_instance_demand={"cr_0": 1},
         ),
         MultiCloudData(
             cloud_service_providers=["csp_0", "csp_1"],

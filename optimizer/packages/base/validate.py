@@ -37,10 +37,10 @@ class ValidateBaseTask(ValidateTask):
         # Validate cr_and_time_to_instance_demand
         for cr in self.base_data.cloud_resources:
             assert (
-                cr in self.base_data.cr_and_time_to_instance_demand.keys()
+                cr in self.base_data.cr_to_instance_demand.keys()
             ), f"No demand defined for CR {cr}"
 
-        for cr, demand in self.base_data.cr_and_time_to_instance_demand.items():
+        for cr, demand in self.base_data.cr_to_instance_demand.items():
             assert (
                 cr in self.base_data.cloud_resources
             ), f"{cr} in cr_and_time_to_instance_demand is not a valid CR"

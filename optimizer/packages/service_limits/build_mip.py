@@ -40,7 +40,7 @@ class BuildMipServiceLimitsTask(BuildMipTask[None]):
             self.problem += (
                 lpSum(
                     self.base_mip_data.var_cr_to_cs_matching[vm, cs]
-                    * self.base_data.cr_and_time_to_instance_demand[vm]
+                    * self.base_data.cr_to_instance_demand[vm]
                     for vm in cs_to_cr_list[cs]
                 )
                 <= max_instances,

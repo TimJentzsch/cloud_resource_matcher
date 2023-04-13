@@ -38,7 +38,7 @@ class BuildMipNetworkTask(BuildMipTask[NetworkMipData]):
         # Pay for CR -> loc traffic
         self.problem.objective += lpSum(
             self.base_mip_data.var_cr_to_cs_matching[cr, cs]
-            * self.base_data.cr_and_time_to_instance_demand[cr]
+            * self.base_data.cr_to_instance_demand[cr]
             * traffic
             * self.network_data.loc_and_loc_to_cost[self.network_data.cs_to_loc[cs], loc]
             for (
@@ -126,7 +126,7 @@ class BuildMipNetworkTask(BuildMipTask[NetworkMipData]):
         # Pay for CR -> loc traffic caused by CR -> CR connections
         self.problem.objective += lpSum(
             var_cr_pair_cs_deployment[cr1, cs1, cr2, cs2]
-            * self.base_data.cr_and_time_to_instance_demand[cr1]
+            * self.base_data.cr_to_instance_demand[cr1]
             * traffic
             * self.network_data.loc_and_loc_to_cost[
                 self.network_data.cs_to_loc[cs1], self.network_data.cs_to_loc[cs2]
