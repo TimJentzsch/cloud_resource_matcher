@@ -40,7 +40,7 @@ def solve_demo_model(
             f"cr_{cr}": [f"cs_{cs}" for cs in range(cs_count) if ((cr + cs) % 4) == 0]
             for cr in range(cr_count)
         },
-        cr_to_instance_demand={f"cr_{cr}": (cr % 4) + 1 for cr in range(cr_count)},
+        cr_to_instance_demand={f"cr_{cr}": (cr % 4) * 250 + 1 for cr in range(cr_count)},
     )
 
     perf_data = PerformanceData(
@@ -136,13 +136,13 @@ def main() -> None:
     parser.add_argument(
         "--cr-count",
         type=int,
-        default=50,
+        default=500,
         help="The number of virtual machines (VMs) in the demo data.",
     )
     parser.add_argument(
         "--cs-count",
         type=int,
-        default=50,
+        default=500,
         help="The number of cloud cloud_cloud_services in the demo data.",
     )
     parser.add_argument(
