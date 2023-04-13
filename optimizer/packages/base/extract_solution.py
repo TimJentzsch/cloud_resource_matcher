@@ -3,11 +3,11 @@ from dataclasses import dataclass
 from optiframe.framework.tasks import ExtractSolutionTask
 from pulp import pulp
 
-from .data import BaseData, CloudService, CloudResource, TimeUnit
+from .data import BaseData, CloudService, CloudResource
 from .build_mip import BaseMipData
 
-CrToCsMatching = dict[tuple[CloudResource, CloudService, TimeUnit], int]
-ServiceInstanceCount = dict[tuple[CloudService, TimeUnit], int]
+CrToCsMatching = dict[tuple[CloudResource, CloudService], int]
+ServiceInstanceCount = dict[CloudService, int]
 
 
 @dataclass
@@ -36,28 +36,26 @@ class ExtractSolutionBaseTask(ExtractSolutionTask[BaseSolution]):
 
         for cr in self.base_data.cloud_resources:
             for cs in self.base_data.cr_to_cs_list[cr]:
-                for t in self.base_data.time:
-                    value = (
-                        round(pulp.value(self.base_mip_data.var_cr_to_cs_matching[cr, cs]))
-                        * self.base_data.cr_and_time_to_instance_demand[cr, t]
-                    )
+                value = (
+                    round(pulp.value(self.base_mip_data.var_cr_to_cs_matching[cr, cs]))
+                    * self.base_data.cr_and_time_to_instance_demand[cr]
+                )
 
-                    if value >= 1:
-                        cr_to_cs_matching[cr, cs, t] = value
+                if value >= 1:
+                    cr_to_cs_matching[cr, cs] = value
 
         cs_instance_count: ServiceInstanceCount = {}
 
         for cs in self.base_data.cloud_services:
-            for t in self.base_data.time:
-                value = sum(
-                    round(pulp.value(self.base_mip_data.var_cr_to_cs_matching[cr, cs]))
-                    * self.base_data.cr_and_time_to_instance_demand[cr, t]
-                    for cr in self.base_data.cloud_resources
-                    if cs in self.base_data.cr_to_cs_list[cr]
-                )
+            value = sum(
+                round(pulp.value(self.base_mip_data.var_cr_to_cs_matching[cr, cs]))
+                * self.base_data.cr_and_time_to_instance_demand[cr]
+                for cr in self.base_data.cloud_resources
+                if cs in self.base_data.cr_to_cs_list[cr]
+            )
 
-                if value >= 1:
-                    cs_instance_count[cs, t] = value
+            if value >= 1:
+                cs_instance_count[cs] = value
 
         return BaseSolution(
             cr_to_cs_matching=cr_to_cs_matching,

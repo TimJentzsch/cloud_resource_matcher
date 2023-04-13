@@ -22,7 +22,6 @@ class SolveSolution:
 def solve_demo_model(
     cr_count: int,
     cs_count: int,
-    time_count: int,
     csp_count: int,
     location_count: int,
     solver: Solver = Solver.CBC,
@@ -41,12 +40,7 @@ def solve_demo_model(
             f"cr_{cr}": [f"cs_{cs}" for cs in range(cs_count) if ((cr + cs) % 4) == 0]
             for cr in range(cr_count)
         },
-        time=list(range(time_count)),
-        cr_and_time_to_instance_demand={
-            (f"cr_{cr}", t): (cr % 2) * (t % 3) + 1
-            for cr in range(cr_count)
-            for t in range(time_count)
-        },
+        cr_and_time_to_instance_demand={f"cr_{cr}": (cr % 4) + 1 for cr in range(cr_count)},
     )
 
     perf_data = PerformanceData(
@@ -152,12 +146,6 @@ def main() -> None:
         help="The number of cloud cloud_cloud_services in the demo data.",
     )
     parser.add_argument(
-        "--time-count",
-        type=int,
-        default=400,
-        help="The number of discrete time units in the demo data.",
-    )
-    parser.add_argument(
         "--location-count",
         type=int,
         default=5,
@@ -224,7 +212,6 @@ def main() -> None:
         solution = solve_demo_model(
             cr_count=args.cr_count,
             cs_count=args.cs_count,
-            time_count=args.time_count,
             location_count=args.location_count,
             csp_count=args.csp_count,
             solver=solver,

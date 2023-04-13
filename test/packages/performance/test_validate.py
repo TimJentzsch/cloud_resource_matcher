@@ -12,8 +12,7 @@ def test_should_not_raise_error_for_valid_data() -> None:
         cloud_services=["cs_0"],
         cr_to_cs_list={"cr_0": ["cs_0"]},
         cs_to_base_cost={"cs_0": 5},
-        time=[0],
-        cr_and_time_to_instance_demand={("cr_0", 0): 1},
+        cr_and_time_to_instance_demand={"cr_0": 1},
     )
 
     performance_data = PerformanceData(
@@ -33,8 +32,7 @@ class TestValidatePerformanceDemand:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 5},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 1},
+            cr_and_time_to_instance_demand={"cr_0": 1},
         )
 
         performance_data = PerformanceData(
@@ -53,8 +51,7 @@ class TestValidatePerformanceDemand:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 5},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 1},
+            cr_and_time_to_instance_demand={"cr_0": 1},
         )
 
         performance_data = PerformanceData(
@@ -75,8 +72,7 @@ class TestValidatePerformanceSupply:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 5},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 1},
+            cr_and_time_to_instance_demand={"cr_0": 1},
         )
 
         performance_data = PerformanceData(
@@ -95,8 +91,7 @@ class TestValidatePerformanceSupply:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 5},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 1},
+            cr_and_time_to_instance_demand={"cr_0": 1},
         )
 
         performance_data = PerformanceData(
@@ -115,8 +110,7 @@ class TestValidatePerformanceSupply:
             cloud_services=["cs_0"],
             cr_to_cs_list={"cr_0": ["cs_0"]},
             cs_to_base_cost={"cs_0": 5},
-            time=[0],
-            cr_and_time_to_instance_demand={("cr_0", 0): 1},
+            cr_and_time_to_instance_demand={"cr_0": 1},
         )
 
         performance_data = PerformanceData(
