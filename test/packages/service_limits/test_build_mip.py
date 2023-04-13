@@ -22,7 +22,7 @@ def test_one_cr_one_cs_trivial_solution() -> None:
             cs_to_base_cost={"cs_0": 5},
             cr_to_instance_demand={"cr_0": 1},
         ),
-        ServiceLimitsData(cs_to_instance_limit={"cs_0": 1}),
+        ServiceLimitsData(cs_to_instance_limit={"cs_0": 1}, cr_to_max_instance_demand={"cr_0": 1}),
     )
 
     Expect(optimizer).to_be_feasible().with_cost(5).with_cr_to_cs_matching(
@@ -40,7 +40,7 @@ def test_infeasible_not_enough_cs_instances() -> None:
             cs_to_base_cost={"cs_0": 1},
             cr_to_instance_demand={"cr_0": 2},
         ),
-        ServiceLimitsData(cs_to_instance_limit={"cs_0": 1}),
+        ServiceLimitsData(cs_to_instance_limit={"cs_0": 1}, cr_to_max_instance_demand={"cr_0": 2}),
     )
 
     Expect(optimizer).to_be_infeasible().test()

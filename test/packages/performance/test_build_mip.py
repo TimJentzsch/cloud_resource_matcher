@@ -84,7 +84,10 @@ def test_resource_matching() -> None:
                 performance_demand={(f"cr_{cr}", "RAM"): cr for cr in range(count)},
                 performance_supply={(f"cs_{cs}", "RAM"): cs for cs in range(count)},
             ),
-            ServiceLimitsData(cs_to_instance_limit={f"cs_{cs}": 1 for cs in range(count)}),
+            ServiceLimitsData(
+                cs_to_instance_limit={f"cs_{cs}": 1 for cs in range(count)},
+                cr_to_max_instance_demand={f"cr_{cr}": 1 for cr in range(count)},
+            ),
         )
     )
 
@@ -181,7 +184,9 @@ def test_should_be_infeasible_if_not_enough_cs_instances_can_be_bought() -> None
                 performance_demand={("cr_0", "RAM"): 1},
                 performance_supply={("cs_0", "RAM"): 1},
             ),
-            ServiceLimitsData(cs_to_instance_limit={"cs_0": 1}),
+            ServiceLimitsData(
+                cs_to_instance_limit={"cs_0": 1}, cr_to_max_instance_demand={"cr_0": 2}
+            ),
         )
     )
 

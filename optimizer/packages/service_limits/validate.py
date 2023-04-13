@@ -40,3 +40,8 @@ class ValidateServiceLimitsTask(ValidateTask):
                 f"The maximum instance demand {max_instance_demand} for CR {cr}"
                 f" cannot be larger than the total instance demand {total_instance_demand}"
             )
+
+        for cr in self.base_data.cloud_resources:
+            assert (
+                cr in self.service_limits_data.cr_to_max_instance_demand.keys()
+            ), f"CR {cr} does not have a maximum instance demand specified"
