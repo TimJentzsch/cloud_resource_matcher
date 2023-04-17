@@ -8,6 +8,7 @@ exclude = ["examples", "benches", "test"]
 [tool.poetry.scripts]
 demo = "examples.demo:main"
 bench_base = "benches.bench_base:bench"
+bench_complete = "benches.bench_complete:bench"
 
 [tool.poetry.dependencies]
 python = "^3.11"
