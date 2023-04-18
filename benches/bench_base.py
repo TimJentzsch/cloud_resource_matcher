@@ -15,9 +15,9 @@ class BenchParams(TypedDict):
 
 
 DEFAULT_PARAMS: BenchParams = {
-    "cr_count": 250,
-    "cs_count": 250,
-    "cs_count_per_cr": 100,
+    "cr_count": 1000,
+    "cs_count": 1000,
+    "cs_count_per_cr": 1000,
 }
 
 
@@ -44,7 +44,7 @@ def bench_cs_count() -> None:
     cs_counts = [10, 25, 50, 100, 200, 500, 1000]
 
     for cs_count in cs_counts:
-        params: BenchParams = {**DEFAULT_PARAMS, "cs_count": cs_count}
+        params: BenchParams = {**DEFAULT_PARAMS, "cs_count": cs_count, "cs_count_per_cr": cs_count}
         bench_instance(params)
 
 
@@ -78,11 +78,11 @@ def get_optimizer(params: BenchParams) -> InitializedOptimizer:
             f"cs_{cs}": cs % 100 + (cs % 20) * (cs % 5) + 10 for cs in range(cs_count)
         },
         cr_to_cs_list={
-            f"cr_{cr}": [
+            f"cr_{cr}": list(set(
                 f"cs_{cs}"
                 for cs in range(cs_count)
                 if ((cr + cs) % (cs_count / cs_count_per_cr)) == 0
-            ]
+            ))
             for cr in range(cr_count)
         },
         cr_to_instance_demand={f"cr_{cr}": (cr % 4) * 250 + 1 for cr in range(cr_count)},
