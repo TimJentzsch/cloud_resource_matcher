@@ -78,11 +78,13 @@ def get_optimizer(params: BenchParams) -> InitializedOptimizer:
             f"cs_{cs}": cs % 100 + (cs % 20) * (cs % 5) + 10 for cs in range(cs_count)
         },
         cr_to_cs_list={
-            f"cr_{cr}": list(set(
-                f"cs_{cs}"
-                for cs in range(cs_count)
-                if ((cr + cs) % (cs_count / cs_count_per_cr)) == 0
-            ))
+            f"cr_{cr}": list(
+                set(
+                    f"cs_{cs}"
+                    for cs in range(cs_count)
+                    if ((cr + cs) % (cs_count / cs_count_per_cr)) == 0
+                )
+            )
             for cr in range(cr_count)
         },
         cr_to_instance_demand={f"cr_{cr}": (cr % 4) * 250 + 1 for cr in range(cr_count)},
