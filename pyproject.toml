@@ -7,6 +7,7 @@ exclude = ["examples", "benches", "test"]
 
 [tool.poetry.scripts]
 demo = "examples.demo:main"
+bench_mini = "benches.bench_mini:bench"
 bench_base = "benches.bench_base:bench"
 bench_complete = "benches.bench_complete:bench"
 
