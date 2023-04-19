@@ -2,35 +2,28 @@
 
 image: python:3.11
 
-# Only run for merge requests, not on every push
+# Only run for merge requests or pushes to the default branch
 workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-
-stages:
-  - lint
-  - test
+    - if: $CI_PIPELINE_SOURCE == 'push' && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 before_script:
   - pip install poetry
   - poetry install
 
 Check formatting:
-  stage: lint
   script:
     - poetry run black --check .
 
 Check types:
-  stage: lint
   script:
     - poetry run mypy .
 
 Check lints:
-  stage: lint
   script:
     - poetry run ruff .
 
 Run unit tests:
-  stage: test
   script:
     - poetry run pytest
