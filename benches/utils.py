@@ -14,9 +14,7 @@ from optimizer.solver import get_pulp_solver, Solver
 def get_solver_from_args() -> Any:
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="Benchmark the optimizer."
-    )
+    parser = argparse.ArgumentParser(description="Benchmark the optimizer.")
     parser.add_argument(
         "--solver",
         choices=["cbc", "gurobi", "scip", "fscip"],
