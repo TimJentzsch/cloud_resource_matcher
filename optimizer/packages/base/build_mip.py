@@ -13,8 +13,6 @@ CsToCrList = dict[CloudService, set[CloudResource]]
 class BaseMipData:
     # Which cloud resource should be deployed on which cloud service?
     var_cr_to_cs_matching: VarCrToCsMatching
-    # Which cloud services are used at all?
-    var_cs_used: dict[CloudService, LpVariable]
 
 
 class BuildMipBaseTask(BuildMipTask[BaseMipData]):
@@ -26,16 +24,6 @@ class BuildMipBaseTask(BuildMipTask[BaseMipData]):
         self.problem = problem
 
     def execute(self) -> BaseMipData:
-        # Pre-compute which cloud services can host which cloud resources
-        cs_to_cr_list: CsToCrList = {
-            cs: set(
-                cr
-                for cr in self.base_data.cloud_resources
-                if cs in self.base_data.cr_to_cs_list[cr]
-            )
-            for cs in self.base_data.cloud_services
-        }
-
         # Assign cloud resource cr to cloud service cs at time t?
         # ASSUMPTION: Each cloud service instance can only be used by one cloud resource instance
         # ASSUMPTION: All instances of one cloud resource have to be deployed
@@ -54,19 +42,6 @@ class BuildMipBaseTask(BuildMipTask[BaseMipData]):
                 f"cr_demand({cr})",
             )
 
-        # Has cloud service cs been purchased at all?
-        var_cs_used: dict[CloudService, LpVariable] = {
-            cs: LpVariable(f"service_used({cs})", cat=LpBinary)
-            for cs in self.base_data.cloud_services
-        }
-
-        # Calculate var_cs_used
-        for cs in self.base_data.cloud_services:
-            self.problem += (
-                var_cs_used[cs] <= lpSum(var_cr_to_cs_matching[cr, cs] for cr in cs_to_cr_list[cs]),
-                f"connect_cr_to_cs_matching_and_cs_used({cs})",
-            )
-
         # Base costs for used cloud services
         self.problem.objective += lpSum(
             var_cr_to_cs_matching[cr, cs]
@@ -78,5 +53,4 @@ class BuildMipBaseTask(BuildMipTask[BaseMipData]):
 
         return BaseMipData(
             var_cr_to_cs_matching=var_cr_to_cs_matching,
-            var_cs_used=var_cs_used,
         )
