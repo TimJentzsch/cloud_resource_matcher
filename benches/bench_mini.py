@@ -4,7 +4,7 @@ from optiframe import Optimizer, InfeasibleError
 from optiframe.framework import InitializedOptimizer
 from pulp import LpMinimize, PULP_CBC_CMD
 
-from benches.utils import print_result, generate_base_data
+from benches.utils import print_result, generate_base_data, get_solver_from_args
 from optimizer.packages.base import base_package
 
 
@@ -26,9 +26,10 @@ def bench() -> None:
 
 def bench_instance(params: BenchParams) -> None:
     optimizer = get_optimizer(params)
+    solver = get_solver_from_args()
 
     try:
-        solution = optimizer.print_mip_and_solve(PULP_CBC_CMD(msg=False))
+        solution = optimizer.print_mip_and_solve(solver=solver)
         print_result(f"{params}", solution)
     except InfeasibleError:
         print(f"- {params}  INFEASIBLE")
