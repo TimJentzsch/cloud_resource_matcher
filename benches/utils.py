@@ -4,7 +4,9 @@ from optiframe import StepData
 from optiframe.framework import ModelSize, StepTimes
 
 from optimizer.packages.base import BaseData
+from optimizer.packages.base.data import CloudService, CloudResource
 from optimizer.packages.network import NetworkData
+from optimizer.packages.network.data import Location
 
 
 def print_result(instance: str, solution: StepData) -> None:
@@ -40,7 +42,7 @@ def generate_base_data(cr_count: int, cs_count: int, cs_count_per_cr: int) -> Ba
     cr_to_cs_list = dict()
 
     for cr_num, cr in enumerate(cloud_resources):
-        cs_list = set()
+        cs_list: set[CloudService] = set()
 
         for i in range(cs_count_per_cr):
             idx = (i * 119428 + 3 * cr_num + 83) % cs_count
@@ -84,10 +86,10 @@ def generate_network_data(
     cr_to_cr_connections: int,
 ) -> NetworkData:
     locations = set(f"loc_{loc}" for loc in range(loc_count))
-    cr_and_loc_to_traffic = dict()
-    cr_and_loc_to_max_latency = dict()
-    cr_and_cr_to_traffic = dict()
-    cr_and_cr_to_max_latency = dict()
+    cr_and_loc_to_traffic: dict[tuple[CloudResource, Location], int] = dict()
+    cr_and_loc_to_max_latency: dict[tuple[CloudResource, Location], int] = dict()
+    cr_and_cr_to_traffic: dict[tuple[CloudResource, Location], int] = dict()
+    cr_and_cr_to_max_latency: dict[tuple[CloudResource, CloudResource], int] = dict()
 
     for i in range(cr_to_loc_connections):
         cr = (i * 1239 + i) % cr_count

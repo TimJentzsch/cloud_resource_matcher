@@ -5,7 +5,7 @@ from optiframe.framework import InitializedOptimizer
 from pulp import LpMinimize, PULP_CBC_CMD
 
 from benches.utils import print_result, generate_base_data
-from optimizer.packages.base import BaseData, base_package
+from optimizer.packages.base import base_package
 
 
 class BenchParams(TypedDict):

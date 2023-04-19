@@ -5,7 +5,7 @@ from optiframe.framework import InitializedOptimizer
 from pulp import LpMinimize, PULP_CBC_CMD
 
 from benches.utils import print_result, generate_base_data
-from optimizer.packages.base import BaseData, base_package
+from optimizer.packages.base import base_package
 
 
 class BenchParams(TypedDict):
@@ -20,7 +20,7 @@ def bench() -> None:
 
     print("\n-----\n")
 
-    params: BenchParams = {"cr_count": 3, "cs_count": 7, "cs_count_per_cr": 5}
+    params = {"cr_count": 3, "cs_count": 7, "cs_count_per_cr": 5}
     bench_instance(params)
 
 
