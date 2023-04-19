@@ -33,7 +33,7 @@ def bench() -> None:
 
 
 def bench_cr_count() -> None:
-    cr_counts = [10, 25, 50, 100, 200, 500, 1000]
+    cr_counts = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
 
     for cr_count in cr_counts:
         params: BenchParams = {**DEFAULT_PARAMS, "cr_count": cr_count}  # type: ignore
@@ -41,19 +41,19 @@ def bench_cr_count() -> None:
 
 
 def bench_cs_count() -> None:
-    cs_counts = [10, 25, 50, 100, 200, 500, 1000]
+    cs_counts = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
 
     for cs_count in cs_counts:
         params: BenchParams = {
             **DEFAULT_PARAMS,  # type: ignore
             "cs_count": cs_count,
-            "cs_count_per_cr": cs_count,
+            "cs_count_per_cr": 100,
         }
         bench_instance(params)
 
 
 def bench_cs_count_per_cr() -> None:
-    cs_count_per_crs = [10, 25, 50, 100, 200, 500, 1000]
+    cs_count_per_crs = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
 
     for cs_count_per_cr in cs_count_per_crs:
         params: BenchParams = {**DEFAULT_PARAMS, "cs_count_per_cr": cs_count_per_cr}  # type: ignore
