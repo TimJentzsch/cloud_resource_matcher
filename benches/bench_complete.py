@@ -4,7 +4,7 @@ from optiframe import Optimizer, InfeasibleError
 from optiframe.framework import InitializedOptimizer
 from pulp import LpMinimize, PULP_CBC_CMD
 
-from benches.utils import print_result
+from benches.utils import print_result, generate_base_data
 from optimizer.packages.base import BaseData, base_package
 from optimizer.packages.multi_cloud import MultiCloudData, multi_cloud_package
 from optimizer.packages.network import NetworkData, network_package
@@ -71,7 +71,7 @@ def bench_cs_count() -> None:
         params: BenchParams = {
             **DEFAULT_PARAMS,  # type: ignore
             "cs_count": cs_count,
-            "cs_count_per_cr": cs_count
+            "cs_count_per_cr": cs_count,
         }
         bench_instance(params)
 
@@ -121,7 +121,7 @@ def bench_cr_to_cr_connections() -> None:
     for cr_to_cr_connections in cr_to_cr_connections_list:
         params: BenchParams = {
             **DEFAULT_PARAMS,  # type: ignore
-            "cr_to_cr_connections": cr_to_cr_connections
+            "cr_to_cr_connections": cr_to_cr_connections,
         }
         bench_instance(params)
 
@@ -145,22 +145,7 @@ def get_optimizer(params: BenchParams) -> InitializedOptimizer:
     cr_to_loc_connections = params["cr_to_loc_connections"]
     cr_to_cr_connections = params["cr_to_cr_connections"]
 
-    base_data = BaseData(
-        cloud_resources=[f"cr_{cr}" for cr in range(cr_count)],
-        cloud_services=[f"cs_{cs}" for cs in range(cs_count)],
-        cs_to_base_cost={
-            f"cs_{cs}": cs % 100 + (cs % 20) * (cs % 5) + 10 for cs in range(cs_count)
-        },
-        cr_to_cs_list={
-            f"cr_{cr}": [
-                f"cs_{cs}"
-                for cs in range(cs_count)
-                if ((cr + cs) % (cs_count / cs_count_per_cr)) == 0
-            ]
-            for cr in range(cr_count)
-        },
-        cr_to_instance_demand={f"cr_{cr}": (cr % 4) * 250 + 1 for cr in range(cr_count)},
-    )
+    base_data = generate_base_data(cr_count, cs_count, cs_count_per_cr)
 
     multi_data = MultiCloudData(
         cloud_service_providers=[f"csp_{csp}" for csp in range(csp_count)],
