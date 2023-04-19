@@ -4,7 +4,7 @@ from optiframe import Optimizer, InfeasibleError
 from optiframe.framework import InitializedOptimizer
 from pulp import LpMinimize, PULP_CBC_CMD
 
-from benches.utils import print_result, generate_base_data
+from benches.utils import print_result, generate_base_data, generate_network_data
 from optimizer.packages.base import BaseData, base_package
 from optimizer.packages.multi_cloud import MultiCloudData, multi_cloud_package
 from optimizer.packages.network import NetworkData, network_package
@@ -158,43 +158,8 @@ def get_optimizer(params: BenchParams) -> InitializedOptimizer:
         csp_to_cost={f"csp_{csp}": csp * 10_000 for csp in range(csp_count)},
     )
 
-    locations = set(f"loc_{loc}" for loc in range(loc_count))
-    cr_and_loc_to_traffic = dict()
-    cr_and_loc_to_max_latency = dict()
-    cr_and_cr_to_traffic = dict()
-    cr_and_cr_to_max_latency = dict()
-
-    for i in range(cr_to_loc_connections):
-        cr = (i * 1239 + i) % cr_count
-        loc = (i * 912 + 32) % loc_count
-
-        cr_and_loc_to_traffic[(f"cr_{cr}", f"loc_{loc}")] = abs(loc - cr)
-        cr_and_loc_to_max_latency[(f"cr_{cr}", f"loc_{loc}")] = abs(cr - loc) % 40 + 5
-
-    for i in range(cr_to_cr_connections):
-        cr1 = (i * 2234 + i) % cr_count
-        cr2 = (i * i + 5 * i + 992) % cr_count
-
-        cr_and_cr_to_traffic[(f"cr_{cr1}", f"cr_{cr2}")] = (cr1 + cr2 + i) % 500
-        cr_and_cr_to_max_latency[(f"cr_{cr1}", f"cr_{cr2}")] = abs(cr2 - cr1 + i) % 50 + 5
-
-    network_data = NetworkData(
-        locations=locations,
-        cs_to_loc={f"cs_{cs}": f"loc_{cs % loc_count}" for cs in range(cs_count)},
-        loc_and_loc_to_latency={
-            (f"loc_{loc1}", f"loc_{loc2}"): abs(loc2 - loc1) % 40
-            for loc1 in range(loc_count)
-            for loc2 in range(loc_count)
-        },
-        loc_and_loc_to_cost={
-            (f"loc_{loc1}", f"loc_{loc2}"): 0 if loc1 == loc2 else (loc1 + loc2 * 2) % 20 + 5
-            for loc1 in range(loc_count)
-            for loc2 in range(loc_count)
-        },
-        cr_and_loc_to_traffic=cr_and_loc_to_traffic,
-        cr_and_loc_to_max_latency=cr_and_loc_to_max_latency,
-        cr_and_cr_to_max_latency=cr_and_cr_to_max_latency,
-        cr_and_cr_to_traffic=cr_and_cr_to_traffic,
+    network_data = generate_network_data(
+        cr_count, cs_count, loc_count, cr_to_loc_connections, cr_to_cr_connections
     )
 
     return (
