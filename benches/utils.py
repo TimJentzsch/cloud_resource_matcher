@@ -1,4 +1,5 @@
 from datetime import timedelta
+from typing import Any
 
 from optiframe import StepData
 from optiframe.framework import ModelSize, StepTimes
@@ -7,6 +8,34 @@ from optimizer.packages.base import BaseData
 from optimizer.packages.base.data import CloudService, CloudResource
 from optimizer.packages.network import NetworkData
 from optimizer.packages.network.data import Location
+from optimizer.solver import get_pulp_solver, Solver
+
+
+def get_solver_from_args() -> Any:
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Benchmark the optimizer.")
+    parser.add_argument(
+        "--solver",
+        choices=["cbc", "gurobi", "scip", "fscip"],
+        default="cbc",
+        help="The solver to use to solve the mixed-integer program.",
+    )
+
+    args = parser.parse_args()
+
+    if args.solver == "cbc":
+        solver = Solver.CBC
+    elif args.solver == "gurobi":
+        solver = Solver.GUROBI
+    elif args.solver == "scip":
+        solver = Solver.SCIP
+    elif args.solver == "fscip":
+        solver = Solver.FSCIP
+    else:
+        raise RuntimeError(f"Unsupported solver {args.solver}")
+
+    return get_pulp_solver(solver=solver, msg=False)
 
 
 def print_result(instance: str, solution: StepData) -> None:

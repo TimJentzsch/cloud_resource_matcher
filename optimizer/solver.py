@@ -31,11 +31,12 @@ def get_pulp_solver(
     time_limit: Optional[timedelta] = None,
     cost_gap_abs: Optional[Cost] = None,
     cost_gap_rel: Optional[float] = None,
+    msg: bool = True,
 ) -> Any:
     """Get the corresponding pulp solver for the solver type."""
     time_limit_sec = None if time_limit is None else time_limit.total_seconds()
 
-    base_params = dict(timeLimit=time_limit_sec, gapAbs=cost_gap_abs, gapRel=cost_gap_rel)
+    base_params = dict(timeLimit=time_limit_sec, gapAbs=cost_gap_abs, gapRel=cost_gap_rel, msg=msg)
 
     if solver == Solver.CBC:
         return pulp.PULP_CBC_CMD(**base_params)

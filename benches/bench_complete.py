@@ -2,9 +2,14 @@ from typing import TypedDict
 
 from optiframe import Optimizer, InfeasibleError
 from optiframe.framework import InitializedOptimizer
-from pulp import LpMinimize, PULP_CBC_CMD
+from pulp import LpMinimize
 
-from benches.utils import print_result, generate_base_data, generate_network_data
+from benches.utils import (
+    print_result,
+    generate_base_data,
+    generate_network_data,
+    get_solver_from_args,
+)
 from optimizer.packages.base import base_package
 from optimizer.packages.multi_cloud import MultiCloudData, multi_cloud_package
 from optimizer.packages.network import network_package
@@ -128,9 +133,10 @@ def bench_cr_to_cr_connections() -> None:
 
 def bench_instance(params: BenchParams) -> None:
     optimizer = get_optimizer(params)
+    solver = get_solver_from_args()
 
     try:
-        solution = optimizer.solve(PULP_CBC_CMD(msg=False))
+        solution = optimizer.solve(solver=solver)
         print_result(f"{params}", solution)
     except InfeasibleError:
         print(f"- {params}  INFEASIBLE")

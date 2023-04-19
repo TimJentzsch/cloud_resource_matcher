@@ -2,9 +2,9 @@ from typing import TypedDict
 
 from optiframe import Optimizer, InfeasibleError
 from optiframe.framework import InitializedOptimizer
-from pulp import LpMinimize, PULP_CBC_CMD
+from pulp import LpMinimize
 
-from benches.utils import print_result, generate_base_data
+from benches.utils import print_result, generate_base_data, get_solver_from_args
 from optimizer.packages.base import base_package
 
 
@@ -62,9 +62,10 @@ def bench_cs_count_per_cr() -> None:
 
 def bench_instance(params: BenchParams) -> None:
     optimizer = get_optimizer(params)
+    solver = get_solver_from_args()
 
     try:
-        solution = optimizer.solve(PULP_CBC_CMD(msg=False))
+        solution = optimizer.solve(solver=solver)
         print_result(f"{params}", solution)
     except InfeasibleError:
         print(f"- {params}  INFEASIBLE")
