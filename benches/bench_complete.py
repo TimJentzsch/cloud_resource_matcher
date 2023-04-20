@@ -37,6 +37,15 @@ DEFAULT_PARAMS: BenchParams = {
 
 
 def bench() -> None:
+    print("\n\n=== CR_COUNT ===")
+    bench_cr_count()
+
+    print("\n\n=== CS_COUNT ===")
+    bench_cs_count()
+
+    print("\n\n=== CS_COUNT_PER_CR ===")
+    bench_cs_count_per_cr()
+
     print("\n\n=== CSP_COUNT ===")
     bench_csp_count()
 
@@ -48,15 +57,6 @@ def bench() -> None:
 
     print("\n\n=== CR_TO_CR_CONNECTIONS ===")
     bench_cr_to_cr_connections()
-
-    print("\n\n=== CR_COUNT ===")
-    bench_cr_count()
-
-    print("\n\n=== CS_COUNT ===")
-    bench_cs_count()
-
-    print("\n\n=== CS_COUNT_PER_CR ===")
-    bench_cs_count_per_cr()
 
 
 def bench_cr_count() -> None:
