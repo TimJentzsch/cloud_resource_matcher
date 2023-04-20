@@ -26,17 +26,26 @@ class BenchParams(TypedDict):
 
 
 DEFAULT_PARAMS: BenchParams = {
-    "cr_count": 50,
-    "cs_count": 250,
-    "cs_count_per_cr": 50,
-    "csp_count": 2,
-    "loc_count": 10,
-    "cr_to_loc_connections": 5,
-    "cr_to_cr_connections": 1,
+    "cr_count": 500,
+    "cs_count": 500,
+    "cs_count_per_cr": 200,
+    "csp_count": 3,
+    "loc_count": 500,
+    "cr_to_loc_connections": 40,
+    "cr_to_cr_connections": 10,
 }
 
 
 def bench() -> None:
+    print("\n\n=== CR_COUNT ===")
+    bench_cr_count()
+
+    print("\n\n=== CS_COUNT ===")
+    bench_cs_count()
+
+    print("\n\n=== CS_COUNT_PER_CR ===")
+    bench_cs_count_per_cr()
+
     print("\n\n=== CSP_COUNT ===")
     bench_csp_count()
 
@@ -49,18 +58,9 @@ def bench() -> None:
     print("\n\n=== CR_TO_CR_CONNECTIONS ===")
     bench_cr_to_cr_connections()
 
-    print("\n\n=== CR_COUNT ===")
-    bench_cr_count()
-
-    print("\n\n=== CS_COUNT ===")
-    bench_cs_count()
-
-    print("\n\n=== CS_COUNT_PER_CR ===")
-    bench_cs_count_per_cr()
-
 
 def bench_cr_count() -> None:
-    cr_counts = [10, 25, 50, 100, 200, 500]
+    cr_counts = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
 
     for cr_count in cr_counts:
         # misc: ignore
@@ -69,7 +69,7 @@ def bench_cr_count() -> None:
 
 
 def bench_cs_count() -> None:
-    cs_counts = [10, 25, 50, 100, 200, 500]
+    cs_counts = [200, 300, 400, 500, 600, 700, 800, 900, 1000]
 
     for cs_count in cs_counts:
         # misc: ignore
@@ -82,7 +82,7 @@ def bench_cs_count() -> None:
 
 
 def bench_cs_count_per_cr() -> None:
-    cs_count_per_crs = [10, 25, 50, 100, 200]
+    cs_count_per_crs = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500]
 
     for cs_count_per_cr in cs_count_per_crs:
         # misc: ignore
@@ -91,7 +91,7 @@ def bench_cs_count_per_cr() -> None:
 
 
 def bench_csp_count() -> None:
-    csp_counts = [1, 2, 3, 4]
+    csp_counts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
     for csp_count in csp_counts:
         # misc: ignore
@@ -100,7 +100,7 @@ def bench_csp_count() -> None:
 
 
 def bench_loc_count() -> None:
-    loc_counts = [10, 25, 50, 100, 200]
+    loc_counts = [100, 200, 300, 400, 500, 600, 700, 800, 1000]
 
     for loc_count in loc_counts:
         # misc: ignore
@@ -109,7 +109,7 @@ def bench_loc_count() -> None:
 
 
 def bench_cr_to_loc_connections() -> None:
-    cr_to_loc_connections_list = [0, 10, 25, 50, 100, 200]
+    cr_to_loc_connections_list = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 
     for cr_to_loc_connections in cr_to_loc_connections_list:
         params: BenchParams = {
@@ -121,7 +121,7 @@ def bench_cr_to_loc_connections() -> None:
 
 
 def bench_cr_to_cr_connections() -> None:
-    cr_to_cr_connections_list = [0, 1, 2, 3, 4, 5]
+    cr_to_cr_connections_list = [0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40]
 
     for cr_to_cr_connections in cr_to_cr_connections_list:
         params: BenchParams = {

@@ -116,9 +116,7 @@ def generate_network_data(
 ) -> NetworkData:
     locations = set(f"loc_{loc}" for loc in range(loc_count))
     cr_and_loc_to_traffic: dict[tuple[CloudResource, Location], int] = dict()
-    cr_and_loc_to_max_latency: dict[tuple[CloudResource, Location], int] = dict()
     cr_and_cr_to_traffic: dict[tuple[CloudResource, Location], int] = dict()
-    cr_and_cr_to_max_latency: dict[tuple[CloudResource, CloudResource], int] = dict()
 
     for i in range(cr_to_loc_connections):
         cr = (i * 1239 + i) % cr_count
@@ -130,7 +128,6 @@ def generate_network_data(
             loc = (loc + j + j % 2) % loc_count
 
             cr_and_loc_to_traffic[(f"cr_{cr}", f"loc_{loc}")] = abs(loc - cr)
-            cr_and_loc_to_max_latency[(f"cr_{cr}", f"loc_{loc}")] = abs(cr - loc) % 40 + 5
 
             j += 1
 
@@ -144,7 +141,6 @@ def generate_network_data(
             cr2 = (cr2 + j + j % 2) % cr_count
 
             cr_and_cr_to_traffic[(f"cr_{cr1}", f"cr_{cr2}")] = (cr1 + cr2 + i) % 500
-            cr_and_cr_to_max_latency[(f"cr_{cr1}", f"cr_{cr2}")] = abs(cr2 - cr1 + i) % 50 + 5
 
             j += 1
 
@@ -162,9 +158,10 @@ def generate_network_data(
             for loc2 in range(loc_count)
         },
         cr_and_loc_to_traffic=cr_and_loc_to_traffic,
-        cr_and_loc_to_max_latency=cr_and_loc_to_max_latency,
-        cr_and_cr_to_max_latency=cr_and_cr_to_max_latency,
         cr_and_cr_to_traffic=cr_and_cr_to_traffic,
+        # Max latency only reduces the model size
+        cr_and_loc_to_max_latency=dict(),
+        cr_and_cr_to_max_latency=dict(),
     )
 
     assert len(locations) == loc_count, f"loc_count {len(locations)} != {loc_count}"
