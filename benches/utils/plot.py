@@ -48,4 +48,5 @@ def plot_results(variation_name: str, param_values: list[int], solutions: list[S
     ax.legend(handles=[size_plot, time_plot])
 
     # Save the plot
-    fig.savefig(f"benches/output/{variation_name}.png")
+    fig.savefig(f"benches/output/png/{variation_name}.png")
+    fig.savefig(f"benches/output/pdf/{variation_name}.pdf")
