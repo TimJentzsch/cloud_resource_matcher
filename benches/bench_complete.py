@@ -1,28 +1,17 @@
-from typing import TypedDict
+from typing import Any
 
-from optiframe import Optimizer, InfeasibleError
+from optiframe import Optimizer
 from optiframe.framework import InitializedOptimizer
 from pulp import LpMinimize
 
-from benches.utils.cli import get_solver_from_args
+from benches.utils import run_benchmark
 from benches.utils.data_generation import generate_network_data, generate_base_data
-from benches.utils.formatting import print_result
 from optimizer.packages.base import base_package
 from optimizer.packages.multi_cloud import MultiCloudData, multi_cloud_package
 from optimizer.packages.network import network_package
 
 
-class BenchParams(TypedDict):
-    cr_count: int
-    cs_count: int
-    cs_count_per_cr: int
-    csp_count: int
-    loc_count: int
-    cr_to_loc_connections: int
-    cr_to_cr_connections: int
-
-
-DEFAULT_PARAMS: BenchParams = {
+DEFAULT_PARAMS = {
     "cr_count": 500,
     "cs_count": 500,
     "cs_count_per_cr": 200,
@@ -57,88 +46,76 @@ def bench() -> None:
 
 
 def bench_cr_count() -> None:
-    cr_counts = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
-
-    for cr_count in cr_counts:
-        # misc: ignore
-        params: BenchParams = {**DEFAULT_PARAMS, "cr_count": cr_count}  # type: ignore
-        bench_instance(params)
+    run_benchmark(
+        "cloud resource count",
+        "cr_count",
+        [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
+        DEFAULT_PARAMS,
+        get_optimizer_fn=get_optimizer,
+    )
 
 
 def bench_cs_count() -> None:
-    cs_counts = [200, 300, 400, 500, 600, 700, 800, 900, 1000]
-
-    for cs_count in cs_counts:
-        # misc: ignore
-        params: BenchParams = {
-            **DEFAULT_PARAMS,  # type: ignore
-            "cs_count": cs_count,
-        }
-        bench_instance(params)
+    run_benchmark(
+        "cloud service count",
+        "cs_count",
+        [200, 300, 400, 500, 600, 700, 800, 900, 1000],
+        {**DEFAULT_PARAMS},
+        get_optimizer_fn=get_optimizer,
+    )
 
 
 def bench_cs_count_per_cr() -> None:
-    cs_count_per_crs = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500]
-
-    for cs_count_per_cr in cs_count_per_crs:
-        # misc: ignore
-        params: BenchParams = {**DEFAULT_PARAMS, "cs_count_per_cr": cs_count_per_cr}  # type: ignore
-        bench_instance(params)
+    run_benchmark(
+        "count of applicable cloud services per cloud resource",
+        "cs_count_per_cr",
+        [50, 100, 150, 200, 250, 300, 350, 400, 450, 500],
+        DEFAULT_PARAMS,
+        get_optimizer_fn=get_optimizer,
+    )
 
 
 def bench_csp_count() -> None:
-    csp_counts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-
-    for csp_count in csp_counts:
-        # misc: ignore
-        params: BenchParams = {**DEFAULT_PARAMS, "csp_count": csp_count}  # type: ignore
-        bench_instance(params)
+    run_benchmark(
+        "cloud service provider count",
+        "csp_count",
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        DEFAULT_PARAMS,
+        get_optimizer_fn=get_optimizer,
+    )
 
 
 def bench_loc_count() -> None:
-    loc_counts = [100, 200, 300, 400, 500, 600, 700, 800, 1000]
-
-    for loc_count in loc_counts:
-        # misc: ignore
-        params: BenchParams = {**DEFAULT_PARAMS, "loc_count": loc_count}  # type: ignore
-        bench_instance(params)
+    run_benchmark(
+        "network location count",
+        "csp_count",
+        [100, 200, 300, 400, 500, 600, 700, 800, 1000],
+        DEFAULT_PARAMS,
+        get_optimizer_fn=get_optimizer,
+    )
 
 
 def bench_cr_to_loc_connections() -> None:
-    cr_to_loc_connections_list = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
-
-    for cr_to_loc_connections in cr_to_loc_connections_list:
-        params: BenchParams = {
-            **DEFAULT_PARAMS,  # type: ignore
-            "cr_to_loc_connections": cr_to_loc_connections,
-            "loc_count": max(DEFAULT_PARAMS["loc_count"], cr_to_loc_connections),
-        }
-        bench_instance(params)
+    run_benchmark(
+        "count of connections between CR and a network location",
+        "cr_to_loc_connections",
+        [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+        DEFAULT_PARAMS,
+        get_optimizer_fn=get_optimizer,
+    )
 
 
 def bench_cr_to_cr_connections() -> None:
-    cr_to_cr_connections_list = [0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40]
-
-    for cr_to_cr_connections in cr_to_cr_connections_list:
-        params: BenchParams = {
-            **DEFAULT_PARAMS,  # type: ignore
-            "cr_to_cr_connections": cr_to_cr_connections,
-        }
-        bench_instance(params)
-
-
-def bench_instance(params: BenchParams) -> None:
-    optimizer = get_optimizer(params)
-    solver = get_solver_from_args()
-
-    try:
-        solution = optimizer.solve(solver=solver)
-        print_result(f"{params}", solution)
-    except InfeasibleError:
-        print(f"- {params}  INFEASIBLE")
+    run_benchmark(
+        "count of connections between CR pairs",
+        "cr_to_cr_connections",
+        [0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40],
+        DEFAULT_PARAMS,
+        get_optimizer_fn=get_optimizer,
+    )
 
 
-def get_optimizer(params: BenchParams) -> InitializedOptimizer:
+def get_optimizer(params: dict[str, Any]) -> InitializedOptimizer:
     cr_count = params["cr_count"]
     cs_count = params["cs_count"]
     cs_count_per_cr = params["cs_count_per_cr"]

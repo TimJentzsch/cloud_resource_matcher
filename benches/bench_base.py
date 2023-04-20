@@ -1,4 +1,4 @@
-from typing import TypedDict, Any
+from typing import Any
 
 from optiframe import Optimizer
 from optiframe.framework import InitializedOptimizer
