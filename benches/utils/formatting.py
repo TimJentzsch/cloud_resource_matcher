@@ -1,4 +1,5 @@
-from mypy.typeshed.stdlib.datetime import timedelta
+from datetime import timedelta
+
 from optiframe import StepData
 from optiframe.framework import StepTimes, ModelSize
 
