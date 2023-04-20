@@ -4,7 +4,9 @@ from optiframe import Optimizer, InfeasibleError
 from optiframe.framework import InitializedOptimizer
 from pulp import LpMinimize
 
-from benches.utils import print_result, generate_base_data, get_solver_from_args
+from benches.utils.cli import get_solver_from_args
+from benches.utils.data_generation import generate_base_data
+from benches.utils.formatting import print_result
 from optimizer.packages.base import base_package
 
 
