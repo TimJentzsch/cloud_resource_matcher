@@ -76,7 +76,6 @@ def bench_cs_count() -> None:
         params: BenchParams = {
             **DEFAULT_PARAMS,  # type: ignore
             "cs_count": cs_count,
-            "cs_count_per_cr": cs_count,
         }
         bench_instance(params)
 
