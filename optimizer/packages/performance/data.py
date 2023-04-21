@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
-from optimizer.packages.base.data import CloudService, CloudResource
-
+from optimizer.packages.base.data import CloudService, CloudResource, Cost
 
 PerformanceCriterion = str
 
@@ -18,3 +17,9 @@ class PerformanceData:
     # The supply a CS has of a given performance criterion
     # E.g. the number of vCPUs a CS offers
     performance_supply: dict[tuple[CloudService, PerformanceCriterion], int]
+
+    # The cost of a performance criterion for a cloud service.
+    # The cost is given per unit used by the cloud resources.
+    # The cost is further multiplied by the instance demand of the cloud resource.
+    # If no cost is defined, `0` is assumed.
+    cost_per_unit: dict[tuple[CloudService, PerformanceCriterion], Cost]

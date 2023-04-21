@@ -28,6 +28,7 @@ def test_with_sufficient_resources() -> None:
             performance_criteria=["vCPU", "RAM"],
             performance_demand={("cr_0", "vCPU"): 8, ("cr_0", "RAM"): 3},
             performance_supply={("cs_0", "vCPU"): 8, ("cs_0", "RAM"): 4},
+            cost_per_unit={},
         ),
     )
 
@@ -48,6 +49,7 @@ def test_with_insufficient_performance() -> None:
             performance_criteria=["vCPU", "RAM"],
             performance_demand={("cr_0", "vCPU"): 8, ("cr_0", "RAM"): 3},
             performance_supply={("cs_0", "vCPU"): 8, ("cs_0", "RAM"): 2},
+            cost_per_unit={},
         ),
     )
 
@@ -83,6 +85,7 @@ def test_resource_matching() -> None:
                 performance_criteria=["RAM"],
                 performance_demand={(f"cr_{cr}", "RAM"): cr for cr in range(count)},
                 performance_supply={(f"cs_{cs}", "RAM"): cs for cs in range(count)},
+                cost_per_unit={},
             ),
             ServiceLimitsData(
                 cs_to_instance_limit={f"cs_{cs}": 1 for cs in range(count)},
@@ -111,6 +114,7 @@ def test_cheap_insufficient_cs() -> None:
             performance_criteria=["RAM"],
             performance_demand={("cr_0", "RAM"): 3},
             performance_supply={("cs_0", "RAM"): 2, ("cs_1", "RAM"): 3},
+            cost_per_unit={},
         ),
     )
 
@@ -136,6 +140,7 @@ def test_allowed_incomplete_data() -> None:
             performance_criteria=["RAM"],
             performance_demand={},
             performance_supply={("cs_0", "RAM"): 1},
+            cost_per_unit={},
         ),
     )
 
@@ -156,6 +161,7 @@ def test_should_work_with_higher_cr_and_time_to_instance_demand() -> None:
             performance_criteria=["RAM"],
             performance_demand={("cr_0", "RAM"): 3},
             performance_supply={("cs_0", "RAM"): 3},
+            cost_per_unit={},
         ),
     )
 
@@ -183,6 +189,7 @@ def test_should_be_infeasible_if_not_enough_cs_instances_can_be_bought() -> None
                 performance_criteria=["RAM"],
                 performance_demand={("cr_0", "RAM"): 1},
                 performance_supply={("cs_0", "RAM"): 1},
+                cost_per_unit={},
             ),
             ServiceLimitsData(
                 cs_to_instance_limit={"cs_0": 1}, cr_to_max_instance_demand={"cr_0": 2}
@@ -191,3 +198,25 @@ def test_should_be_infeasible_if_not_enough_cs_instances_can_be_bought() -> None
     )
 
     Expect(optimizer).to_be_infeasible().test()
+
+
+def test_should_include_performance_cost_in_objective() -> None:
+    """One performance criterion has a cost which must be included in the objective."""
+    optimizer = OPTIMIZER.initialize(
+        BaseData(
+            cloud_resources=["cr_0"],
+            cloud_services=["cs_0"],
+            cr_to_cs_list={"cr_0": ["cs_0"]},
+            cs_to_base_cost={"cs_0": 1},
+            cr_to_instance_demand={"cr_0": 5},
+        ),
+        PerformanceData(
+            performance_criteria=["RAM"],
+            performance_demand={("cr_0", "RAM"): 2},
+            performance_supply={("cs_0", "RAM"): 5},
+            cost_per_unit={("cs_0", "RAM"): 3},
+        ),
+    )
+
+    # 5 * 1 from the base cost and 5 * 2 * 3 = 30 for the performance cost
+    Expect(optimizer).to_be_feasible().with_cost(35).test()

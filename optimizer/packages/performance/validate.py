@@ -45,3 +45,10 @@ class ValidatePerformanceTask(ValidateTask):
                 ) in self.performance_data.performance_supply.keys(), (
                     f"CS {cs} does not have its supply for {pc} defined"
                 )
+
+        # Validate cost_per_unit
+        for (cs, pc) in self.performance_data.cost_per_unit.keys():
+            assert cs in self.base_data.cloud_services, f"{cs} in cost_per_unit is not a valid CS"
+            assert (
+                pc in self.performance_data.performance_criteria
+            ), f"{pc} in cost_per_unit is not a valid performance criterion"

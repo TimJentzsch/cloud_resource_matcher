@@ -53,6 +53,7 @@ def solve_demo_model(
             **{(f"cs_{cs}", "vCPUs"): (cs + 4) % 30 + 5 for cs in range(cs_count)},
             **{(f"cs_{cs}", "RAM"): cs % 23 + 1 for cs in range(cs_count)},
         },
+        cost_per_unit={(f"cs_{cs}", "RAM"): cs % 5 for cs in range(cs_count)},
     )
 
     multi_data = MultiCloudData(
