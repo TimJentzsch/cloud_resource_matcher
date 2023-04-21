@@ -1,65 +1,6 @@
-from datetime import timedelta
-from typing import Any
-
-from optiframe import StepData
-from optiframe.framework import ModelSize, StepTimes
-
-from optimizer.packages.base import BaseData
-from optimizer.packages.base.data import CloudService, CloudResource
+from optimizer.packages.base.data import CloudService, BaseData, CloudResource
 from optimizer.packages.network import NetworkData
 from optimizer.packages.network.data import Location
-from optimizer.solver import get_pulp_solver, Solver
-
-
-def get_solver_from_args() -> Any:
-    import argparse
-
-    parser = argparse.ArgumentParser(description="Benchmark the optimizer.")
-    parser.add_argument(
-        "--solver",
-        choices=["cbc", "gurobi", "scip", "fscip"],
-        default="cbc",
-        help="The solver to use to solve the mixed-integer program.",
-    )
-
-    args = parser.parse_args()
-
-    if args.solver == "cbc":
-        solver = Solver.CBC
-    elif args.solver == "gurobi":
-        solver = Solver.GUROBI
-    elif args.solver == "scip":
-        solver = Solver.SCIP
-    elif args.solver == "fscip":
-        solver = Solver.FSCIP
-    else:
-        raise RuntimeError(f"Unsupported solver {args.solver}")
-
-    return get_pulp_solver(solver=solver, msg=False)
-
-
-def print_result(instance: str, solution: StepData) -> None:
-    model_size: ModelSize = solution[ModelSize]
-    step_times: StepTimes = solution[StepTimes]
-
-    step_time_list = [
-        (step_times.validate, "vd"),
-        (step_times.pre_processing, "pp"),
-        (step_times.build_mip, "bm"),
-        (step_times.solve, "sv"),
-        (step_times.extract_solution, "es"),
-    ]
-
-    total_time = sum((time for time, _ in step_time_list), timedelta())
-    step_time_str = " -> ".join(f"{name} {format_time(time)}" for time, name in step_time_list)
-
-    print(f"- {instance}")
-    print(f"    model_size: {model_size.variable_count:,} x {model_size.constraint_count:,}")
-    print(f"    time: {format_time(total_time)} ({step_time_str})")
-
-
-def format_time(time: timedelta) -> str:
-    return f"{time.total_seconds():.3f}s"
 
 
 def generate_base_data(cr_count: int, cs_count: int, cs_count_per_cr: int) -> BaseData:
