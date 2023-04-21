@@ -198,3 +198,25 @@ def test_should_be_infeasible_if_not_enough_cs_instances_can_be_bought() -> None
     )
 
     Expect(optimizer).to_be_infeasible().test()
+
+
+def test_should_include_performance_cost_in_objective() -> None:
+    """One performance criterion has a cost which must be included in the objective."""
+    optimizer = OPTIMIZER.initialize(
+        BaseData(
+            cloud_resources=["cr_0"],
+            cloud_services=["cs_0"],
+            cr_to_cs_list={"cr_0": ["cs_0"]},
+            cs_to_base_cost={"cs_0": 1},
+            cr_to_instance_demand={"cr_0": 5},
+        ),
+        PerformanceData(
+            performance_criteria=["RAM"],
+            performance_demand={("cr_0", "RAM"): 2},
+            performance_supply={("cs_0", "RAM"): 5},
+            cost_per_unit={("cs_0", "RAM"): 3},
+        ),
+    )
+
+    # 5 * 1 from the base cost and 5 * 2 * 3 = 30 for the performance cost
+    Expect(optimizer).to_be_feasible().with_cost(35).test()
