@@ -30,6 +30,7 @@ def plot_results(variation_name: str, param_values: list[int], solutions: list[S
         marker="o",
         linewidth=LINE_WIDTH,
     )
+    ax.set_ylim(bottom=0)
     ax.set_ylabel("model size")
 
     # Optimization time plot
@@ -42,6 +43,7 @@ def plot_results(variation_name: str, param_values: list[int], solutions: list[S
         marker="v",
         linewidth=LINE_WIDTH,
     )
+    ax2.set_ylim(bottom=0)
     ax2.set_ylabel("total optimization time (s)")
 
     # Legend

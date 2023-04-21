@@ -23,6 +23,9 @@ DEFAULT_PARAMS = {
 
 
 def bench() -> None:
+    print("\n\n=== CR_TO_CR_CONNECTIONS ===")
+    bench_cr_to_cr_connections()
+
     print("\n\n=== CR_COUNT ===")
     bench_cr_count()
 
@@ -40,9 +43,6 @@ def bench() -> None:
 
     print("\n\n=== CR_TO_LOC_CONNECTIONS ===")
     bench_cr_to_loc_connections()
-
-    print("\n\n=== CR_TO_CR_CONNECTIONS ===")
-    bench_cr_to_cr_connections()
 
 
 def bench_cr_count() -> None:
@@ -69,7 +69,7 @@ def bench_cs_count_per_cr() -> None:
     run_benchmark(
         "count of applicable cloud services per cloud resource",
         "cs_count_per_cr",
-        [50, 100, 150, 200, 250, 300, 350, 400, 450, 500],
+        [50, 100, 150, 200, 250, 300, 350, 400],
         DEFAULT_PARAMS,
         get_optimizer_fn=get_optimizer,
     )
@@ -88,7 +88,7 @@ def bench_csp_count() -> None:
 def bench_loc_count() -> None:
     run_benchmark(
         "network location count",
-        "csp_count",
+        "loc_count",
         [100, 200, 300, 400, 500, 600, 700, 800, 1000],
         DEFAULT_PARAMS,
         get_optimizer_fn=get_optimizer,
@@ -109,7 +109,7 @@ def bench_cr_to_cr_connections() -> None:
     run_benchmark(
         "count of connections between CR pairs",
         "cr_to_cr_connections",
-        [0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40],
+        [0, 4, 8, 12, 16, 20, 24, 28, 32, 36],
         DEFAULT_PARAMS,
         get_optimizer_fn=get_optimizer,
     )
