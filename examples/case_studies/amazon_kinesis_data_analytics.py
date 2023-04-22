@@ -124,5 +124,5 @@ def pricing_example_2() -> None:
 
 if __name__ == "__main__":
     pricing_example_1()
-    print("\n")
+    print()
     pricing_example_2()

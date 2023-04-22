@@ -17,6 +17,48 @@ OPTIMIZER = (
 )
 
 
+def ephemeral_storage_pricing_example_1() -> None:
+    """Mobile application backend."""
+    print("EPHEMERAL STORAGE PRICING EXAMPLE 1")
+
+    solution = OPTIMIZER.initialize(
+        BaseData(
+            cloud_resources=["food_order"],
+            cloud_services=["aws_lambda_us_east"],
+            cr_to_cs_list={"food_order": ["aws_lambda_us_east"]},
+            # 3 million requests
+            cr_to_instance_demand={"food_order": 3_000_000},
+            # The cost is entirely usage-based
+            cs_to_base_cost={"aws_lambda_us_east": 0},
+        ),
+        PerformanceData(
+            performance_criteria=["compute", "requests"],
+            performance_demand={
+                # 0.120s * 1536MB/1024MB
+                ("food_order", "compute"): 0.120 * (1536 / 1024),
+                # 1 request per message
+                ("food_order", "requests"): 1,
+            },
+            # Available resources virtually unbounded
+            performance_supply={
+                ("aws_lambda_us_east", "requests"): sys.maxsize,
+                ("aws_lambda_us_east", "compute"): sys.maxsize,
+            },
+            cost_per_unit={
+                # $0.20/million
+                ("aws_lambda_us_east", "requests"): 0.20 / 1_000_000,
+                # $0.0000166667/GB-s
+                ("aws_lambda_us_east", "compute"): 0.0000166667,
+            },
+        ),
+    ).solve(pulp.PULP_CBC_CMD(msg=False))
+
+    cost = solution[SolutionObjValue].objective_value
+    print(f"- Total Charges: ${cost:.2f}")
+    # 400,000 GB-s included in free tier not handled yet
+    # assert abs(cost - 2.73) < 0.01
+
+
 def ephemeral_storage_pricing_example_2() -> None:
     """Enriching streaming telemetry with additional metadata."""
     print("EPHEMERAL STORAGE PRICING EXAMPLE 2")
@@ -59,4 +101,6 @@ def ephemeral_storage_pricing_example_2() -> None:
 
 
 if __name__ == "__main__":
+    ephemeral_storage_pricing_example_1()
+    print()
     ephemeral_storage_pricing_example_2()
