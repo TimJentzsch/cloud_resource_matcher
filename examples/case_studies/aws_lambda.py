@@ -11,9 +11,7 @@ from optimizer.packages.base import base_package, BaseData
 from optimizer.packages.performance import performance_package, PerformanceData
 
 OPTIMIZER = (
-    Optimizer("aws_lambda", LpMinimize)
-    .add_package(base_package)
-    .add_package(performance_package)
+    Optimizer("aws_lambda", LpMinimize).add_package(base_package).add_package(performance_package)
 )
 
 
