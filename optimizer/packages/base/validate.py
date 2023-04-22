@@ -34,14 +34,14 @@ class ValidateBaseTask(ValidateTask):
             assert cs in self.base_data.cloud_services, f"{cs} in cs_to_base_cost is not a valid CS"
             assert cost >= 0, f"Cost {cost} for CS {cs} is negative"
 
-        # Validate cr_and_time_to_instance_demand
-        for cr in self.base_data.cloud_resources:
-            assert (
-                cr in self.base_data.cr_to_instance_demand.keys()
-            ), f"No demand defined for CR {cr}"
-
+        # Validate cr_to_instance_demand
         for cr, demand in self.base_data.cr_to_instance_demand.items():
             assert (
                 cr in self.base_data.cloud_resources
             ), f"{cr} in cr_and_time_to_instance_demand is not a valid CR"
             assert demand >= 0, f"Demand {demand} for CR {cr} is negative"
+
+        for cr in self.base_data.cloud_resources:
+            assert (
+                cr in self.base_data.cr_to_instance_demand.keys()
+            ), f"No demand defined for CR {cr}"
