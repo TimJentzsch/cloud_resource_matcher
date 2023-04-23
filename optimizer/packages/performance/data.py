@@ -12,11 +12,11 @@ class PerformanceData:
 
     # The demand a VM has for a given performance criterion
     # E.g. the number of vCPUs a VM needs to execute its workflows
-    performance_demand: dict[tuple[CloudResource, PerformanceCriterion], int]
+    performance_demand: dict[tuple[CloudResource, PerformanceCriterion], float]
 
     # The supply a CS has of a given performance criterion
     # E.g. the number of vCPUs a CS offers
-    performance_supply: dict[tuple[CloudService, PerformanceCriterion], int]
+    performance_supply: dict[tuple[CloudService, PerformanceCriterion], float]
 
     # The cost of a performance criterion for a cloud service.
     # The cost is given per unit used by the cloud resources.
