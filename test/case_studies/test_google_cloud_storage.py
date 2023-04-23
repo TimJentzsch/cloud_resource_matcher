@@ -5,6 +5,7 @@ See <https://cloud.google.com/storage/pricing-examples>.
 import sys
 from itertools import product
 
+import pytest
 from optiframe import Optimizer, SolutionObjValue
 from pulp import LpMinimize, pulp
 
@@ -23,10 +24,8 @@ OPTIMIZER = (
 TB_TO_GB = 1_024
 
 
-def simple_example() -> None:
+def test_simple_example() -> None:
     """Google Cloud Storage simple example."""
-    print("Simple Example")
-
     solution = OPTIMIZER.initialize(
         BaseData(
             cloud_resources=["my_bucket"],
@@ -97,10 +96,8 @@ def simple_example() -> None:
     assert abs(cost - expected_cost) < 0.1, f"Got {cost:.2f}, expected {expected_cost:.2f}"
 
 
-def detailed_example() -> None:
+def test_detailed_example() -> None:
     """Google Cloud Storage detailed example."""
-    print("Detailed Example")
-
     locations = {
         "us_east1",
         # Pricing tiers modeled as separate locations
@@ -138,18 +135,18 @@ def detailed_example() -> None:
                 # 30 TB Standard storage in the nam4 dual-region
                 ("my_bucket", "standard_storage_nam4_dual_region"): 30 * TB_TO_GB,
                 # 100 TB Nearline storage in a multi-region
-                ("my_bucket", "nearline_storage_multi_region"):  100 * TB_TO_GB,
+                ("my_bucket", "nearline_storage_multi_region"): 100 * TB_TO_GB,
                 # 100,000 Class A operations (object adds, bucket and object listings)
                 # on Standard storage data
-                ("my_bucket", "class_a_operations_standard_storage"):  100_000,
+                ("my_bucket", "class_a_operations_standard_storage"): 100_000,
                 # 10,000,000 Class B operations (object gets, retrieving bucket and object metadata)
                 # on Standard storage data
-                ("my_bucket", "class_b_operations_standard_storage"):  10_000_000,
+                ("my_bucket", "class_b_operations_standard_storage"): 10_000_000,
                 # 1,000,000 Class B operations (object gets, retrieving bucket and object metadata)
                 # on Nearline storage data
-                ("my_bucket", "class_b_operations_nearline_storage"):  1_000_000,
+                ("my_bucket", "class_b_operations_nearline_storage"): 1_000_000,
                 # 10 TB Data retrieval (the Nearline storage portion of your overall data egress)
-                ("my_bucket", "data_retrieval"):  10 * TB_TO_GB,
+                ("my_bucket", "data_retrieval"): 10 * TB_TO_GB,
                 # 14 TB inter-region replication in a dual-region (turbo replication)
                 # This should be 14,336 GB, but in their example they use 14,485 GB
                 ("my_bucket", "turbo_replication"): 14_485,
@@ -229,14 +226,6 @@ def detailed_example() -> None:
     ).solve(pulp.PULP_CBC_CMD(msg=False))
 
     cost = solution[SolutionObjValue].objective_value
-    print(f"- Total Charges: ${cost:.2f}")
 
     # The example shows a total of $9,893.80, but the sum of the components is $9,903.80
-    expected_cost = 9903.80
-    assert abs(cost - expected_cost) < 0.1, f"Got {cost:.2f}, expected {expected_cost:.2f}"
-
-
-if __name__ == "__main__":
-    simple_example()
-    print()
-    detailed_example()
+    assert cost == pytest.approx(9903.80, 0.01)

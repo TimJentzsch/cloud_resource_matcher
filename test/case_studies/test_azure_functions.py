@@ -4,6 +4,7 @@ See <https://azure.microsoft.com/en-us/pricing/details/functions/>.
 """
 import sys
 
+import pytest
 from optiframe import Optimizer, SolutionObjValue
 from pulp import LpMinimize, pulp
 
@@ -17,10 +18,9 @@ OPTIMIZER = (
 )
 
 
-def example() -> None:
+@pytest.mark.skip("Free grants can't be represented yet")
+def test_example() -> None:
     """Azure Functions pricing example."""
-    print("Azure Functions")
-
     solution = OPTIMIZER.initialize(
         BaseData(
             cloud_resources=["workload"],
@@ -54,11 +54,4 @@ def example() -> None:
     ).solve(pulp.PULP_CBC_CMD(msg=False))
 
     cost = solution[SolutionObjValue].objective_value
-    print(f"- Total Charges: ${cost:.2f}")
-
-    # Free grants can't be represented yet
-    # assert abs(cost -  18.00) < 0.1, f"Got {cost:.2f}, expected {expected_cost:.2f}"
-
-
-if __name__ == "__main__":
-    example()
+    assert cost == pytest.approx(18.00, 0.01)

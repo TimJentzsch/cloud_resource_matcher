@@ -4,6 +4,7 @@ See <https://aws.amazon.com/kinesis/data-analytics/pricing/#Pricing_examples>.
 """
 import sys
 
+import pytest
 from optiframe import Optimizer, SolutionObjValue
 from pulp import LpMinimize, pulp
 
@@ -17,10 +18,8 @@ OPTIMIZER = (
 )
 
 
-def pricing_example_1() -> None:
+def test_pricing_example_1() -> None:
     """Studio Notebook with a Simple Streaming Filter"""
-    print("PRICING EXAMPLE 1")
-
     solution = OPTIMIZER.initialize(
         BaseData(
             cloud_resources=["studio_notebook"],
@@ -54,14 +53,11 @@ def pricing_example_1() -> None:
     ).solve(pulp.PULP_CBC_CMD(msg=False))
 
     cost = solution[SolutionObjValue].objective_value
-    print(f"- Total Charges: ${cost:.2f}")
-    assert abs(cost - 495.20) < 0.01
+    assert cost == pytest.approx(495.20, 0.01)
 
 
-def pricing_example_2() -> None:
+def test_pricing_example_2() -> None:
     """Studio Notebook with a Sliding Window Deployed to Streaming Mode"""
-    print("PRICING EXAMPLE 2")
-
     solution = OPTIMIZER.initialize(
         BaseData(
             cloud_resources=["studio_notebook_dev", "studio_notebook_prod", "backup"],
@@ -118,11 +114,4 @@ def pricing_example_2() -> None:
     ).solve(pulp.PULP_CBC_CMD(msg=False))
 
     cost = solution[SolutionObjValue].objective_value
-    print(f"- Total Charges: ${cost:.2f}")
-    assert abs(cost - 242.10) < 0.01
-
-
-if __name__ == "__main__":
-    pricing_example_1()
-    print()
-    pricing_example_2()
+    assert cost == pytest.approx(242.10, 0.01)

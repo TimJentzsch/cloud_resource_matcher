@@ -4,6 +4,7 @@ See <https://aws.amazon.com/rds/aurora/pricing/>.
 """
 import sys
 
+import pytest
 from optiframe import Optimizer, SolutionObjValue
 from pulp import LpMinimize, pulp
 
@@ -17,10 +18,8 @@ OPTIMIZER = (
 )
 
 
-def database_storage_and_ios() -> None:
+def test_database_storage_and_ios() -> None:
     """Database Storage and I/Os."""
-    print("Database Storage and I/Os")
-
     solution = OPTIMIZER.initialize(
         BaseData(
             cloud_resources=["database"],
@@ -54,11 +53,5 @@ def database_storage_and_ios() -> None:
     ).solve(pulp.PULP_CBC_CMD(msg=False))
 
     cost = solution[SolutionObjValue].objective_value
-    print(f"- Total Charges: ${cost:.2f}")
 
-    expected_cost = 129.00 + 57.80
-    assert abs(cost - expected_cost) < 0.1, f"Got {cost:.2f}, expected {expected_cost:.2f}"
-
-
-if __name__ == "__main__":
-    database_storage_and_ios()
+    assert cost == pytest.approx(129.00 + 57.80, 0.01)

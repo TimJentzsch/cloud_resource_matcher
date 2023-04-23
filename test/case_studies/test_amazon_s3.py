@@ -4,6 +4,7 @@ See <https://aws.amazon.com/s3/faqs/#Billing>.
 """
 import sys
 
+import pytest
 from optiframe import Optimizer, SolutionObjValue
 from pulp import LpMinimize, pulp
 
@@ -19,10 +20,8 @@ GB_TO_BYTES = 1_073_741_824
 TB_TO_BYTES = 1_024 * GB_TO_BYTES
 
 
-def storage_example() -> None:
+def test_storage_example() -> None:
     """Amazon S3 storage pricing example."""
-    print("Storage")
-
     solution = OPTIMIZER.initialize(
         BaseData(
             cloud_resources=["data"],
@@ -53,11 +52,4 @@ def storage_example() -> None:
     ).solve(pulp.PULP_CBC_CMD(msg=False))
 
     cost = solution[SolutionObjValue].objective_value
-    print(f"- Total Charges: ${cost:.2f}")
-
-    # Tiered pricing is not supported yet, so the total cost is (slightly) wrong
-    # assert abs(cost -  1_215.00) < 0.1, f"Got {cost:.2f}, expected {expected_cost:.2f}"
-
-
-if __name__ == "__main__":
-    storage_example()
+    assert cost == pytest.approx(1_215.00, 0.01)

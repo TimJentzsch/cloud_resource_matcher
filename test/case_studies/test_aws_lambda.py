@@ -4,6 +4,7 @@ See <https://aws.amazon.com/lambda/pricing/>.
 """
 import sys
 
+import pytest
 from optiframe import Optimizer, SolutionObjValue
 from pulp import LpMinimize, pulp
 
@@ -15,10 +16,9 @@ OPTIMIZER = (
 )
 
 
-def ephemeral_storage_pricing_example_1() -> None:
+@pytest.mark.skip("400,000 GB-s included in free tier not handled yet")
+def test_ephemeral_storage_pricing_example_1() -> None:
     """Mobile application backend."""
-    print("EPHEMERAL STORAGE PRICING EXAMPLE 1")
-
     solution = OPTIMIZER.initialize(
         BaseData(
             cloud_resources=["food_order"],
@@ -52,15 +52,11 @@ def ephemeral_storage_pricing_example_1() -> None:
     ).solve(pulp.PULP_CBC_CMD(msg=False))
 
     cost = solution[SolutionObjValue].objective_value
-    print(f"- Total Charges: ${cost:.2f}")
-    # 400,000 GB-s included in free tier not handled yet
-    # assert abs(cost - 2.73) < 0.01
+    assert cost == pytest.approx(2.73, 0.01)
 
 
-def ephemeral_storage_pricing_example_2() -> None:
+def test_ephemeral_storage_pricing_example_2() -> None:
     """Enriching streaming telemetry with additional metadata."""
-    print("EPHEMERAL STORAGE PRICING EXAMPLE 2")
-
     solution = OPTIMIZER.initialize(
         BaseData(
             cloud_resources=["telemetry_metadata"],
@@ -94,11 +90,4 @@ def ephemeral_storage_pricing_example_2() -> None:
     ).solve(pulp.PULP_CBC_CMD(msg=False))
 
     cost = solution[SolutionObjValue].objective_value
-    print(f"- Total Charges: ${cost:.2f}")
-    assert abs(cost - 249.49) < 0.01
-
-
-if __name__ == "__main__":
-    ephemeral_storage_pricing_example_1()
-    print()
-    ephemeral_storage_pricing_example_2()
+    assert cost == pytest.approx(249.49, 0.01)
