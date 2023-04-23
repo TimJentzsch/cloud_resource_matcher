@@ -38,4 +38,5 @@ class BuildMipPerformanceTask(BuildMipTask[None]):
             for cs in self.base_data.cr_to_cs_list[cr]
             for pc in self.performance_data.performance_criteria
             if (cs, pc) in self.performance_data.cost_per_unit.keys()
+            and (cr, pc) in self.performance_data.performance_demand.keys()
         )
