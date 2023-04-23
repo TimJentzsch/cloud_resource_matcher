@@ -1,4 +1,4 @@
-"""The examples from the Amazon Kinesis Data Analytics pricing page.
+"""Pricing examples from the Amazon Kinesis Data Analytics pricing page.
 
 See <https://aws.amazon.com/kinesis/data-analytics/pricing/#Pricing_examples>.
 """

@@ -1,4 +1,4 @@
-"""The examples from the Amazon Aurora pricing page.
+"""Pricing examples from the Amazon Aurora pricing page.
 
 See <https://aws.amazon.com/rds/aurora/pricing/>.
 """

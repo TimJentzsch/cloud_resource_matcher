@@ -1,4 +1,4 @@
-"""The examples from the AWS Lambda pricing page.
+"""Pricing examples from the AWS Lambda pricing page.
 
 See <https://aws.amazon.com/lambda/pricing/>.
 """
