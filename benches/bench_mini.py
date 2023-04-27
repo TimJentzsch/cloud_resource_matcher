@@ -39,4 +39,4 @@ def bench_instance(params: BenchParams) -> None:
 
 def get_optimizer(params: BenchParams) -> InitializedOptimizer:
     base_data = generate_base_data(**params)
-    return Optimizer("bench_base", sense=LpMinimize).add_package(base_package).initialize(base_data)
+    return Optimizer("bench_base", sense=LpMinimize).add_modules(base_package).initialize(base_data)

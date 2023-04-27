@@ -11,11 +11,7 @@ from pulp import LpMinimize, pulp
 from optimizer.packages.base import base_package, BaseData
 from optimizer.packages.performance import performance_package, PerformanceData
 
-OPTIMIZER = (
-    Optimizer("amazon_aurora", LpMinimize)
-    .add_package(base_package)
-    .add_package(performance_package)
-)
+OPTIMIZER = Optimizer("amazon_aurora", LpMinimize).add_modules(base_package, performance_package)
 
 
 def test_database_storage_and_ios() -> None:

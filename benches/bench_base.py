@@ -59,4 +59,4 @@ def bench_cs_count_per_cr() -> None:
 
 def get_optimizer(params: dict[str, Any]) -> InitializedOptimizer:
     base_data = generate_base_data(**params)
-    return Optimizer("bench_base", sense=LpMinimize).add_package(base_package).initialize(base_data)
+    return Optimizer("bench_base", sense=LpMinimize).add_modules(base_package).initialize(base_data)

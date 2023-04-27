@@ -11,9 +11,7 @@ from pulp import LpMinimize, pulp
 from optimizer.packages.base import base_package, BaseData
 from optimizer.packages.performance import performance_package, PerformanceData
 
-OPTIMIZER = (
-    Optimizer("aws_lambda", LpMinimize).add_package(base_package).add_package(performance_package)
-)
+OPTIMIZER = Optimizer("aws_lambda", LpMinimize).add_modules(base_package, performance_package)
 
 
 @pytest.mark.skip("400,000 GB-s included in free tier not handled yet")

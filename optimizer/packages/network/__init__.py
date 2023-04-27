@@ -2,9 +2,9 @@ from .data import NetworkData
 from .pre_processing import PreProcessingNetworkTask
 from .validate import ValidateNetworkTask
 from .build_mip import BuildMipNetworkTask, NetworkMipData
-from optiframe.framework import OptimizationPackage
+from optiframe.framework import OptimizationModule
 
-network_package = OptimizationPackage(
+network_package = OptimizationModule(
     validate=ValidateNetworkTask,
     pre_processing=PreProcessingNetworkTask,
     build_mip=BuildMipNetworkTask,

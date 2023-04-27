@@ -7,10 +7,8 @@ from optimizer.packages.service_limits import service_limits_package, ServiceLim
 from test.framework import Expect
 
 
-OPTIMIZER = (
-    Optimizer("test_performance", sense=LpMinimize)
-    .add_package(base_package)
-    .add_package(performance_package)
+OPTIMIZER = Optimizer("test_performance", sense=LpMinimize).add_modules(
+    base_package, performance_package
 )
 
 
@@ -65,9 +63,7 @@ def test_resource_matching() -> None:
 
     optimizer = (
         Optimizer("test_performance", sense=LpMinimize)
-        .add_package(base_package)
-        .add_package(performance_package)
-        .add_package(service_limits_package)
+        .add_modules(base_package, performance_package, service_limits_package)
         .initialize(
             BaseData(
                 cloud_resources=[f"cr_{cr}" for cr in range(count)],
@@ -174,9 +170,7 @@ def test_should_be_infeasible_if_not_enough_cs_instances_can_be_bought() -> None
     """
     optimizer = (
         Optimizer("test_performance", sense=LpMinimize)
-        .add_package(base_package)
-        .add_package(performance_package)
-        .add_package(service_limits_package)
+        .add_modules(base_package, performance_package, service_limits_package)
         .initialize(
             BaseData(
                 cloud_resources=["cr_0"],

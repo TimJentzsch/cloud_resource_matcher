@@ -96,10 +96,7 @@ def solve_demo_model(
 
     data = (
         Optimizer("cloud_cost_optimization", sense=LpMinimize)
-        .add_package(base_package)
-        .add_package(performance_package)
-        .add_package(network_package)
-        .add_package(multi_cloud_package)
+        .add_modules(base_package, performance_package, network_package, multi_cloud_package)
         .initialize(base_data, perf_data, network_data, multi_data)
         .validate()
         .pre_processing()

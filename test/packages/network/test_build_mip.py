@@ -6,11 +6,7 @@ from optimizer.packages.network import NetworkData, network_package
 from test.framework import Expect
 
 
-OPTIMIZER = (
-    Optimizer("test_network", sense=LpMinimize)
-    .add_package(base_package)
-    .add_package(network_package)
-)
+OPTIMIZER = Optimizer("test_network", sense=LpMinimize).add_modules(base_package, network_package)
 
 
 def test_should_pay_for_cr_location_costs() -> None:

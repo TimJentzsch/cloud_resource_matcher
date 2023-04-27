@@ -143,8 +143,6 @@ def get_optimizer(params: dict[str, Any]) -> InitializedOptimizer:
 
     return (
         Optimizer("bench_complete", sense=LpMinimize)
-        .add_package(base_package)
-        .add_package(network_package)
-        .add_package(multi_cloud_package)
+        .add_modules(base_package, network_package, multi_cloud_package)
         .initialize(base_data, network_data, multi_data)
     )

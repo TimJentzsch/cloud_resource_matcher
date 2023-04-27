@@ -6,10 +6,8 @@ from optimizer.packages.multi_cloud import MultiCloudData, multi_cloud_package
 from test.framework import Expect
 
 
-OPTIMIZER = (
-    Optimizer("test_multi_cloud", sense=LpMinimize)
-    .add_package(base_package)
-    .add_package(multi_cloud_package)
+OPTIMIZER = Optimizer("test_multi_cloud", sense=LpMinimize).add_modules(
+    base_package, multi_cloud_package
 )
 
 

@@ -5,10 +5,8 @@ from optimizer.packages.base import BaseData, base_package
 from optimizer.packages.service_limits import service_limits_package, ServiceLimitsData
 from test.framework import Expect
 
-OPTIMIZER = (
-    Optimizer("test_service_limits", sense=LpMinimize)
-    .add_package(base_package)
-    .add_package(service_limits_package)
+OPTIMIZER = Optimizer("test_service_limits", sense=LpMinimize).add_modules(
+    base_package, service_limits_package
 )
 
 

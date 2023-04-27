@@ -4,7 +4,7 @@ from pulp import LpMinimize
 from optimizer.packages.base import BaseData, base_package
 from test.framework import Expect
 
-OPTIMIZER = Optimizer("test_base", sense=LpMinimize).add_package(base_package)
+OPTIMIZER = Optimizer("test_base", sense=LpMinimize).add_modules(base_package)
 
 
 def test_one_cr_one_cs_trivial_solution() -> None:

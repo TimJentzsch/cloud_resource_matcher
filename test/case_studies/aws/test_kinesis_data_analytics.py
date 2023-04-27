@@ -11,10 +11,8 @@ from pulp import LpMinimize, pulp
 from optimizer.packages.base import base_package, BaseData
 from optimizer.packages.performance import performance_package, PerformanceData
 
-OPTIMIZER = (
-    Optimizer("amazon_kinesis_data_analytics", LpMinimize)
-    .add_package(base_package)
-    .add_package(performance_package)
+OPTIMIZER = Optimizer("amazon_kinesis_data_analytics", LpMinimize).add_modules(
+    base_package, performance_package
 )
 
 
