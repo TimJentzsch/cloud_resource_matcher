@@ -4,12 +4,12 @@ from typing import Optional
 
 from pulp import LpMinimize
 
-from optimizer.packages.base.data import Cost
+from optimizer.modules.base.data import Cost
 from optiframe import Optimizer, SolutionObjValue, InfeasibleError
-from optimizer.packages.base import BaseSolution, BaseData, base_package
-from optimizer.packages.multi_cloud import MultiCloudData, multi_cloud_package
-from optimizer.packages.network import NetworkData, network_package
-from optimizer.packages.performance import PerformanceData, performance_package
+from optimizer.modules.base import BaseSolution, BaseData, base_module
+from optimizer.modules.multi_cloud import MultiCloudData, multi_cloud_module
+from optimizer.modules.network import NetworkData, network_module
+from optimizer.modules.performance import PerformanceData, performance_module
 from optimizer.solver import Solver, get_pulp_solver
 
 
@@ -96,10 +96,7 @@ def solve_demo_model(
 
     data = (
         Optimizer("cloud_cost_optimization", sense=LpMinimize)
-        .add_package(base_package)
-        .add_package(performance_package)
-        .add_package(network_package)
-        .add_package(multi_cloud_package)
+        .add_modules(base_module, performance_module, network_module, multi_cloud_module)
         .initialize(base_data, perf_data, network_data, multi_data)
         .validate()
         .pre_processing()

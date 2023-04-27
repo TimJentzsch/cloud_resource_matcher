@@ -6,9 +6,9 @@ from pulp import LpMinimize
 
 from benches.utils import run_benchmark
 from benches.utils.data_generation import generate_network_data, generate_base_data
-from optimizer.packages.base import base_package
-from optimizer.packages.multi_cloud import MultiCloudData, multi_cloud_package
-from optimizer.packages.network import network_package
+from optimizer.modules.base import base_module
+from optimizer.modules.multi_cloud import MultiCloudData, multi_cloud_module
+from optimizer.modules.network import network_module
 
 
 DEFAULT_PARAMS = {
@@ -143,8 +143,6 @@ def get_optimizer(params: dict[str, Any]) -> InitializedOptimizer:
 
     return (
         Optimizer("bench_complete", sense=LpMinimize)
-        .add_package(base_package)
-        .add_package(network_package)
-        .add_package(multi_cloud_package)
+        .add_modules(base_module, network_module, multi_cloud_module)
         .initialize(base_data, network_data, multi_data)
     )

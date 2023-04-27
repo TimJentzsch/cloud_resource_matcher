@@ -1,6 +1,6 @@
-from optimizer.packages.base.data import CloudService, BaseData, CloudResource
-from optimizer.packages.network import NetworkData
-from optimizer.packages.network.data import Location
+from optimizer.modules.base.data import CloudService, BaseData, CloudResource
+from optimizer.modules.network import NetworkData
+from optimizer.modules.network.data import Location
 
 
 def generate_base_data(cr_count: int, cs_count: int, cs_count_per_cr: int) -> BaseData:

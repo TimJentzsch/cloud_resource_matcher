@@ -9,15 +9,12 @@ import pytest
 from optiframe import Optimizer, SolutionObjValue
 from pulp import LpMinimize, pulp
 
-from optimizer.packages.base import base_package, BaseData
-from optimizer.packages.network import network_package, NetworkData
-from optimizer.packages.performance import performance_package, PerformanceData
+from optimizer.modules.base import base_module, BaseData
+from optimizer.modules.network import network_module, NetworkData
+from optimizer.modules.performance import performance_module, PerformanceData
 
-OPTIMIZER = (
-    Optimizer("google_cloud_storage", LpMinimize)
-    .add_package(base_package)
-    .add_package(performance_package)
-    .add_package(network_package)
+OPTIMIZER = Optimizer("google_cloud_storage", LpMinimize).add_modules(
+    base_module, performance_module, network_module
 )
 
 

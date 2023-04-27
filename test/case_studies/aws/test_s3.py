@@ -8,12 +8,10 @@ import pytest
 from optiframe import Optimizer, SolutionObjValue
 from pulp import LpMinimize, pulp
 
-from optimizer.packages.base import base_package, BaseData
-from optimizer.packages.performance import performance_package, PerformanceData
+from optimizer.modules.base import base_module, BaseData
+from optimizer.modules.performance import performance_module, PerformanceData
 
-OPTIMIZER = (
-    Optimizer("amazon_s3", LpMinimize).add_package(base_package).add_package(performance_package)
-)
+OPTIMIZER = Optimizer("amazon_s3", LpMinimize).add_modules(base_module, performance_module)
 
 
 GB_TO_BYTES = 1_073_741_824
