@@ -7,7 +7,7 @@ from pulp import LpMinimize
 from benches.utils.cli import get_solver_from_args
 from benches.utils.data_generation import generate_base_data
 from benches.utils.formatting import print_result
-from optimizer.packages.base import base_package
+from optimizer.modules.base import base_module
 
 
 class BenchParams(TypedDict):
@@ -39,4 +39,4 @@ def bench_instance(params: BenchParams) -> None:
 
 def get_optimizer(params: BenchParams) -> InitializedOptimizer:
     base_data = generate_base_data(**params)
-    return Optimizer("bench_base", sense=LpMinimize).add_modules(base_package).initialize(base_data)
+    return Optimizer("bench_base", sense=LpMinimize).add_modules(base_module).initialize(base_data)

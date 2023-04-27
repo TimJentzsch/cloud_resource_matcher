@@ -6,7 +6,7 @@ from pulp import LpMinimize
 
 from benches.utils import run_benchmark
 from benches.utils.data_generation import generate_base_data
-from optimizer.packages.base import base_package
+from optimizer.modules.base import base_module
 
 
 DEFAULT_PARAMS = {
@@ -59,4 +59,4 @@ def bench_cs_count_per_cr() -> None:
 
 def get_optimizer(params: dict[str, Any]) -> InitializedOptimizer:
     base_data = generate_base_data(**params)
-    return Optimizer("bench_base", sense=LpMinimize).add_modules(base_package).initialize(base_data)
+    return Optimizer("bench_base", sense=LpMinimize).add_modules(base_module).initialize(base_data)

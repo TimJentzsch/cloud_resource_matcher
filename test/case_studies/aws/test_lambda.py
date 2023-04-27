@@ -8,10 +8,10 @@ import pytest
 from optiframe import Optimizer, SolutionObjValue
 from pulp import LpMinimize, pulp
 
-from optimizer.packages.base import base_package, BaseData
-from optimizer.packages.performance import performance_package, PerformanceData
+from optimizer.modules.base import base_module, BaseData
+from optimizer.modules.performance import performance_module, PerformanceData
 
-OPTIMIZER = Optimizer("aws_lambda", LpMinimize).add_modules(base_package, performance_package)
+OPTIMIZER = Optimizer("aws_lambda", LpMinimize).add_modules(base_module, performance_module)
 
 
 @pytest.mark.skip("400,000 GB-s included in free tier not handled yet")
