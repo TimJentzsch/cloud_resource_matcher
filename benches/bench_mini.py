@@ -1,3 +1,4 @@
+"""Benchmarks for a minimal model instance."""
 from typing import TypedDict
 
 from optiframe import Optimizer, InfeasibleError
@@ -11,12 +12,15 @@ from optimizer.modules.base import base_module
 
 
 class BenchParams(TypedDict):
+    """The parameters to specify a problem instance."""
+
     cr_count: int
     cs_count: int
     cs_count_per_cr: int
 
 
 def bench() -> None:
+    """Run the benchmarks."""
     params: BenchParams = {"cr_count": 1, "cs_count": 1, "cs_count_per_cr": 1}
     bench_instance(params)
 
@@ -27,6 +31,7 @@ def bench() -> None:
 
 
 def bench_instance(params: BenchParams) -> None:
+    """Run benchmarks for the given problem instance."""
     optimizer = get_optimizer(params)
     solver = get_solver_from_args()
 
@@ -38,5 +43,6 @@ def bench_instance(params: BenchParams) -> None:
 
 
 def get_optimizer(params: BenchParams) -> InitializedOptimizer:
+    """Get an optimizer instance with the given parameters."""
     base_data = generate_base_data(**params)
     return Optimizer("bench_base", sense=LpMinimize).add_modules(base_module).initialize(base_data)

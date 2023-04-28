@@ -1,3 +1,4 @@
+"""The data for the performance module."""
 from dataclasses import dataclass
 
 from optimizer.modules.base.data import CloudService, CloudResource, Cost
@@ -7,6 +8,13 @@ PerformanceCriterion = str
 
 @dataclass
 class PerformanceData:
+    """The data for the performance module.
+
+    You can specify how much performance a CR needs and how much the CSs provide.
+    You can also define costs for the performance attributes,
+    which is helpful to represent usage-based pricing models.
+    """
+
     # The available performance criteria, e.g. number of vCPUs or amount of RAM
     performance_criteria: list[PerformanceCriterion]
 

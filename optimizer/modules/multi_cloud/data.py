@@ -1,3 +1,4 @@
+"""The data for the multi cloud module."""
 from dataclasses import dataclass
 
 from optimizer.modules.base.data import CloudService, Cost
@@ -10,6 +11,14 @@ CloudServiceProvider = str
 
 @dataclass
 class MultiCloudData:
+    """The data for the multi cloud module.
+
+    Can be used to specify the different cloud service providers
+    and the services they offer.
+    It can be enforced that a minimum or maximum number of CSPs must be used.
+    Additionally, migration costs can be specified.
+    """
+
     # The identifiers of available cloud service providers.
     cloud_service_providers: list[CloudServiceProvider]
 

@@ -1,3 +1,4 @@
+"""Utility functions to format the benchmark results."""
 from datetime import timedelta
 
 from optiframe import StepData
@@ -5,6 +6,7 @@ from optiframe.framework import StepTimes, ModelSize
 
 
 def print_result(instance: str, solution: StepData) -> None:
+    """Print out the benchmark results in the console."""
     model_size: ModelSize = solution[ModelSize]
     step_times: StepTimes = solution[StepTimes]
 
@@ -25,4 +27,5 @@ def print_result(instance: str, solution: StepData) -> None:
 
 
 def format_time(time: timedelta) -> str:
+    """Format the time needed for the optimization."""
     return f"{time.total_seconds():.3f}s"

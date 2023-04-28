@@ -1,3 +1,4 @@
+"""Implementation of the validation step for the multi cloud module."""
 from optiframe.framework.tasks import ValidateTask
 
 from optimizer.modules.base import BaseData
@@ -5,6 +6,8 @@ from .data import MultiCloudData
 
 
 class ValidateMultiCloudTask(ValidateTask):
+    """A task to validate the data for the multi cloud module."""
+
     base_data: BaseData
     multi_cloud_data: MultiCloudData
 
@@ -13,8 +16,7 @@ class ValidateMultiCloudTask(ValidateTask):
         self.multi_cloud_data = multi_cloud_data
 
     def execute(self) -> None:
-        """
-        Validate the data for consistency.
+        """Validate the data for consistency.
 
         :raises AssertionError: When the data is not valid.
         """

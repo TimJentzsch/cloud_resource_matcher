@@ -1,3 +1,4 @@
+"""Tests for the build MIP step of the performance module."""
 from optiframe import Optimizer
 from pulp import LpMinimize
 
@@ -120,9 +121,7 @@ def test_cheap_insufficient_cs() -> None:
 
 
 def test_allowed_incomplete_data() -> None:
-    """
-    Make sure that the user is allowed to leave data undefined where it makes sense.
-    """
+    """Make sure that the user is allowed to leave data undefined where it makes sense."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
             cloud_resources=["cr_0"],
@@ -165,7 +164,9 @@ def test_should_work_with_higher_cr_and_time_to_instance_demand() -> None:
 
 
 def test_should_be_infeasible_if_not_enough_cs_instances_can_be_bought() -> None:
-    """There is demand for two CRs, which each occupy the CS fully.
+    """Test that the problem is infeasible if not enough instances can be bought.
+
+    There is demand for two CRs, which each occupy the CS fully.
     But only one instance of the CS may be bought.
     """
     optimizer = (

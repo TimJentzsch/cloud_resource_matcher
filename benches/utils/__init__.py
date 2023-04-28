@@ -1,3 +1,4 @@
+"""Utility functions for the benchmark tool."""
 from typing import Callable, Any
 
 from optiframe import InfeasibleError, StepData
@@ -15,6 +16,7 @@ def run_benchmark(
     default_params: dict[str, Any],
     get_optimizer_fn: Callable[[dict[str, Any]], InitializedOptimizer],
 ) -> None:
+    """Run a benchmark and plot the results."""
     solutions: list[StepData] = list()
 
     for val in param_values:

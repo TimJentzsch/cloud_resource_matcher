@@ -1,3 +1,4 @@
+"""Tests for the validation step of the base module."""
 import pytest
 
 from optimizer.modules.base import BaseData
@@ -18,6 +19,8 @@ def test_should_not_raise_error_for_valid_data() -> None:
 
 
 class TestCrToCsList:
+    """Tests for the cr_to_cs_list attribute."""
+
     def test_should_raise_error_for_missing_cr(self) -> None:
         """One CR does not have the valid CSs defined."""
         data = BaseData(
@@ -59,6 +62,8 @@ class TestCrToCsList:
 
 
 class TestCrToBaseCost:
+    """Tests for the cr_to_base_cost attribute."""
+
     def test_should_raise_error_for_missing_cs(self) -> None:
         """One CS does not have base costs defined."""
         data = BaseData(
@@ -86,7 +91,9 @@ class TestCrToBaseCost:
             ValidateBaseTask(data).execute()
 
 
-class TestCrAndTimeToInstanceDemand:
+class TestCrToInstanceDemand:
+    """Tests for the cr_to_instance_demand attribute."""
+
     def test_should_raise_error_for_missing_entry(self) -> None:
         """A CR-time pair does not have the demand defined."""
         data = BaseData(

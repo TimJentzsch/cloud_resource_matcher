@@ -1,3 +1,4 @@
+"""Implementation of the validation step for the network module."""
 from optiframe.framework.tasks import ValidateTask
 
 from optimizer.modules.base import BaseData
@@ -5,6 +6,8 @@ from .data import NetworkData
 
 
 class ValidateNetworkTask(ValidateTask):
+    """Validate the data provided for the network module."""
+
     base_data: BaseData
     network_data: NetworkData
 
@@ -13,8 +16,7 @@ class ValidateNetworkTask(ValidateTask):
         self.network_data = network_data
 
     def execute(self) -> None:
-        """
-        Validate the data for consistency.
+        """Validate the data for consistency.
 
         :raises AssertionError: When the data is not valid.
         """

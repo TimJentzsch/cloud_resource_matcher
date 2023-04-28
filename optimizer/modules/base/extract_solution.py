@@ -1,3 +1,4 @@
+"""Implementation of the extract solution step for the base module."""
 from dataclasses import dataclass
 
 from optiframe.framework.tasks import ExtractSolutionTask
@@ -12,7 +13,8 @@ ServiceInstanceCount = dict[CloudService, int]
 
 @dataclass
 class BaseSolution:
-    """
+    """The solution for the base problem.
+
     The most important parts of the solution, including the assignment
     of CRs to CSs and the number of CS instances to buy.
     """
@@ -24,6 +26,8 @@ class BaseSolution:
 
 
 class ExtractSolutionBaseTask(ExtractSolutionTask[BaseSolution]):
+    """A task to extract the solution for the base module."""
+
     base_data: BaseData
     base_mip_data: BaseMipData
 
@@ -32,6 +36,11 @@ class ExtractSolutionBaseTask(ExtractSolutionTask[BaseSolution]):
         self.base_mip_data = base_mip_data
 
     def execute(self) -> BaseSolution:
+        """Extract the solution for the base module.
+
+        Extracts which CRs are deployed on which CS and
+        how many instances have to be bought of each CS.
+        """
         cr_to_cs_matching: CrToCsMatching = dict()
 
         for cr in self.base_data.cloud_resources:

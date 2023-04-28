@@ -1,3 +1,4 @@
+"""Utility functions to plot the benchmark results."""
 from optiframe import StepData
 from optiframe.framework import ModelSize, StepTimes
 
@@ -10,6 +11,7 @@ LINE_WIDTH = 3
 
 
 def plot_results(variation_name: str, param_values: list[int], solutions: list[StepData]) -> None:
+    """Create a line graph for the benchmark results."""
     model_sizes: list[int] = [get_model_size(solution[ModelSize]) for solution in solutions]
     optimization_times: list[float] = [
         get_total_time(solution[StepTimes]).total_seconds() for solution in solutions

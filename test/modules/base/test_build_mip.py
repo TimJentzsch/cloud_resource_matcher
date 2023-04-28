@@ -1,3 +1,4 @@
+"""Tests for the build MIP step of the base module."""
 from optiframe import Optimizer
 from pulp import LpMinimize
 

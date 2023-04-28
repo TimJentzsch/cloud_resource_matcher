@@ -1,3 +1,4 @@
+"""Tests for the validation step of the multi cloud module."""
 import pytest
 
 from optimizer.modules.base import BaseData
@@ -27,6 +28,8 @@ def test_should_not_raise_error_for_valid_data() -> None:
 
 
 class TestCspToCsList:
+    """Tests for the csp_to_cs_list attribute."""
+
     def test_should_raise_error_for_missing_csp(self) -> None:
         """One CSP is missing the definition of CS that belong to it."""
         base_data = BaseData(
@@ -113,9 +116,10 @@ class TestCspToCsList:
 
 
 class TestMinMaxCspCount:
+    """Tests for the min_csp_count and max_csp_count attributes."""
+
     def test_should_raise_error_on_negative_min_count(self) -> None:
         """The min_csp_count is negative."""
-
         base_data = BaseData(
             cloud_resources=["cr_0"],
             cloud_services=["cs_0"],
@@ -137,7 +141,6 @@ class TestMinMaxCspCount:
 
     def test_should_raise_error_on_negative_max_count(self) -> None:
         """The max_csp_count is negative."""
-
         base_data = BaseData(
             cloud_resources=["cr_0"],
             cloud_services=["cs_0"],
@@ -158,10 +161,7 @@ class TestMinMaxCspCount:
             ValidateMultiCloudTask(base_data, multi_data).execute()
 
     def test_should_raise_error_on_max_smaller_min_count(self) -> None:
-        """
-        The max_csp_count is smaller than min_csp_count.
-        """
-
+        """The max_csp_count is smaller than min_csp_count."""
         base_data = BaseData(
             cloud_resources=["cr_0"],
             cloud_services=["cs_0"],
@@ -183,6 +183,8 @@ class TestMinMaxCspCount:
 
 
 class TestCspToCost:
+    """Tests for the csp_to_cost attribute."""
+
     def test_should_raise_error_on_missing_csp(self) -> None:
         """One of the CSPs does not have a cost defined."""
         base_data = BaseData(

@@ -17,7 +17,7 @@ OPTIMIZER = Optimizer("amazon_kinesis_data_analytics", LpMinimize).add_modules(
 
 
 def test_pricing_example_1() -> None:
-    """Studio Notebook with a Simple Streaming Filter"""
+    """Studio Notebook with a Simple Streaming Filter."""
     solution = OPTIMIZER.initialize(
         BaseData(
             cloud_resources=["studio_notebook"],
@@ -55,7 +55,7 @@ def test_pricing_example_1() -> None:
 
 
 def test_pricing_example_2() -> None:
-    """Studio Notebook with a Sliding Window Deployed to Streaming Mode"""
+    """Studio Notebook with a Sliding Window Deployed to Streaming Mode."""
     solution = OPTIMIZER.initialize(
         BaseData(
             cloud_resources=["studio_notebook_dev", "studio_notebook_prod", "backup"],
