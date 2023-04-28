@@ -1,3 +1,4 @@
+"""A testing framework for the cloud resource matcher."""
 from __future__ import annotations
 
 import math
@@ -16,11 +17,15 @@ from optimizer.modules.base.data import CloudService, CloudResource, Cost
 
 @dataclass
 class SolveSolution:
+    """The solution obtained from solving the tested instance."""
+
     cost: Cost
     base: BaseSolution
 
 
 class Expect:
+    """Create a test for the given optimizer instance."""
+
     _optimizer: BuiltOptimizer
 
     _variables: set[str]
@@ -67,11 +72,11 @@ class Expect:
         return self
 
     def to_be_infeasible(self) -> _ExpectInfeasible:
-        """The given problem is unsolvable."""
+        """Assert that the problem is unsolvable."""
         return _ExpectInfeasible(self)
 
     def to_be_feasible(self) -> _ExpectFeasible:
-        """The given problem has a solution."""
+        """Assert that the problem has a valid solution."""
         return _ExpectFeasible(self)
 
 

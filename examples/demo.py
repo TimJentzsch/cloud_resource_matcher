@@ -1,3 +1,4 @@
+"""A demo for the cloud resource matcher."""
 from dataclasses import dataclass
 from datetime import timedelta, datetime
 from typing import Optional
@@ -15,6 +16,8 @@ from optimizer.solver import Solver, get_pulp_solver
 
 @dataclass
 class SolveSolution:
+    """The solution obtained from solving the demo."""
+
     cost: Cost
     base: BaseSolution
 
@@ -115,6 +118,7 @@ def solve_demo_model(
 
 
 def main() -> None:
+    """Execute the demo for the cloud resource matcher."""
     import logging
     import argparse
 

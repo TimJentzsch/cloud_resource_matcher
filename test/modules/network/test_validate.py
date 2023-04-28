@@ -1,3 +1,4 @@
+"""Tests for the validation step of the network module."""
 import pytest
 
 from optimizer.modules.base import BaseData
@@ -30,6 +31,8 @@ def test_should_not_raise_error_for_valid_data() -> None:
 
 
 class TestLocAndLocToLatency:
+    """Tests for the loc_and_loc_to_latency attribute."""
+
     def test_should_raise_error_for_missing_location_pair(self) -> None:
         """One location pair does not have a latency defined between them."""
         base_data = BaseData(
@@ -104,6 +107,8 @@ class TestLocAndLocToLatency:
 
 
 class TestCsToLoc:
+    """Tests for the cs_to_loc attribute."""
+
     def test_should_raise_error_on_missing_service(self) -> None:
         """One cloud service has no location defined."""
         base_data = BaseData(
@@ -178,6 +183,8 @@ class TestCsToLoc:
 
 
 class TestCrAndLocToMaxLatency:
+    """Tests for the cr_and_loc_to_max_latency attribute."""
+
     def test_should_raise_error_on_invalid_virtual_machine(self) -> None:
         """One cloud resource does not exist."""
         base_data = BaseData(
@@ -252,6 +259,8 @@ class TestCrAndLocToMaxLatency:
 
 
 class TestCrAndLocToTraffic:
+    """Tests for cr_and_loc_to_traffic attribute."""
+
     def test_should_raise_error_on_invalid_virtual_machine(self) -> None:
         """One cloud resource does not exist."""
         base_data = BaseData(
@@ -332,6 +341,8 @@ class TestCrAndLocToTraffic:
 
 
 class TestCrAndCrToTraffic:
+    """Tests for the cr_and_cr_to_traffic attribute."""
+
     def test_should_raise_error_on_invalid_virtual_machine(self) -> None:
         """One cloud resource does not exist."""
         base_data = BaseData(
@@ -382,6 +393,8 @@ class TestCrAndCrToTraffic:
 
 
 class TestLocAndLocToCost:
+    """Tests for the loc_and_loc_to_cost attribute."""
+
     def test_should_raise_error_on_invalid_location(self) -> None:
         """One location does not exist."""
         base_data = BaseData(

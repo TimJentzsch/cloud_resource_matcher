@@ -1,3 +1,4 @@
+"""Tests for the build MIP step of the multi cloud module."""
 from optiframe import Optimizer
 from pulp import LpMinimize
 
@@ -12,7 +13,9 @@ OPTIMIZER = Optimizer("test_multi_cloud", sense=LpMinimize).add_modules(
 
 
 def test_min_csp_count_constraint_matching() -> None:
-    """There are two CSPs, one cheap and one expensive.
+    """Test that the min_csp_count influences the matching decision.
+
+    There are two CSPs, one cheap and one expensive.
     To respect the min CSP count constraint, both CSPs have to be used.
     """
     optimizer = OPTIMIZER.initialize(
@@ -41,7 +44,9 @@ def test_min_csp_count_constraint_matching() -> None:
 
 
 def test_max_csp_count_constraint_matching() -> None:
-    """There are two CSPs, it would be cheapest to use both of them.
+    """Test that the max_csp_count influences the matching decision.
+
+    There are two CSPs, it would be cheapest to use both of them.
     To respect the max CSP count constraint, only one CSP can be used.
     """
     optimizer = OPTIMIZER.initialize(

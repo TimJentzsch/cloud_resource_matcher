@@ -1,3 +1,4 @@
+"""Tests for the build MIP step of the network module."""
 from optiframe import Optimizer
 from pulp import LpMinimize
 
@@ -37,7 +38,9 @@ def test_should_pay_for_cr_location_costs() -> None:
 
 
 def test_should_be_infeasible_if_max_latency_is_violated() -> None:
-    """The cloud resource can only be placed in a location where the max latency
+    """Test that the problem is infeasible if the maximum latency is violated.
+
+    The cloud resource can only be placed in a location where the max latency
     can't be respected.
     """
     locations = {"loc_0", "loc_1"}
