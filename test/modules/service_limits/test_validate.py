@@ -1,3 +1,4 @@
+"""Tests for the validation step of the service limits module."""
 import pytest
 
 from optimizer.modules.base import BaseData
@@ -23,6 +24,8 @@ def test_should_not_raise_error_for_valid_data() -> None:
 
 
 class TestCsToInstanceLimit:
+    """Tests for the cs_to_instance_limit attribute."""
+
     def test_should_raise_error_for_invalid_service(self) -> None:
         """One of the CSs does not exist."""
         base_data = BaseData(
@@ -61,6 +64,8 @@ class TestCsToInstanceLimit:
 
 
 class TestCrToMaxInstanceDemand:
+    """Tests for the cr_to_max_instance_demand attribute."""
+
     def test_should_raise_error_for_invalid_cr(self) -> None:
         """One of the CRs does not exist."""
         base_data = BaseData(

@@ -1,3 +1,4 @@
+"""Tests for the validation step of the performance module."""
 import pytest
 
 from optimizer.modules.base import BaseData
@@ -26,6 +27,8 @@ def test_should_not_raise_error_for_valid_data() -> None:
 
 
 class TestValidatePerformanceDemand:
+    """Tests for the performance_demand attribute."""
+
     def test_should_raise_error_for_invalid_vm(self) -> None:
         """A demand is defined for a VM that doesn't exist."""
         base_data = BaseData(
@@ -68,6 +71,8 @@ class TestValidatePerformanceDemand:
 
 
 class TestValidatePerformanceSupply:
+    """Tests for the performance_supply attribute."""
+
     def test_should_raise_error_for_invalid_cs(self) -> None:
         """A supply is defined for a CS that doesn't exist."""
         base_data = BaseData(
@@ -130,6 +135,8 @@ class TestValidatePerformanceSupply:
 
 
 class TestValidateCostPerUnit:
+    """Tests for the cost_per_unit attribute."""
+
     def test_should_raise_error_for_invalid_cs(self) -> None:
         """Should raise error if an invalid CS is specified in the cost."""
         base_data = BaseData(
