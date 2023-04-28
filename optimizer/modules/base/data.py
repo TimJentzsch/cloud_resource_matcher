@@ -1,3 +1,4 @@
+"""The data for the base module."""
 from dataclasses import dataclass
 
 
@@ -9,13 +10,22 @@ CloudResource = str
 # Often abbreviated as 'CS'.
 CloudService = str
 
-# A cost unit, e.g. € or $.
+# The cost in any price unit, e.g. € or $.
 Cost = float
 
 
 @dataclass
 class BaseData:
-    # The identifiers of available cloud resources
+    """The data for the base module.
+
+    This includes the most important information, such as the available
+    cloud resources and cloud services and which services can be used
+    for which resources.
+    Flat (or upfront) costs for the cloud services can also be specified.
+    """
+
+    # The identifiers of available cloud resources.
+    # Cloud resources are anything that can be deployed on the cloud.
     cloud_resources: list[CloudResource]
 
     # The identifiers of offered cloud services.
