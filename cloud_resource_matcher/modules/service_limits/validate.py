@@ -1,7 +1,7 @@
 """Implementation of the validation step for the service limits module."""
 from optiframe.framework.tasks import ValidateTask
 
-from optimizer.modules.base import BaseData
+from cloud_resource_matcher.modules.base import BaseData
 from .data import ServiceLimitsData
 
 

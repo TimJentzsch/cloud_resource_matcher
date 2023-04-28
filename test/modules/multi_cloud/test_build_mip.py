@@ -2,8 +2,8 @@
 from optiframe import Optimizer
 from pulp import LpMinimize
 
-from optimizer.modules.base import BaseData, base_module
-from optimizer.modules.multi_cloud import MultiCloudData, multi_cloud_module
+from cloud_resource_matcher.modules.base import BaseData, base_module
+from cloud_resource_matcher.modules.multi_cloud import MultiCloudData, multi_cloud_module
 from test.framework import Expect
 
 

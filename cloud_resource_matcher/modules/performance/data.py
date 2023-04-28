@@ -1,7 +1,7 @@
 """The data for the performance module."""
 from dataclasses import dataclass
 
-from optimizer.modules.base.data import CloudService, CloudResource, Cost
+from cloud_resource_matcher.modules.base.data import CloudService, CloudResource, Cost
 
 PerformanceCriterion = str
 

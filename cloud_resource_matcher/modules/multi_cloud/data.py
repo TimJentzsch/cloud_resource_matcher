@@ -1,7 +1,7 @@
 """The data for the multi cloud module."""
 from dataclasses import dataclass
 
-from optimizer.modules.base.data import CloudService, Cost
+from cloud_resource_matcher.modules.base.data import CloudService, Cost
 
 
 # The identifier for a cloud service provider such as AWS, Google Cloud or Azure.

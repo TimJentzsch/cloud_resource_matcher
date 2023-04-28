@@ -2,8 +2,8 @@
 from optiframe import Optimizer
 from pulp import LpMinimize
 
-from optimizer.modules.base import BaseData, base_module
-from optimizer.modules.network import NetworkData, network_module
+from cloud_resource_matcher.modules.base import BaseData, base_module
+from cloud_resource_matcher.modules.network import NetworkData, network_module
 from test.framework import Expect
 
 

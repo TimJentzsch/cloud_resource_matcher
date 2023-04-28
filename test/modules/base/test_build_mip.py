@@ -2,7 +2,7 @@
 from optiframe import Optimizer
 from pulp import LpMinimize
 
-from optimizer.modules.base import BaseData, base_module
+from cloud_resource_matcher.modules.base import BaseData, base_module
 from test.framework import Expect
 
 OPTIMIZER = Optimizer("test_base", sense=LpMinimize).add_modules(base_module)

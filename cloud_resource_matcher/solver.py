@@ -6,7 +6,7 @@ from typing import Optional, Any
 
 import pulp
 
-from optimizer.modules.base.data import Cost
+from cloud_resource_matcher.modules.base.data import Cost
 
 
 class Solver(Enum):

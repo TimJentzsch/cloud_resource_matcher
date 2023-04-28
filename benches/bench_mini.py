@@ -8,7 +8,7 @@ from pulp import LpMinimize
 from benches.utils.cli import get_solver_from_args
 from benches.utils.data_generation import generate_base_data
 from benches.utils.formatting import print_result
-from optimizer.modules.base import base_module
+from cloud_resource_matcher.modules.base import base_module
 
 
 class BenchParams(TypedDict):

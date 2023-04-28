@@ -1,8 +1,8 @@
 """Implementation of the pre-processing step for the performance module."""
 from optiframe.framework.tasks import PreProcessingTask
 
-from optimizer.modules.base import BaseData
-from optimizer.modules.performance import PerformanceData
+from cloud_resource_matcher.modules.base import BaseData
+from cloud_resource_matcher.modules.performance import PerformanceData
 
 
 class PreProcessingPerformanceTask(PreProcessingTask[BaseData]):

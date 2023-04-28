@@ -1,8 +1,8 @@
 """Tests for the validation step of the base module."""
 import pytest
 
-from optimizer.modules.base import BaseData
-from optimizer.modules.base.validate import ValidateBaseTask
+from cloud_resource_matcher.modules.base import BaseData
+from cloud_resource_matcher.modules.base.validate import ValidateBaseTask
 
 
 def test_should_not_raise_error_for_valid_data() -> None:
