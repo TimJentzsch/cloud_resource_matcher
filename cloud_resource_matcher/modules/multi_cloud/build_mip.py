@@ -5,7 +5,7 @@ from optiframe.framework.tasks import BuildMipTask
 from pulp import LpProblem, LpBinary, LpVariable, lpSum
 
 from .data import MultiCloudData, CloudServiceProvider
-from optimizer.modules.base import BaseData, BaseMipData
+from cloud_resource_matcher.modules.base import BaseData, BaseMipData
 
 
 @dataclass

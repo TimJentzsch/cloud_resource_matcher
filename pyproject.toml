@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "optimizer"
+name = "cloud_resource_matcher"
 version = "0.1.0"
-description = "A tool to match cloud resources to cloud services."
-authors = ["Tim Jentzsch <optimizer.projects@timjen.net>"]
+description = "A framework to optimize costs of cloud computing deployments."
+authors = ["Tim Jentzsch <cloud_resource_matcher.projects@timjen.net>"]
 exclude = ["examples", "benches", "test"]
 
 [tool.poetry.scripts]

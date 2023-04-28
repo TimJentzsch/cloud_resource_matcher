@@ -7,7 +7,7 @@ from pulp import LpMinimize
 
 from benches.utils import run_benchmark
 from benches.utils.data_generation import generate_base_data
-from optimizer.modules.base import base_module
+from cloud_resource_matcher.modules.base import base_module
 
 
 DEFAULT_PARAMS = {

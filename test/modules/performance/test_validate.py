@@ -1,9 +1,9 @@
 """Tests for the validation step of the performance module."""
 import pytest
 
-from optimizer.modules.base import BaseData
-from optimizer.modules.performance import PerformanceData
-from optimizer.modules.performance.validate import ValidatePerformanceTask
+from cloud_resource_matcher.modules.base import BaseData
+from cloud_resource_matcher.modules.performance import PerformanceData
+from cloud_resource_matcher.modules.performance.validate import ValidatePerformanceTask
 
 
 def test_should_not_raise_error_for_valid_data() -> None:

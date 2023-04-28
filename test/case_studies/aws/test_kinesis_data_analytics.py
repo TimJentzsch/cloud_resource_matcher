@@ -8,8 +8,8 @@ import pytest
 from optiframe import Optimizer, SolutionObjValue
 from pulp import LpMinimize, pulp
 
-from optimizer.modules.base import base_module, BaseData
-from optimizer.modules.performance import performance_module, PerformanceData
+from cloud_resource_matcher.modules.base import base_module, BaseData
+from cloud_resource_matcher.modules.performance import performance_module, PerformanceData
 
 OPTIMIZER = Optimizer("amazon_kinesis_data_analytics", LpMinimize).add_modules(
     base_module, performance_module

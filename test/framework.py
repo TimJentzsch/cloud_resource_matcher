@@ -9,10 +9,10 @@ import pytest
 from pulp import LpVariable, LpProblem
 
 from optiframe.framework import InitializedOptimizer, BuiltOptimizer
-from optimizer.modules.base import BaseSolution
-from optimizer.modules.base.extract_solution import CrToCsMatching, ServiceInstanceCount
+from cloud_resource_matcher.modules.base import BaseSolution
+from cloud_resource_matcher.modules.base.extract_solution import CrToCsMatching, ServiceInstanceCount
 from optiframe import SolutionObjValue, InfeasibleError
-from optimizer.modules.base.data import CloudService, CloudResource, Cost
+from cloud_resource_matcher.modules.base.data import CloudService, CloudResource, Cost
 
 
 @dataclass

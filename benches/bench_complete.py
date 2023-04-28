@@ -7,9 +7,9 @@ from pulp import LpMinimize
 
 from benches.utils import run_benchmark
 from benches.utils.data_generation import generate_network_data, generate_base_data
-from optimizer.modules.base import base_module
-from optimizer.modules.multi_cloud import MultiCloudData, multi_cloud_module
-from optimizer.modules.network import network_module
+from cloud_resource_matcher.modules.base import base_module
+from cloud_resource_matcher.modules.multi_cloud import MultiCloudData, multi_cloud_module
+from cloud_resource_matcher.modules.network import network_module
 
 
 DEFAULT_PARAMS = {

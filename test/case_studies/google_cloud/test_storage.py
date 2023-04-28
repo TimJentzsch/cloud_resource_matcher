@@ -9,9 +9,9 @@ import pytest
 from optiframe import Optimizer, SolutionObjValue
 from pulp import LpMinimize, pulp
 
-from optimizer.modules.base import base_module, BaseData
-from optimizer.modules.network import network_module, NetworkData
-from optimizer.modules.performance import performance_module, PerformanceData
+from cloud_resource_matcher.modules.base import base_module, BaseData
+from cloud_resource_matcher.modules.network import network_module, NetworkData
+from cloud_resource_matcher.modules.performance import performance_module, PerformanceData
 
 OPTIMIZER = Optimizer("google_cloud_storage", LpMinimize).add_modules(
     base_module, performance_module, network_module

@@ -2,8 +2,8 @@
 from optiframe import Optimizer
 from pulp import LpMinimize
 
-from optimizer.modules.base import BaseData, base_module
-from optimizer.modules.service_limits import service_limits_module, ServiceLimitsData
+from cloud_resource_matcher.modules.base import BaseData, base_module
+from cloud_resource_matcher.modules.service_limits import service_limits_module, ServiceLimitsData
 from test.framework import Expect
 
 OPTIMIZER = Optimizer("test_service_limits", sense=LpMinimize).add_modules(

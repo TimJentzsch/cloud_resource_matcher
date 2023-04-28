@@ -1,7 +1,7 @@
 """The data for the service limits module."""
 from dataclasses import dataclass
 
-from optimizer.modules.base.data import CloudService
+from cloud_resource_matcher.modules.base.data import CloudService
 
 
 @dataclass

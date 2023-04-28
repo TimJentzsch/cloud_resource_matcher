@@ -6,7 +6,7 @@ from pulp import LpProblem, LpBinary, LpVariable, lpSum
 
 from .data import NetworkData
 from ..base.data import CloudService, CloudResource
-from optimizer.modules.base import BaseData, BaseMipData
+from cloud_resource_matcher.modules.base import BaseData, BaseMipData
 
 
 @dataclass

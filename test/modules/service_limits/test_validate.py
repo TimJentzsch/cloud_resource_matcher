@@ -1,9 +1,9 @@
 """Tests for the validation step of the service limits module."""
 import pytest
 
-from optimizer.modules.base import BaseData
-from optimizer.modules.service_limits import ServiceLimitsData
-from optimizer.modules.service_limits.validate import ValidateServiceLimitsTask
+from cloud_resource_matcher.modules.base import BaseData
+from cloud_resource_matcher.modules.service_limits import ServiceLimitsData
+from cloud_resource_matcher.modules.service_limits.validate import ValidateServiceLimitsTask
 
 
 def test_should_not_raise_error_for_valid_data() -> None:

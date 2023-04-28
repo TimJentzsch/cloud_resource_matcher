@@ -5,13 +5,13 @@ from typing import Optional
 
 from pulp import LpMinimize
 
-from optimizer.modules.base.data import Cost
+from cloud_resource_matcher.modules.base.data import Cost
 from optiframe import Optimizer, SolutionObjValue, InfeasibleError
-from optimizer.modules.base import BaseSolution, BaseData, base_module
-from optimizer.modules.multi_cloud import MultiCloudData, multi_cloud_module
-from optimizer.modules.network import NetworkData, network_module
-from optimizer.modules.performance import PerformanceData, performance_module
-from optimizer.solver import Solver, get_pulp_solver
+from cloud_resource_matcher.modules.base import BaseSolution, BaseData, base_module
+from cloud_resource_matcher.modules.multi_cloud import MultiCloudData, multi_cloud_module
+from cloud_resource_matcher.modules.network import NetworkData, network_module
+from cloud_resource_matcher.modules.performance import PerformanceData, performance_module
+from cloud_resource_matcher.solver import Solver, get_pulp_solver
 
 
 @dataclass

@@ -2,8 +2,8 @@
 from optiframe.framework.tasks import BuildMipTask
 from pulp import LpProblem, lpSum
 
-from optimizer.modules.base import BaseData, BaseMipData
-from optimizer.modules.performance import PerformanceData
+from cloud_resource_matcher.modules.base import BaseData, BaseMipData
+from cloud_resource_matcher.modules.performance import PerformanceData
 
 
 class BuildMipPerformanceTask(BuildMipTask[None]):

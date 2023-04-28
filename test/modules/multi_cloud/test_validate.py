@@ -1,9 +1,9 @@
 """Tests for the validation step of the multi cloud module."""
 import pytest
 
-from optimizer.modules.base import BaseData
-from optimizer.modules.multi_cloud import MultiCloudData
-from optimizer.modules.multi_cloud.validate import ValidateMultiCloudTask
+from cloud_resource_matcher.modules.base import BaseData
+from cloud_resource_matcher.modules.multi_cloud import MultiCloudData
+from cloud_resource_matcher.modules.multi_cloud.validate import ValidateMultiCloudTask
 
 
 def test_should_not_raise_error_for_valid_data() -> None:

@@ -2,8 +2,8 @@
 from optiframe.framework.tasks import BuildMipTask
 from pulp import LpProblem, lpSum
 
-from optimizer.modules.base import BaseData, BaseMipData
-from optimizer.modules.base.build_mip import CsToCrList
+from cloud_resource_matcher.modules.base import BaseData, BaseMipData
+from cloud_resource_matcher.modules.base.build_mip import CsToCrList
 from .data import ServiceLimitsData
 
 

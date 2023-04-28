@@ -1,8 +1,8 @@
 """Implementation of the pre-processing step for the network module."""
 from optiframe.framework.tasks import PreProcessingTask
 
-from optimizer.modules.base import BaseData
-from optimizer.modules.network import NetworkData
+from cloud_resource_matcher.modules.base import BaseData
+from cloud_resource_matcher.modules.network import NetworkData
 
 
 class PreProcessingNetworkTask(PreProcessingTask[BaseData]):
