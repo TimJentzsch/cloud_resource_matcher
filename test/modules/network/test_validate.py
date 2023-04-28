@@ -106,7 +106,6 @@ class TestLocAndLocToLatency:
 class TestCsToLoc:
     def test_should_raise_error_on_missing_service(self) -> None:
         """One cloud service has no location defined."""
-
         base_data = BaseData(
             cloud_resources=["cr_0"],
             cloud_services=["cs_0"],
@@ -131,7 +130,6 @@ class TestCsToLoc:
 
     def test_should_raise_error_on_invalid_service(self) -> None:
         """The max_csp_count is negative."""
-
         base_data = BaseData(
             cloud_resources=["cr_0"],
             cloud_services=["cs_0"],
@@ -156,7 +154,6 @@ class TestCsToLoc:
 
     def test_should_raise_error_on_invalid_location(self) -> None:
         """A specified location does not exist."""
-
         base_data = BaseData(
             cloud_resources=["cr_0"],
             cloud_services=["cs_0"],
@@ -183,7 +180,6 @@ class TestCsToLoc:
 class TestCrAndLocToMaxLatency:
     def test_should_raise_error_on_invalid_virtual_machine(self) -> None:
         """One cloud resource does not exist."""
-
         base_data = BaseData(
             cloud_resources=["cr_0"],
             cloud_services=["cs_0"],
@@ -208,7 +204,6 @@ class TestCrAndLocToMaxLatency:
 
     def test_should_raise_error_on_invalid_location(self) -> None:
         """One location does not exist."""
-
         base_data = BaseData(
             cloud_resources=["cr_0"],
             cloud_services=["cs_0"],
@@ -233,7 +228,6 @@ class TestCrAndLocToMaxLatency:
 
     def test_should_raise_error_on_negative_latency(self) -> None:
         """One of the maximum latencies is negative."""
-
         base_data = BaseData(
             cloud_resources=["cr_0"],
             cloud_services=["cs_0"],
@@ -260,7 +254,6 @@ class TestCrAndLocToMaxLatency:
 class TestCrAndLocToTraffic:
     def test_should_raise_error_on_invalid_virtual_machine(self) -> None:
         """One cloud resource does not exist."""
-
         base_data = BaseData(
             cloud_resources=["cr_0"],
             cloud_services=["cs_0"],
@@ -288,7 +281,6 @@ class TestCrAndLocToTraffic:
 
     def test_should_raise_error_on_invalid_location(self) -> None:
         """One location does not exist."""
-
         base_data = BaseData(
             cloud_resources=["cr_0"],
             cloud_services=["cs_0"],
@@ -316,7 +308,6 @@ class TestCrAndLocToTraffic:
 
     def test_should_raise_error_on_negative_traffic(self) -> None:
         """One of the traffics is negative."""
-
         base_data = BaseData(
             cloud_resources=["cr_0"],
             cloud_services=["cs_0"],
@@ -343,7 +334,6 @@ class TestCrAndLocToTraffic:
 class TestCrAndCrToTraffic:
     def test_should_raise_error_on_invalid_virtual_machine(self) -> None:
         """One cloud resource does not exist."""
-
         base_data = BaseData(
             cloud_resources=["cr_0"],
             cloud_services=["cs_0"],
@@ -368,7 +358,6 @@ class TestCrAndCrToTraffic:
 
     def test_should_raise_error_on_negative_traffic(self) -> None:
         """One location does not exist."""
-
         base_data = BaseData(
             cloud_resources=["cr_0"],
             cloud_services=["cs_0"],
@@ -395,7 +384,6 @@ class TestCrAndCrToTraffic:
 class TestLocAndLocToCost:
     def test_should_raise_error_on_invalid_location(self) -> None:
         """One location does not exist."""
-
         base_data = BaseData(
             cloud_resources=["cr_0"],
             cloud_services=["cs_0"],
@@ -420,7 +408,6 @@ class TestLocAndLocToCost:
 
     def test_should_raise_error_on_missing_location_pair(self) -> None:
         """One location pair has no costs defined."""
-
         base_data = BaseData(
             cloud_resources=["cr_0"],
             cloud_services=["cs_0"],

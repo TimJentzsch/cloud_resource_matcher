@@ -13,8 +13,7 @@ class PreProcessingNetworkTask(PreProcessingTask[BaseData]):
         self.network_data = network_data
 
     def execute(self) -> BaseData:
-        """
-        Remove CS from list of applicable CS if the corresponding CR cannot support
+        """Remove CS from list of applicable CS if the corresponding CR cannot support
         the latency of the CS to a given location.
         """
         for (cr, loc), max_latency in self.network_data.cr_and_loc_to_max_latency.items():

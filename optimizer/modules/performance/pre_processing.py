@@ -1,3 +1,4 @@
+"""Implementation of the pre-processing step for the performance module."""
 from optiframe.framework.tasks import PreProcessingTask
 
 from optimizer.modules.base import BaseData
@@ -5,6 +6,8 @@ from optimizer.modules.performance import PerformanceData
 
 
 class PreProcessingPerformanceTask(PreProcessingTask[BaseData]):
+    """A task to implement the pre-processing for the performance module."""
+
     base_data: BaseData
     performance_data: PerformanceData
 
@@ -13,8 +16,9 @@ class PreProcessingPerformanceTask(PreProcessingTask[BaseData]):
         self.performance_data = performance_data
 
     def execute(self) -> BaseData:
-        """
-        Remove CSs from the list of applicable CS if they do not satisfy the
+        """Enforce the performance requirements as a pre-processing step.
+
+        Removes CSs from the list of applicable CS if they do not satisfy the
         performance requirements of a CR.
         """
         for (cr, pc), demand in self.performance_data.performance_demand.items():

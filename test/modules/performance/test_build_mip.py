@@ -120,9 +120,7 @@ def test_cheap_insufficient_cs() -> None:
 
 
 def test_allowed_incomplete_data() -> None:
-    """
-    Make sure that the user is allowed to leave data undefined where it makes sense.
-    """
+    """Make sure that the user is allowed to leave data undefined where it makes sense."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
             cloud_resources=["cr_0"],

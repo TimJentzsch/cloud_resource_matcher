@@ -12,8 +12,7 @@ ServiceInstanceCount = dict[CloudService, int]
 
 @dataclass
 class BaseSolution:
-    """
-    The most important parts of the solution, including the assignment
+    """The most important parts of the solution, including the assignment
     of CRs to CSs and the number of CS instances to buy.
     """
 

@@ -10,8 +10,7 @@ class ValidateBaseTask(ValidateTask):
         self.base_data = base_data
 
     def execute(self) -> None:
-        """
-        Validate the data for consistency.
+        """Validate the data for consistency.
 
         :raises AssertionError: When the data is not valid.
         """

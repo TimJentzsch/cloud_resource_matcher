@@ -115,7 +115,6 @@ class TestCspToCsList:
 class TestMinMaxCspCount:
     def test_should_raise_error_on_negative_min_count(self) -> None:
         """The min_csp_count is negative."""
-
         base_data = BaseData(
             cloud_resources=["cr_0"],
             cloud_services=["cs_0"],
@@ -137,7 +136,6 @@ class TestMinMaxCspCount:
 
     def test_should_raise_error_on_negative_max_count(self) -> None:
         """The max_csp_count is negative."""
-
         base_data = BaseData(
             cloud_resources=["cr_0"],
             cloud_services=["cs_0"],
@@ -158,10 +156,7 @@ class TestMinMaxCspCount:
             ValidateMultiCloudTask(base_data, multi_data).execute()
 
     def test_should_raise_error_on_max_smaller_min_count(self) -> None:
-        """
-        The max_csp_count is smaller than min_csp_count.
-        """
-
+        """The max_csp_count is smaller than min_csp_count."""
         base_data = BaseData(
             cloud_resources=["cr_0"],
             cloud_services=["cs_0"],

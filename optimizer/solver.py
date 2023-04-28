@@ -1,3 +1,5 @@
+"""Utilities to easily create a solver object."""
+
 from datetime import timedelta
 from enum import Enum
 from typing import Optional, Any
@@ -8,6 +10,8 @@ from optimizer.modules.base.data import Cost
 
 
 class Solver(Enum):
+    """Popular solvers for mixed integer programs."""
+
     # COIN Branch and Cut solver (CBC), an open source solver.
     # Comes pre-bundled with Pulp.
     # <https://coin-or.github.io/Cbc/intro.html>

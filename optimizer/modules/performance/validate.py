@@ -1,3 +1,4 @@
+"""Implementation of the validation step for the performance module."""
 from optiframe.framework.tasks import ValidateTask
 
 from optimizer.modules.base import BaseData
@@ -5,6 +6,8 @@ from .data import PerformanceData
 
 
 class ValidatePerformanceTask(ValidateTask):
+    """A task to validate the data provided by the performance module."""
+
     base_data: BaseData
     performance_data: PerformanceData
 
@@ -13,8 +16,7 @@ class ValidatePerformanceTask(ValidateTask):
         self.performance_data = performance_data
 
     def execute(self) -> None:
-        """
-        Validate the data for consistency.
+        """Validate the data for consistency.
 
         :raises AssertionError: When the data is not valid.
         """

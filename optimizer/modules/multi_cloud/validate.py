@@ -13,8 +13,7 @@ class ValidateMultiCloudTask(ValidateTask):
         self.multi_cloud_data = multi_cloud_data
 
     def execute(self) -> None:
-        """
-        Validate the data for consistency.
+        """Validate the data for consistency.
 
         :raises AssertionError: When the data is not valid.
         """

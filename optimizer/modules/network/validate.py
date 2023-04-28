@@ -13,8 +13,7 @@ class ValidateNetworkTask(ValidateTask):
         self.network_data = network_data
 
     def execute(self) -> None:
-        """
-        Validate the data for consistency.
+        """Validate the data for consistency.
 
         :raises AssertionError: When the data is not valid.
         """

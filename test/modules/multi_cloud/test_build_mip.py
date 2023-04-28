@@ -114,9 +114,7 @@ def test_max_csp_count_constraint_infeasible() -> None:
 
 
 def test_csp_objective() -> None:
-    """
-    There are two CSPs, one has cheaper cloud services, but a higher migration cost.
-    """
+    """There are two CSPs, one has cheaper cloud services, but a higher migration cost."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
             cloud_resources=["cr_0"],

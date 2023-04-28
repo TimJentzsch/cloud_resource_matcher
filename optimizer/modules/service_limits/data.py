@@ -1,3 +1,4 @@
+"""The data for the service limits module."""
 from dataclasses import dataclass
 
 from optimizer.modules.base.data import CloudService
@@ -5,6 +6,8 @@ from optimizer.modules.base.data import CloudService
 
 @dataclass
 class ServiceLimitsData:
+    """The data for the service limits module."""
+
     # A map from cloud services to the maximum number of available instances.
     cs_to_instance_limit: dict[CloudService, int]
 

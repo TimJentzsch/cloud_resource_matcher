@@ -1,3 +1,4 @@
+"""Implementation of the validation step for the service limits module."""
 from optiframe.framework.tasks import ValidateTask
 
 from optimizer.modules.base import BaseData
@@ -5,6 +6,8 @@ from .data import ServiceLimitsData
 
 
 class ValidateServiceLimitsTask(ValidateTask):
+    """A task to validate the data for the service limits module."""
+
     base_data: BaseData
     service_limits_data: ServiceLimitsData
 
@@ -13,8 +16,7 @@ class ValidateServiceLimitsTask(ValidateTask):
         self.service_limits_data = service_limits_data
 
     def execute(self) -> None:
-        """
-        Validate the data for consistency.
+        """Validate the data for consistency.
 
         :raises AssertionError: When the data is not valid.
         """

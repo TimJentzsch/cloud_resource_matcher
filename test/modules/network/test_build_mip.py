@@ -10,9 +10,7 @@ OPTIMIZER = Optimizer("test_network", sense=LpMinimize).add_modules(base_module,
 
 
 def test_should_pay_for_cr_location_costs() -> None:
-    """
-    Ensure that the cost of traffic between CRs and specific locations is paid for.
-    """
+    """Ensure that the cost of traffic between CRs and specific locations is paid for."""
     optimizer = OPTIMIZER.initialize(
         BaseData(
             cloud_resources=["cr_0"],
@@ -39,8 +37,7 @@ def test_should_pay_for_cr_location_costs() -> None:
 
 
 def test_should_be_infeasible_if_max_latency_is_violated() -> None:
-    """
-    The cloud resource can only be placed in a location where the max latency
+    """The cloud resource can only be placed in a location where the max latency
     can't be respected.
     """
     locations = {"loc_0", "loc_1"}
