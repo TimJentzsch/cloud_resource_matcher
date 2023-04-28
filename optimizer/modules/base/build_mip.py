@@ -22,7 +22,7 @@ class BaseMipData:
 
 
 class BuildMipBaseTask(BuildMipTask[BaseMipData]):
-    """A task to modify the MIP to implement the base package."""
+    """A task to modify the MIP to implement the base module."""
 
     base_data: BaseData
     problem: LpProblem
@@ -32,7 +32,7 @@ class BuildMipBaseTask(BuildMipTask[BaseMipData]):
         self.problem = problem
 
     def execute(self) -> BaseMipData:
-        """Modify the MIP to implement the base package.
+        """Modify the MIP to implement the base module.
 
         Adds the central variables to determine which CR to deploy on which CS.
         """
