@@ -1,9 +1,11 @@
+"""Utility functions to generate the benchmark data."""
 from optimizer.modules.base.data import CloudService, BaseData, CloudResource
 from optimizer.modules.network import NetworkData
 from optimizer.modules.network.data import Location
 
 
 def generate_base_data(cr_count: int, cs_count: int, cs_count_per_cr: int) -> BaseData:
+    """Generate benchmark data for the base module."""
     assert cs_count_per_cr <= cs_count
 
     cloud_resources = [f"cr_{cr}" for cr in range(cr_count)]
@@ -55,6 +57,7 @@ def generate_network_data(
     cr_to_loc_connections: int,
     cr_to_cr_connections: int,
 ) -> NetworkData:
+    """Generate benchmark data for the network module."""
     locations = set(f"loc_{loc}" for loc in range(loc_count))
     cr_and_loc_to_traffic: dict[tuple[CloudResource, Location], int] = dict()
     cr_and_cr_to_traffic: dict[tuple[CloudResource, Location], int] = dict()

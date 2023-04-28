@@ -1,9 +1,11 @@
+"""Utility functions for the CLI usage of the benchmark tool."""
 from typing import Any
 
 from optimizer.solver import get_pulp_solver, Solver
 
 
 def get_solver_from_args() -> Any:
+    """Obtain a solver object from the CLI arguments."""
     import argparse
 
     parser = argparse.ArgumentParser(description="Benchmark the optimizer.")

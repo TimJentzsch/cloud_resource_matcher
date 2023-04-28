@@ -1,3 +1,4 @@
+"""Utility methods for the benchmark results."""
 from datetime import timedelta
 
 from optiframe.framework import StepTimes, ModelSize

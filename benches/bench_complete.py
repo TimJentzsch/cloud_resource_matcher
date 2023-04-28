@@ -1,3 +1,4 @@
+"""Benchmarks for a model containing all modules."""
 from typing import Any
 
 from optiframe import Optimizer
@@ -23,6 +24,7 @@ DEFAULT_PARAMS = {
 
 
 def bench() -> None:
+    """Run the benchmarks for the complete model."""
     print("\n\n=== CR_TO_CR_CONNECTIONS ===")
     bench_cr_to_cr_connections()
 
@@ -46,6 +48,7 @@ def bench() -> None:
 
 
 def bench_cr_count() -> None:
+    """Run benchmarks varying the number of cloud resources."""
     run_benchmark(
         "cloud resource count",
         "cr_count",
@@ -56,6 +59,7 @@ def bench_cr_count() -> None:
 
 
 def bench_cs_count() -> None:
+    """Run benchmarks varying the number of cloud services."""
     run_benchmark(
         "cloud service count",
         "cs_count",
@@ -66,6 +70,7 @@ def bench_cs_count() -> None:
 
 
 def bench_cs_count_per_cr() -> None:
+    """Run benchmarks varying the number of applicable CSs for a CR."""
     run_benchmark(
         "count of applicable cloud services per cloud resource",
         "cs_count_per_cr",
@@ -76,6 +81,7 @@ def bench_cs_count_per_cr() -> None:
 
 
 def bench_csp_count() -> None:
+    """Run benchmarks varying the number of cloud service providers."""
     run_benchmark(
         "cloud service provider count",
         "csp_count",
@@ -86,6 +92,7 @@ def bench_csp_count() -> None:
 
 
 def bench_loc_count() -> None:
+    """Run benchmarks varying the number of network locations."""
     run_benchmark(
         "network location count",
         "loc_count",
@@ -96,6 +103,7 @@ def bench_loc_count() -> None:
 
 
 def bench_cr_to_loc_connections() -> None:
+    """Run benchmarks varying the number of connections between a CR and a location."""
     run_benchmark(
         "count of connections between CR and a network location",
         "cr_to_loc_connections",
@@ -106,6 +114,7 @@ def bench_cr_to_loc_connections() -> None:
 
 
 def bench_cr_to_cr_connections() -> None:
+    """Run benchmarks varying the number of connections between CR pairs."""
     run_benchmark(
         "count of connections between CR pairs",
         "cr_to_cr_connections",
@@ -116,6 +125,7 @@ def bench_cr_to_cr_connections() -> None:
 
 
 def get_optimizer(params: dict[str, Any]) -> InitializedOptimizer:
+    """Get an optimizer instance for the provided parameters."""
     cr_count = params["cr_count"]
     cs_count = params["cs_count"]
     cs_count_per_cr = params["cs_count_per_cr"]
