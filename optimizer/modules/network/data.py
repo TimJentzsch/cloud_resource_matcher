@@ -1,3 +1,4 @@
+"""The data for the network module."""
 from dataclasses import dataclass
 
 from optimizer.modules.base.data import CloudService, CloudResource, Cost
@@ -9,6 +10,14 @@ NetworkTraffic = int
 
 @dataclass
 class NetworkData:
+    """The data for the network module.
+
+    Can be used to specify the available network locations,
+    connections between CRs and locations or pairs of CRs
+    and used to enforce maximum latency requirements.
+    Costs for network traffic can also be specified.
+    """
+
     # A locations that affect latency and network prices.
     # Can be physical or virtual locations.
     locations: set[Location]

@@ -1,3 +1,4 @@
+"""Implementation of the build MIP step for the performance module."""
 from optiframe.framework.tasks import BuildMipTask
 from pulp import LpProblem, lpSum
 
@@ -6,6 +7,8 @@ from optimizer.modules.performance import PerformanceData
 
 
 class BuildMipPerformanceTask(BuildMipTask[None]):
+    """A task to modify the MIP for the performance module."""
+
     problem: LpProblem
     base_data: BaseData
     performance_data: PerformanceData
@@ -24,8 +27,9 @@ class BuildMipPerformanceTask(BuildMipTask[None]):
         self.problem = problem
 
     def execute(self) -> None:
-        """The constraints are enforced entirely in the pre-processing step.
+        """Modify the MIP for the performance module.
 
+        The constraints are enforced entirely in the pre-processing step.
         The MIP only needs to be adjusted to add the cost to the objective.
         """
         # Pay for the performance used by the cloud resources

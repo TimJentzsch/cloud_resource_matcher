@@ -1,3 +1,8 @@
+"""The performance module.
+
+This module can be used to enforce performance requirements
+and to represent usage-based pricing models.
+"""
 from .data import PerformanceData
 from .pre_processing import PreProcessingPerformanceTask
 from .validate import ValidatePerformanceTask
