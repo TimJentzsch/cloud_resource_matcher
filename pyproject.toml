@@ -16,9 +16,8 @@ bench_complete = "benches.bench_complete:bench"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-# Git dependency needed for a bugfix, see <https://github.com/coin-or/pulp/pull/627>
-PuLP = { git = "https://github.com/TimJentzsch/pulp.git", rev = "ff1f470320ecbe43afce48253e50b14cbc125757" }
 optiframe = "^0.4.0"
+pulp = "^2.7.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.12.0"
