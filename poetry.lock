@@ -574,20 +574,16 @@ dev = ["pre-commit", "tox"]
 testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
-name = "PuLP"
+name = "pulp"
 version = "2.7.0"
 description = "PuLP is an LP modeler written in python. PuLP can generate MPS or LP files and call GLPK, COIN CLP/CBC, CPLEX, and GUROBI to solve linear problems."
 category = "main"
 optional = false
-python-versions = ">=3.7"
-files = []
-develop = false
-
-[package.source]
-type = "git"
-url = "https://github.com/TimJentzsch/pulp.git"
-reference = "ff1f470320ecbe43afce48253e50b14cbc125757"
-resolved_reference = "ff1f470320ecbe43afce48253e50b14cbc125757"
+python-versions = "*"
+files = [
+    {file = "PuLP-2.7.0-py3-none-any.whl", hash = "sha256:b6de42c929e80325bf44cc7a2997f02535440800c376b9eb8cb7b4670ed53769"},
+    {file = "PuLP-2.7.0.tar.gz", hash = "sha256:e73ee6b32d639c9b8cf4b4aded334ba158be5f8313544e056f796ace0a10ae63"},
+]
 
 [[package]]
 name = "pyparsing"
@@ -693,4 +689,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "70df4adbce77daffc5f477ee98beff5b3c4b9e572738adfa396c5568fb61027d"
+content-hash = "d26d72a6641102a14ac0c55579938e8257ffe29a5b62f2659cd037924c773a28"
