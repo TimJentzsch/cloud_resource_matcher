@@ -76,6 +76,23 @@ However, it's not very fast, so you probably want to change it.
 You can pass any solver object from `pulp` into the `.solve(...)` method.
 Take a look at [this documentation](https://coin-or.github.io/pulp/guides/how_to_configure_solvers.html) for instructions on how to install and configure the solvers.
 
+## Glossary
+
+Here is a small glossary of terms that are used across this project:
+
+- **Cloud resource** (CR): Anything you want to deploy on the cloud, such as virtual machines, serverless functions or databases.
+- **Cloud service** (CS): An offer that you can buy in the cloud, for example Google Cloud C3, Amazon S3 or Azure Functions.
+- **Cloud service provider** (CSP): A company offering cloud services. For example Google Cloud, AWS or Microsoft Azure.
+- **Mixed integer program** (MIP): A mathematical description of optimization problems.
+    Solvers can use this to return an optimal solution to the problem.
+    See also [mixed integer programming](https://en.wikipedia.org/wiki/Integer_programming).
+- **Module**: A component that implements one set of decision criteria for the optimization problem.
+    For example, the network module implements functionality to represent network traffic and latencies.
+    By choosing the modules you want to use, you can configure the functionality of the optimizer.
+    If a decision criteria or pricing model you need to use is not implemented yet, you can define your own modules.
+- **Solver**: A program implementing multiple algorithms to solve mixed integer programs to optimality.
+    Examples include [CBC](https://github.com/coin-or/Cbc) (open source), [SCIP](https://www.scipopt.org/) (open source) and [Gurobi](https://www.gurobi.com/solutions/gurobi-optimizer/) (commercial).
+
 ## Development
 
 We use [Poetry](https://python-poetry.org/docs/#installation) as a package manager, so you have to install it to properly run the project locally.
