@@ -1,4 +1,4 @@
-# Cloud Resource Matcher
+# Cloud Resource Matcher [![PyPI Version](https://img.shields.io/pypi/v/cloud_resource_matcher)](https://pypi.org/project/cloud_resource_matcher/) [![License](https://img.shields.io/github/license/TimJentzsch/cloud_resource_matcher)](./LICENSE)
 
 A framework to optimize cloud computing costs, using [mixed integer programming](https://en.wikipedia.org/wiki/Integer_programming).
 
