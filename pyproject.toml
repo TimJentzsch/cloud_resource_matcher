@@ -3,6 +3,9 @@ name = "cloud_resource_matcher"
 version = "0.1.0"
 description = "A framework to optimize costs of cloud computing deployments."
 authors = ["Tim Jentzsch <cloud_resource_matcher.projects@timjen.net>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/TimJentzsch/cloud_resource_matcher"
 exclude = ["examples", "benches", "test"]
 
 [tool.poetry.scripts]
