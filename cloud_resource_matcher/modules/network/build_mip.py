@@ -5,8 +5,8 @@ from optiframe.framework.tasks import BuildMipTask
 from pulp import LpBinary, LpProblem, LpVariable, lpSum
 
 from cloud_resource_matcher.modules.base import BaseData, BaseMipData
+from cloud_resource_matcher.modules.base.data import CloudResource, CloudService
 
-from ..base.data import CloudResource, CloudService
 from .data import NetworkData
 
 

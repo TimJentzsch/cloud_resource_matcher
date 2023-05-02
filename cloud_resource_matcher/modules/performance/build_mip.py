@@ -3,7 +3,8 @@ from optiframe.framework.tasks import BuildMipTask
 from pulp import LpProblem, lpSum
 
 from cloud_resource_matcher.modules.base import BaseData, BaseMipData
-from cloud_resource_matcher.modules.performance import PerformanceData
+
+from .data import PerformanceData
 
 
 class BuildMipPerformanceTask(BuildMipTask[None]):

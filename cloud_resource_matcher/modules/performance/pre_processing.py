@@ -2,7 +2,8 @@
 from optiframe.framework.tasks import PreProcessingTask
 
 from cloud_resource_matcher.modules.base import BaseData
-from cloud_resource_matcher.modules.performance import PerformanceData
+
+from .data import PerformanceData
 
 
 class PreProcessingPerformanceTask(PreProcessingTask[BaseData]):
