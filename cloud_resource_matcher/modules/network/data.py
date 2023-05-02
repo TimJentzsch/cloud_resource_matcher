@@ -1,7 +1,7 @@
 """The data for the network module."""
 from dataclasses import dataclass
 
-from cloud_resource_matcher.modules.base.data import CloudService, CloudResource, Cost
+from cloud_resource_matcher.modules.base.data import CloudResource, CloudService, Cost
 
 Location = str
 Latency = int

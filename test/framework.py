@@ -3,19 +3,19 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Self, Optional, Dict, List, Iterable
+from typing import Dict, Iterable, List, Optional, Self
 
 import pytest
-from pulp import LpVariable, LpProblem
+from optiframe import InfeasibleError, SolutionObjValue
+from optiframe.framework import BuiltOptimizer, InitializedOptimizer
+from pulp import LpProblem, LpVariable
 
-from optiframe.framework import InitializedOptimizer, BuiltOptimizer
 from cloud_resource_matcher.modules.base import BaseSolution
+from cloud_resource_matcher.modules.base.data import CloudResource, CloudService, Cost
 from cloud_resource_matcher.modules.base.extract_solution import (
     CrToCsMatching,
     ServiceInstanceCount,
 )
-from optiframe import SolutionObjValue, InfeasibleError
-from cloud_resource_matcher.modules.base.data import CloudService, CloudResource, Cost
 
 
 @dataclass

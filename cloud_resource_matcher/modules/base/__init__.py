@@ -6,11 +6,12 @@ and which cloud services are available.
 
 This module isn't very useful on its own, but provides the basis for all other modules.
 """
-from .data import BaseData
-from .validate import ValidateBaseTask
-from .build_mip import BuildMipBaseTask, BaseMipData
-from .extract_solution import ExtractSolutionBaseTask, BaseSolution
 from optiframe.framework import OptimizationModule
+
+from .build_mip import BaseMipData, BuildMipBaseTask
+from .data import BaseData
+from .extract_solution import BaseSolution, ExtractSolutionBaseTask
+from .validate import ValidateBaseTask
 
 base_module = OptimizationModule(
     validate=ValidateBaseTask, build_mip=BuildMipBaseTask, extract_solution=ExtractSolutionBaseTask

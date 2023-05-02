@@ -1,9 +1,10 @@
 """Tests for the build MIP step of the base module."""
+from test.framework import Expect
+
 from optiframe import Optimizer
 from pulp import LpMinimize
 
 from cloud_resource_matcher.modules.base import BaseData, base_module
-from test.framework import Expect
 
 OPTIMIZER = Optimizer("test_base", sense=LpMinimize).add_modules(base_module)
 

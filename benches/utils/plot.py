@@ -1,11 +1,9 @@
 """Utility functions to plot the benchmark results."""
+import matplotlib.pyplot as plt
 from optiframe import StepData
 from optiframe.framework import ModelSize, StepTimes
 
-import matplotlib.pyplot as plt
-
-from benches.utils.results import get_total_time, get_model_size
-
+from benches.utils.results import get_model_size, get_total_time
 
 LINE_WIDTH = 3
 

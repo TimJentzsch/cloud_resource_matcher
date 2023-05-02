@@ -1,7 +1,7 @@
 """Benchmarks for a minimal model instance."""
 from typing import TypedDict
 
-from optiframe import Optimizer, InfeasibleError
+from optiframe import InfeasibleError, Optimizer
 from optiframe.framework import InitializedOptimizer
 from pulp import LpMinimize
 

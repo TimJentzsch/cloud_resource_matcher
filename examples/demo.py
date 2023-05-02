@@ -1,13 +1,13 @@
 """A demo for the cloud resource matcher."""
 from dataclasses import dataclass
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
+from optiframe import InfeasibleError, Optimizer, SolutionObjValue
 from pulp import LpMinimize
 
+from cloud_resource_matcher.modules.base import BaseData, BaseSolution, base_module
 from cloud_resource_matcher.modules.base.data import Cost
-from optiframe import Optimizer, SolutionObjValue, InfeasibleError
-from cloud_resource_matcher.modules.base import BaseSolution, BaseData, base_module
 from cloud_resource_matcher.modules.multi_cloud import MultiCloudData, multi_cloud_module
 from cloud_resource_matcher.modules.network import NetworkData, network_module
 from cloud_resource_matcher.modules.performance import PerformanceData, performance_module
@@ -119,8 +119,8 @@ def solve_demo_model(
 
 def main() -> None:
     """Execute the demo for the cloud resource matcher."""
-    import logging
     import argparse
+    import logging
 
     logging.basicConfig(
         encoding="utf-8", level=logging.DEBUG, format="%(asctime)s [%(levelname)s] %(message)s"

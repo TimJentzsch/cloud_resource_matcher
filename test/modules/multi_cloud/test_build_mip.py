@@ -1,11 +1,11 @@
 """Tests for the build MIP step of the multi cloud module."""
+from test.framework import Expect
+
 from optiframe import Optimizer
 from pulp import LpMinimize
 
 from cloud_resource_matcher.modules.base import BaseData, base_module
 from cloud_resource_matcher.modules.multi_cloud import MultiCloudData, multi_cloud_module
-from test.framework import Expect
-
 
 OPTIMIZER = Optimizer("test_multi_cloud", sense=LpMinimize).add_modules(
     base_module, multi_cloud_module
