@@ -1,7 +1,6 @@
 """The data for the base module."""
 from dataclasses import dataclass
 
-
 # Any resource that needs to be deployed to the cloud (e.g. virtual machines).
 # Often abbreviated as 'CR'.
 CloudResource = str

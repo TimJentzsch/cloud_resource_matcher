@@ -1,5 +1,5 @@
 """Utility functions to generate the benchmark data."""
-from cloud_resource_matcher.modules.base.data import CloudService, BaseData, CloudResource
+from cloud_resource_matcher.modules.base.data import BaseData, CloudResource, CloudService
 from cloud_resource_matcher.modules.network import NetworkData
 from cloud_resource_matcher.modules.network.data import Location
 

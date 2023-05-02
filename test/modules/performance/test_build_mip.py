@@ -1,12 +1,12 @@
 """Tests for the build MIP step of the performance module."""
+from test.framework import Expect
+
 from optiframe import Optimizer
 from pulp import LpMinimize
 
 from cloud_resource_matcher.modules.base import BaseData, base_module
 from cloud_resource_matcher.modules.performance import PerformanceData, performance_module
-from cloud_resource_matcher.modules.service_limits import service_limits_module, ServiceLimitsData
-from test.framework import Expect
-
+from cloud_resource_matcher.modules.service_limits import ServiceLimitsData, service_limits_module
 
 OPTIMIZER = Optimizer("test_performance", sense=LpMinimize).add_modules(
     base_module, performance_module

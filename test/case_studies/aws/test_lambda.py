@@ -8,8 +8,8 @@ import pytest
 from optiframe import Optimizer, SolutionObjValue
 from pulp import LpMinimize, pulp
 
-from cloud_resource_matcher.modules.base import base_module, BaseData
-from cloud_resource_matcher.modules.performance import performance_module, PerformanceData
+from cloud_resource_matcher.modules.base import BaseData, base_module
+from cloud_resource_matcher.modules.performance import PerformanceData, performance_module
 
 OPTIMIZER = Optimizer("aws_lambda", LpMinimize).add_modules(base_module, performance_module)
 

@@ -2,7 +2,7 @@
 from datetime import timedelta
 
 from optiframe import StepData
-from optiframe.framework import StepTimes, ModelSize
+from optiframe.framework import ModelSize, StepTimes
 
 
 def print_result(instance: str, solution: StepData) -> None:

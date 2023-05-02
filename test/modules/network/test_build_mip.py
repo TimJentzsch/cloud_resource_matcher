@@ -1,11 +1,11 @@
 """Tests for the build MIP step of the network module."""
+from test.framework import Expect
+
 from optiframe import Optimizer
 from pulp import LpMinimize
 
 from cloud_resource_matcher.modules.base import BaseData, base_module
 from cloud_resource_matcher.modules.network import NetworkData, network_module
-from test.framework import Expect
-
 
 OPTIMIZER = Optimizer("test_network", sense=LpMinimize).add_modules(base_module, network_module)
 

@@ -1,5 +1,5 @@
 """Utility functions for the benchmark tool."""
-from typing import Callable, Any
+from typing import Any, Callable
 
 from optiframe import InfeasibleError, StepData
 from optiframe.framework import InitializedOptimizer

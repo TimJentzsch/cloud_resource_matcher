@@ -1,7 +1,7 @@
 """Utility methods for the benchmark results."""
 from datetime import timedelta
 
-from optiframe.framework import StepTimes, ModelSize
+from optiframe.framework import ModelSize, StepTimes
 
 
 def get_total_time(step_times: StepTimes) -> timedelta:

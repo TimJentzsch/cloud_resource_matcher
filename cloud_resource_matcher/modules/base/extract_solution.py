@@ -4,8 +4,8 @@ from dataclasses import dataclass
 from optiframe.framework.tasks import ExtractSolutionTask
 from pulp import pulp
 
-from .data import BaseData, CloudService, CloudResource
 from .build_mip import BaseMipData
+from .data import BaseData, CloudResource, CloudService
 
 CrToCsMatching = dict[tuple[CloudResource, CloudService], int]
 ServiceInstanceCount = dict[CloudService, int]

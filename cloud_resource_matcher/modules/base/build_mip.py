@@ -2,9 +2,9 @@
 from dataclasses import dataclass
 
 from optiframe.framework.tasks import BuildMipTask
-from pulp import LpVariable, LpProblem, LpBinary, lpSum
+from pulp import LpBinary, LpProblem, LpVariable, lpSum
 
-from .data import BaseData, CloudService, CloudResource
+from .data import BaseData, CloudResource, CloudService
 
 VarCrToCsMatching = dict[tuple[CloudResource, CloudService], LpVariable]
 CsToCrList = dict[CloudService, set[CloudResource]]

@@ -3,11 +3,12 @@
 This module can be used to enforce performance requirements
 and to represent usage-based pricing models.
 """
+from optiframe.framework import OptimizationModule
+
+from .build_mip import BuildMipPerformanceTask
 from .data import PerformanceData
 from .pre_processing import PreProcessingPerformanceTask
 from .validate import ValidatePerformanceTask
-from .build_mip import BuildMipPerformanceTask
-from optiframe.framework import OptimizationModule
 
 performance_module = OptimizationModule(
     validate=ValidatePerformanceTask,

@@ -2,11 +2,12 @@
 from dataclasses import dataclass
 
 from optiframe.framework.tasks import BuildMipTask
-from pulp import LpProblem, LpBinary, LpVariable, lpSum
+from pulp import LpBinary, LpProblem, LpVariable, lpSum
 
-from .data import NetworkData
-from ..base.data import CloudService, CloudResource
 from cloud_resource_matcher.modules.base import BaseData, BaseMipData
+
+from ..base.data import CloudResource, CloudService
+from .data import NetworkData
 
 
 @dataclass

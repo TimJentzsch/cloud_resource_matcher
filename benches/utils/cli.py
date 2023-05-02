@@ -1,7 +1,7 @@
 """Utility functions for the CLI usage of the benchmark tool."""
 from typing import Any
 
-from cloud_resource_matcher.solver import get_pulp_solver, Solver
+from cloud_resource_matcher.solver import Solver, get_pulp_solver
 
 
 def get_solver_from_args() -> Any:

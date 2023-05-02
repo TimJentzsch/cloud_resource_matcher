@@ -2,7 +2,7 @@
 
 from datetime import timedelta
 from enum import Enum
-from typing import Optional, Any
+from typing import Any, Optional
 
 import pulp
 

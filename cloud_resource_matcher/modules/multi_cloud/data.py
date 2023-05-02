@@ -3,7 +3,6 @@ from dataclasses import dataclass
 
 from cloud_resource_matcher.modules.base.data import CloudService, Cost
 
-
 # The identifier for a cloud service provider such as AWS, Google Cloud or Azure.
 # Commonly abbreviated as 'CSP'.
 CloudServiceProvider = str

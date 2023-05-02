@@ -9,7 +9,6 @@ from benches.utils import run_benchmark
 from benches.utils.data_generation import generate_base_data
 from cloud_resource_matcher.modules.base import base_module
 
-
 DEFAULT_PARAMS = {
     "cr_count": 1000,
     "cs_count": 1000,
