@@ -8,8 +8,8 @@ This module isn't very useful on its own, but provides the basis for all other m
 """
 from optiframe import OptimizationModule
 
-from .mip_construction import BaseMipData, MipConstructionBaseTask
 from .data import BaseData
+from .mip_construction import BaseMipData, MipConstructionBaseTask
 from .solution_extraction import BaseSolution, SolutionExtractionBaseTask
 from .validation import ValidationBaseTask
 

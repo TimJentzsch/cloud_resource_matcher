@@ -6,8 +6,8 @@ Migration costs for the CSPs can also be represented.
 """
 from optiframe import OptimizationModule
 
-from .mip_construction import MipConstructionMultiCloudTask, MultiCloudMipData
 from .data import MultiCloudData
+from .mip_construction import MipConstructionMultiCloudTask, MultiCloudMipData
 from .validation import ValidationMultiCloudTask
 
 multi_cloud_module = OptimizationModule(

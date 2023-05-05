@@ -5,8 +5,8 @@ and to represent usage-based pricing models.
 """
 from optiframe import OptimizationModule
 
-from .mip_construction import MipConstructionPerformanceTask
 from .data import PerformanceData
+from .mip_construction import MipConstructionPerformanceTask
 from .pre_processing import PreProcessingPerformanceTask
 from .validation import ValidatePerformanceTask
 

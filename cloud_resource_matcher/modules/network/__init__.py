@@ -5,8 +5,8 @@ enforce maximum latency requirements and specify network usage costs.
 """
 from optiframe import OptimizationModule
 
-from .mip_construction import MipConstructionNetworkTask, NetworkMipData
 from .data import NetworkData
+from .mip_construction import MipConstructionNetworkTask, NetworkMipData
 from .pre_processing import PreProcessingNetworkTask
 from .validation import ValidateNetworkTask
 
