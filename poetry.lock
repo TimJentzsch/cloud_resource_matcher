@@ -424,14 +424,14 @@ files = [
 
 [[package]]
 name = "optiframe"
-version = "0.4.0"
+version = "0.5.0"
 description = "A modular framework for mixed integer programming."
 category = "main"
 optional = false
 python-versions = ">=3.11.0rc1"
 files = [
-    {file = "optiframe-0.4.0-py3-none-any.whl", hash = "sha256:5750ffdd8cb9c6d330ac05a467e1b5eb10a4dd417d7cad2fd812de4583c850e2"},
-    {file = "optiframe-0.4.0.tar.gz", hash = "sha256:1c77224c156f3e56cc223954571d13238f5132a8782176411fd43023cd5ba6b8"},
+    {file = "optiframe-0.5.0-py3-none-any.whl", hash = "sha256:b345eb113182d1a698d36378f8212983da913cee72bee38fb303ada5a6b6b61b"},
+    {file = "optiframe-0.5.0.tar.gz", hash = "sha256:d42a7277ca7184017da7a8ca2d658f1e46f7b2de66c3ee8e1683e4cfde422a90"},
 ]
 
 [package.dependencies]
@@ -689,4 +689,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "d26d72a6641102a14ac0c55579938e8257ffe29a5b62f2659cd037924c773a28"
+content-hash = "b9745998929f9bb2ca9011281327d3e153fb0e8f31edeb26d2ad118e97e19399"
