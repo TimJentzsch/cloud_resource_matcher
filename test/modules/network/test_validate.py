@@ -3,7 +3,7 @@ import pytest
 
 from cloud_resource_matcher.modules.base import BaseData
 from cloud_resource_matcher.modules.network import NetworkData
-from cloud_resource_matcher.modules.network.validate import ValidateNetworkTask
+from cloud_resource_matcher.modules.network.validation import ValidateNetworkTask
 
 
 def test_should_not_raise_error_for_valid_data() -> None:

@@ -1,5 +1,5 @@
 """Implementation of the pre-processing step for the network module."""
-from optiframe.framework.tasks import PreProcessingTask
+from optiframe import PreProcessingTask
 
 from cloud_resource_matcher.modules.base import BaseData
 from cloud_resource_matcher.modules.network import NetworkData
@@ -15,7 +15,7 @@ class PreProcessingNetworkTask(PreProcessingTask[BaseData]):
         self.base_data = base_data
         self.network_data = network_data
 
-    def execute(self) -> BaseData:
+    def pre_process(self) -> BaseData:
         """Enforce the latency requirements for the network module.
 
         Removes CSs from list of applicable CSs if the corresponding CR cannot support

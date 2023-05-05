@@ -1,11 +1,11 @@
 """Implementation of the extract solution step for the base module."""
 from dataclasses import dataclass
 
-from optiframe.framework.tasks import ExtractSolutionTask
+from optiframe import SolutionExtractionTask
 from pulp import pulp
 
-from .build_mip import BaseMipData
 from .data import BaseData, CloudResource, CloudService
+from .mip_construction import BaseMipData
 
 CrToCsMatching = dict[tuple[CloudResource, CloudService], int]
 ServiceInstanceCount = dict[CloudService, int]
@@ -25,7 +25,7 @@ class BaseSolution:
     cs_instance_count: ServiceInstanceCount
 
 
-class ExtractSolutionBaseTask(ExtractSolutionTask[BaseSolution]):
+class SolutionExtractionBaseTask(SolutionExtractionTask[BaseSolution]):
     """A task to extract the solution for the base module."""
 
     base_data: BaseData
@@ -35,7 +35,7 @@ class ExtractSolutionBaseTask(ExtractSolutionTask[BaseSolution]):
         self.base_data = base_data
         self.base_mip_data = base_mip_data
 
-    def execute(self) -> BaseSolution:
+    def extract_solution(self) -> BaseSolution:
         """Extract the solution for the base module.
 
         Extracts which CRs are deployed on which CS and

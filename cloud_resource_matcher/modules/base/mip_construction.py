@@ -1,7 +1,7 @@
-"""Implementation of the build MIP step for the base module."""
+"""Implementation of the MIP construction step for the base module."""
 from dataclasses import dataclass
 
-from optiframe.framework.tasks import BuildMipTask
+from optiframe import MipConstructionTask
 from pulp import LpBinary, LpProblem, LpVariable, lpSum
 
 from .data import BaseData, CloudResource, CloudService
@@ -21,7 +21,7 @@ class BaseMipData:
     var_cr_to_cs_matching: VarCrToCsMatching
 
 
-class BuildMipBaseTask(BuildMipTask[BaseMipData]):
+class MipConstructionBaseTask(MipConstructionTask[BaseMipData]):
     """A task to modify the MIP to implement the base module."""
 
     base_data: BaseData
@@ -31,7 +31,7 @@ class BuildMipBaseTask(BuildMipTask[BaseMipData]):
         self.base_data = base_data
         self.problem = problem
 
-    def execute(self) -> BaseMipData:
+    def construct_mip(self) -> BaseMipData:
         """Modify the MIP to implement the base module.
 
         Adds the central variables to determine which CR to deploy on which CS.

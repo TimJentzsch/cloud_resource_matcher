@@ -1,5 +1,5 @@
 """Implementation of the build MIP step for the performance module."""
-from optiframe.framework.tasks import BuildMipTask
+from optiframe import MipConstructionTask
 from pulp import LpProblem, lpSum
 
 from cloud_resource_matcher.modules.base import BaseData, BaseMipData
@@ -7,7 +7,7 @@ from cloud_resource_matcher.modules.base import BaseData, BaseMipData
 from .data import PerformanceData
 
 
-class BuildMipPerformanceTask(BuildMipTask[None]):
+class MipConstructionPerformanceTask(MipConstructionTask[None]):
     """A task to modify the MIP for the performance module."""
 
     problem: LpProblem
@@ -27,7 +27,7 @@ class BuildMipPerformanceTask(BuildMipTask[None]):
         self.base_mip_data = base_mip_data
         self.problem = problem
 
-    def execute(self) -> None:
+    def construct_mip(self) -> None:
         """Modify the MIP for the performance module.
 
         The constraints are enforced entirely in the pre-processing step.

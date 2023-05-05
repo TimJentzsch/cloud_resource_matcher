@@ -6,15 +6,17 @@ and which cloud services are available.
 
 This module isn't very useful on its own, but provides the basis for all other modules.
 """
-from optiframe.framework import OptimizationModule
+from optiframe import OptimizationModule
 
-from .build_mip import BaseMipData, BuildMipBaseTask
 from .data import BaseData
-from .extract_solution import BaseSolution, ExtractSolutionBaseTask
-from .validate import ValidateBaseTask
+from .mip_construction import BaseMipData, MipConstructionBaseTask
+from .solution_extraction import BaseSolution, SolutionExtractionBaseTask
+from .validation import ValidationBaseTask
 
 base_module = OptimizationModule(
-    validate=ValidateBaseTask, build_mip=BuildMipBaseTask, extract_solution=ExtractSolutionBaseTask
+    validation=ValidationBaseTask,
+    mip_construction=MipConstructionBaseTask,
+    solution_extraction=SolutionExtractionBaseTask,
 )
 
 __all__ = ["BaseData", "BaseMipData", "BaseSolution", "base_module"]

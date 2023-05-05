@@ -1,10 +1,10 @@
 """Implementation of the validation step for the base module."""
-from optiframe.framework.tasks import ValidateTask
+from optiframe import ValidationTask
 
 from .data import BaseData
 
 
-class ValidateBaseTask(ValidateTask):
+class ValidationBaseTask(ValidationTask):
     """A task to validate the data of the base module."""
 
     base_data: BaseData
@@ -12,7 +12,7 @@ class ValidateBaseTask(ValidateTask):
     def __init__(self, base_data: BaseData):
         self.base_data = base_data
 
-    def execute(self) -> None:
+    def validate(self) -> None:
         """Validate the data for consistency.
 
         :raises AssertionError: When the data is not valid.
