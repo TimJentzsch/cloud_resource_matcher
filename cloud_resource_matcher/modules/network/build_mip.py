@@ -1,7 +1,7 @@
 """Implementation of the build MIP step for the network module."""
 from dataclasses import dataclass
 
-from optiframe.framework.tasks import BuildMipTask
+from optiframe import MipConstructionTask
 from pulp import LpBinary, LpProblem, LpVariable, lpSum
 
 from cloud_resource_matcher.modules.base import BaseData, BaseMipData
@@ -23,7 +23,7 @@ class NetworkMipData:
     ]
 
 
-class BuildMipNetworkTask(BuildMipTask[NetworkMipData]):
+class MipConstructionNetworkTask(MipConstructionTask[NetworkMipData]):
     """A task to modify the MIP to implement the network module."""
 
     base_data: BaseData
@@ -43,7 +43,7 @@ class BuildMipNetworkTask(BuildMipTask[NetworkMipData]):
         self.base_mip_data = base_mip_data
         self.problem = problem
 
-    def execute(self) -> NetworkMipData:
+    def construct_mip(self) -> NetworkMipData:
         """Modify the MIP to implement the network module."""
         connection_deployments = dict()
 

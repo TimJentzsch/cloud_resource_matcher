@@ -1,12 +1,12 @@
 """Implementation of the validation step for the network module."""
-from optiframe.framework.tasks import ValidateTask
+from optiframe import ValidationTask
 
 from cloud_resource_matcher.modules.base import BaseData
 
 from .data import NetworkData
 
 
-class ValidateNetworkTask(ValidateTask):
+class ValidateNetworkTask(ValidationTask):
     """Validate the data provided for the network module."""
 
     base_data: BaseData
@@ -16,7 +16,7 @@ class ValidateNetworkTask(ValidateTask):
         self.base_data = base_data
         self.network_data = network_data
 
-    def execute(self) -> None:
+    def validate(self) -> None:
         """Validate the data for consistency.
 
         :raises AssertionError: When the data is not valid.

@@ -1,12 +1,12 @@
 """Implementation of the validation step for the performance module."""
-from optiframe.framework.tasks import ValidateTask
+from optiframe import ValidationTask
 
 from cloud_resource_matcher.modules.base import BaseData
 
 from .data import PerformanceData
 
 
-class ValidatePerformanceTask(ValidateTask):
+class ValidatePerformanceTask(ValidationTask):
     """A task to validate the data provided by the performance module."""
 
     base_data: BaseData
@@ -16,7 +16,7 @@ class ValidatePerformanceTask(ValidateTask):
         self.base_data = base_data
         self.performance_data = performance_data
 
-    def execute(self) -> None:
+    def validate(self) -> None:
         """Validate the data for consistency.
 
         :raises AssertionError: When the data is not valid.

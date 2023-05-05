@@ -3,7 +3,7 @@ import pytest
 
 from cloud_resource_matcher.modules.base import BaseData
 from cloud_resource_matcher.modules.multi_cloud import MultiCloudData
-from cloud_resource_matcher.modules.multi_cloud.validate import ValidateMultiCloudTask
+from cloud_resource_matcher.modules.multi_cloud.validate import ValidationMultiCloudTask
 
 
 def test_should_not_raise_error_for_valid_data() -> None:
@@ -24,7 +24,7 @@ def test_should_not_raise_error_for_valid_data() -> None:
         csp_to_cost={"csp_0": 10},
     )
 
-    ValidateMultiCloudTask(base_data, multi_data).execute()
+    ValidationMultiCloudTask(base_data, multi_data).execute()
 
 
 class TestCspToCsList:
@@ -49,7 +49,7 @@ class TestCspToCsList:
         )
 
         with pytest.raises(AssertionError):
-            ValidateMultiCloudTask(base_data, multi_data).execute()
+            ValidationMultiCloudTask(base_data, multi_data).execute()
 
     def test_should_raise_error_for_invalid_csp(self) -> None:
         """One CSP in the definitions does not exist."""
@@ -70,7 +70,7 @@ class TestCspToCsList:
         )
 
         with pytest.raises(AssertionError):
-            ValidateMultiCloudTask(base_data, multi_data).execute()
+            ValidationMultiCloudTask(base_data, multi_data).execute()
 
     def test_should_raise_error_for_invalid_cs(self) -> None:
         """One CS in the definitions does not exist."""
@@ -91,7 +91,7 @@ class TestCspToCsList:
         )
 
         with pytest.raises(AssertionError):
-            ValidateMultiCloudTask(base_data, multi_data).execute()
+            ValidationMultiCloudTask(base_data, multi_data).execute()
 
     def test_should_raise_error_for_unmatched_cs(self) -> None:
         """One CS has not been matched to a CSP."""
@@ -112,7 +112,7 @@ class TestCspToCsList:
         )
 
         with pytest.raises(AssertionError):
-            ValidateMultiCloudTask(base_data, multi_data).execute()
+            ValidationMultiCloudTask(base_data, multi_data).execute()
 
 
 class TestMinMaxCspCount:
@@ -137,7 +137,7 @@ class TestMinMaxCspCount:
         )
 
         with pytest.raises(AssertionError):
-            ValidateMultiCloudTask(base_data, multi_data).execute()
+            ValidationMultiCloudTask(base_data, multi_data).execute()
 
     def test_should_raise_error_on_negative_max_count(self) -> None:
         """The max_csp_count is negative."""
@@ -158,7 +158,7 @@ class TestMinMaxCspCount:
         )
 
         with pytest.raises(AssertionError):
-            ValidateMultiCloudTask(base_data, multi_data).execute()
+            ValidationMultiCloudTask(base_data, multi_data).execute()
 
     def test_should_raise_error_on_max_smaller_min_count(self) -> None:
         """The max_csp_count is smaller than min_csp_count."""
@@ -179,7 +179,7 @@ class TestMinMaxCspCount:
         )
 
         with pytest.raises(AssertionError):
-            ValidateMultiCloudTask(base_data, multi_data).execute()
+            ValidationMultiCloudTask(base_data, multi_data).execute()
 
 
 class TestCspToCost:
@@ -204,4 +204,4 @@ class TestCspToCost:
         )
 
         with pytest.raises(AssertionError):
-            ValidateMultiCloudTask(base_data, multi_data).execute()
+            ValidationMultiCloudTask(base_data, multi_data).execute()

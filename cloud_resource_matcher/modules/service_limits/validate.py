@@ -1,12 +1,12 @@
 """Implementation of the validation step for the service limits module."""
-from optiframe.framework.tasks import ValidateTask
+from optiframe import ValidationTask
 
 from cloud_resource_matcher.modules.base import BaseData
 
 from .data import ServiceLimitsData
 
 
-class ValidateServiceLimitsTask(ValidateTask):
+class ValidationServiceLimitsTask(ValidationTask):
     """A task to validate the data for the service limits module."""
 
     base_data: BaseData
@@ -16,7 +16,7 @@ class ValidateServiceLimitsTask(ValidateTask):
         self.base_data = base_data
         self.service_limits_data = service_limits_data
 
-    def execute(self) -> None:
+    def validate(self) -> None:
         """Validate the data for consistency.
 
         :raises AssertionError: When the data is not valid.

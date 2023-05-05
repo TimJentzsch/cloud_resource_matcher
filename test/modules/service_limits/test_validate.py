@@ -3,7 +3,7 @@ import pytest
 
 from cloud_resource_matcher.modules.base import BaseData
 from cloud_resource_matcher.modules.service_limits import ServiceLimitsData
-from cloud_resource_matcher.modules.service_limits.validate import ValidateServiceLimitsTask
+from cloud_resource_matcher.modules.service_limits.validate import ValidationServiceLimitsTask
 
 
 def test_should_not_raise_error_for_valid_data() -> None:
@@ -20,7 +20,7 @@ def test_should_not_raise_error_for_valid_data() -> None:
         cs_to_instance_limit={"cs_0": 1}, cr_to_max_instance_demand={"cr_0": 1}
     )
 
-    ValidateServiceLimitsTask(base_data, service_limits_data).execute()
+    ValidationServiceLimitsTask(base_data, service_limits_data).execute()
 
 
 class TestCsToInstanceLimit:
@@ -42,7 +42,7 @@ class TestCsToInstanceLimit:
         )
 
         with pytest.raises(AssertionError):
-            ValidateServiceLimitsTask(base_data, service_limits_data).execute()
+            ValidationServiceLimitsTask(base_data, service_limits_data).execute()
 
     def test_should_raise_error_for_negative_instance_count(self) -> None:
         """A maximum instance count is negative."""
@@ -60,7 +60,7 @@ class TestCsToInstanceLimit:
         )
 
         with pytest.raises(AssertionError):
-            ValidateServiceLimitsTask(base_data, service_limits_data).execute()
+            ValidationServiceLimitsTask(base_data, service_limits_data).execute()
 
 
 class TestCrToMaxInstanceDemand:
@@ -82,7 +82,7 @@ class TestCrToMaxInstanceDemand:
         )
 
         with pytest.raises(AssertionError):
-            ValidateServiceLimitsTask(base_data, service_limits_data).execute()
+            ValidationServiceLimitsTask(base_data, service_limits_data).execute()
 
     def test_should_raise_error_for_negative_instance_demand(self) -> None:
         """A maximum instance demand is negative."""
@@ -100,7 +100,7 @@ class TestCrToMaxInstanceDemand:
         )
 
         with pytest.raises(AssertionError):
-            ValidateServiceLimitsTask(base_data, service_limits_data).execute()
+            ValidationServiceLimitsTask(base_data, service_limits_data).execute()
 
     def test_should_raise_error_for_max_greater_than_total(self) -> None:
         """The maximum instance demand of a CR is greater than the total demand."""
@@ -118,7 +118,7 @@ class TestCrToMaxInstanceDemand:
         )
 
         with pytest.raises(AssertionError):
-            ValidateServiceLimitsTask(base_data, service_limits_data).execute()
+            ValidationServiceLimitsTask(base_data, service_limits_data).execute()
 
     def test_should_raise_error_for_missing_entry(self) -> None:
         """One CR does not have a maximum instance demand specified."""
@@ -136,4 +136,4 @@ class TestCrToMaxInstanceDemand:
         )
 
         with pytest.raises(AssertionError):
-            ValidateServiceLimitsTask(base_data, service_limits_data).execute()
+            ValidationServiceLimitsTask(base_data, service_limits_data).execute()

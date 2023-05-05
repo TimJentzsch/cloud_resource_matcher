@@ -4,14 +4,14 @@ This module can be used when multiple cloud service providers are considered for
 A minimum and maximum number of used CSPs can be enforced.
 Migration costs for the CSPs can also be represented.
 """
-from optiframe.framework import OptimizationModule
+from optiframe import OptimizationModule
 
-from .build_mip import BuildMipMultiCloudTask, MultiCloudMipData
+from .build_mip import MipConstructionMultiCloudTask, MultiCloudMipData
 from .data import MultiCloudData
-from .validate import ValidateMultiCloudTask
+from .validate import ValidationMultiCloudTask
 
 multi_cloud_module = OptimizationModule(
-    validate=ValidateMultiCloudTask, build_mip=BuildMipMultiCloudTask
+    validation=ValidationMultiCloudTask, mip_construction=MipConstructionMultiCloudTask
 )
 
 __all__ = ["MultiCloudData", "MultiCloudMipData", "multi_cloud_module"]

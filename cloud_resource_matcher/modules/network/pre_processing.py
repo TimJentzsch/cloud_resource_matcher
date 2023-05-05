@@ -15,7 +15,7 @@ class PreProcessingNetworkTask(PreProcessingTask[BaseData]):
         self.base_data = base_data
         self.network_data = network_data
 
-    def execute(self) -> BaseData:
+    def pre_process(self) -> BaseData:
         """Enforce the latency requirements for the network module.
 
         Removes CSs from list of applicable CSs if the corresponding CR cannot support

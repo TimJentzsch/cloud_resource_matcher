@@ -1,7 +1,7 @@
 """Implementation of the build MIP step for the multi cloud module."""
 from dataclasses import dataclass
 
-from optiframe.framework.tasks import BuildMipTask
+from optiframe import MipConstructionTask
 from pulp import LpBinary, LpProblem, LpVariable, lpSum
 
 from cloud_resource_matcher.modules.base import BaseData, BaseMipData
@@ -19,7 +19,7 @@ class MultiCloudMipData:
     var_csp_used: dict[CloudServiceProvider, LpVariable]
 
 
-class BuildMipMultiCloudTask(BuildMipTask[MultiCloudMipData]):
+class MipConstructionMultiCloudTask(MipConstructionTask[MultiCloudMipData]):
     """A task to modify the MIP to implement the multi cloud module."""
 
     base_data: BaseData
@@ -39,7 +39,7 @@ class BuildMipMultiCloudTask(BuildMipTask[MultiCloudMipData]):
         self.base_mip_data = base_mip_data
         self.problem = problem
 
-    def execute(self) -> MultiCloudMipData:
+    def construct_mip(self) -> MultiCloudMipData:
         """Modify the MIP to implement the multi cloud module.
 
         This adds variables  to track which CSPs are used and enforces the corresponding

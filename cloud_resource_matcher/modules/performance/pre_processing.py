@@ -1,5 +1,5 @@
 """Implementation of the pre-processing step for the performance module."""
-from optiframe.framework.tasks import PreProcessingTask
+from optiframe import PreProcessingTask
 
 from cloud_resource_matcher.modules.base import BaseData
 
@@ -16,7 +16,7 @@ class PreProcessingPerformanceTask(PreProcessingTask[BaseData]):
         self.base_data = base_data
         self.performance_data = performance_data
 
-    def execute(self) -> BaseData:
+    def pre_process(self) -> BaseData:
         """Enforce the performance requirements as a pre-processing step.
 
         Removes CSs from the list of applicable CS if they do not satisfy the

@@ -2,7 +2,7 @@
 import pytest
 
 from cloud_resource_matcher.modules.base import BaseData
-from cloud_resource_matcher.modules.base.validate import ValidateBaseTask
+from cloud_resource_matcher.modules.base.validate import ValidationBaseTask
 
 
 def test_should_not_raise_error_for_valid_data() -> None:
@@ -15,7 +15,7 @@ def test_should_not_raise_error_for_valid_data() -> None:
         cr_to_instance_demand={"cr_0": 1},
     )
 
-    ValidateBaseTask(data).execute()
+    ValidationBaseTask(data).execute()
 
 
 class TestCrToCsList:
@@ -32,7 +32,7 @@ class TestCrToCsList:
         )
 
         with pytest.raises(AssertionError):
-            ValidateBaseTask(data).execute()
+            ValidationBaseTask(data).execute()
 
     def test_should_raise_error_for_invalid_cr(self) -> None:
         """The valid CSs are defined for a CR that doesn't exist."""
@@ -45,7 +45,7 @@ class TestCrToCsList:
         )
 
         with pytest.raises(AssertionError):
-            ValidateBaseTask(data).execute()
+            ValidationBaseTask(data).execute()
 
     def test_should_raise_error_for_invalid_service(self) -> None:
         """One of the valid CSs for a CR does not exist."""
@@ -58,7 +58,7 @@ class TestCrToCsList:
         )
 
         with pytest.raises(AssertionError):
-            ValidateBaseTask(data).execute()
+            ValidationBaseTask(data).execute()
 
 
 class TestCrToBaseCost:
@@ -75,7 +75,7 @@ class TestCrToBaseCost:
         )
 
         with pytest.raises(AssertionError):
-            ValidateBaseTask(data).execute()
+            ValidationBaseTask(data).execute()
 
     def test_should_raise_error_for_invalid_cs(self) -> None:
         """One CS that has base costs defined does not exist."""
@@ -88,7 +88,7 @@ class TestCrToBaseCost:
         )
 
         with pytest.raises(AssertionError):
-            ValidateBaseTask(data).execute()
+            ValidationBaseTask(data).execute()
 
 
 class TestCrToInstanceDemand:
@@ -105,7 +105,7 @@ class TestCrToInstanceDemand:
         )
 
         with pytest.raises(AssertionError):
-            ValidateBaseTask(data).execute()
+            ValidationBaseTask(data).execute()
 
     def test_should_raise_error_for_invalid_cr(self) -> None:
         """A CR that has the demand defined does not exist."""
@@ -118,7 +118,7 @@ class TestCrToInstanceDemand:
         )
 
         with pytest.raises(AssertionError):
-            ValidateBaseTask(data).execute()
+            ValidationBaseTask(data).execute()
 
     def test_should_raise_error_for_negative_demand(self) -> None:
         """A defined demand is negative."""
@@ -131,4 +131,4 @@ class TestCrToInstanceDemand:
         )
 
         with pytest.raises(AssertionError):
-            ValidateBaseTask(data).execute()
+            ValidationBaseTask(data).execute()

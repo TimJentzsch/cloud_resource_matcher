@@ -1,5 +1,5 @@
 """Implementation of the build MIP step for the service limits module."""
-from optiframe.framework.tasks import BuildMipTask
+from optiframe import MipConstructionTask
 from pulp import LpProblem, lpSum
 
 from cloud_resource_matcher.modules.base import BaseData, BaseMipData
@@ -8,7 +8,7 @@ from cloud_resource_matcher.modules.base.build_mip import CsToCrList
 from .data import ServiceLimitsData
 
 
-class BuildMipServiceLimitsTask(BuildMipTask[None]):
+class MipConstructionServiceLimitsTask(MipConstructionTask[None]):
     """A task to build the MIP for the service limits module."""
 
     base_data: BaseData
@@ -28,7 +28,7 @@ class BuildMipServiceLimitsTask(BuildMipTask[None]):
         self.base_mip_data = base_mip_data
         self.problem = problem
 
-    def execute(self) -> None:
+    def construct_mip(self) -> None:
         """Add the variables and constraints for the service limits module."""
         # Pre-compute which cloud services can host which cloud resources
         cs_to_cr_list: CsToCrList = {
