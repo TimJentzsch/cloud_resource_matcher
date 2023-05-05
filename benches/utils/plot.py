@@ -2,16 +2,14 @@
 import matplotlib.pyplot as plt
 from optiframe import ModelSize, StepData, StepTimes
 
-from benches.utils.results import get_model_size, get_total_time
-
 LINE_WIDTH = 3
 
 
 def plot_results(variation_name: str, param_values: list[int], solutions: list[StepData]) -> None:
     """Create a line graph for the benchmark results."""
-    model_sizes: list[int] = [get_model_size(solution[ModelSize]) for solution in solutions]
+    model_sizes: list[int] = [solution[ModelSize].total for solution in solutions]
     optimization_times: list[float] = [
-        get_total_time(solution[StepTimes]).total_seconds() for solution in solutions
+        solution[StepTimes].total.total_seconds() for solution in solutions
     ]
 
     col_model_size = "black"
