@@ -12,7 +12,7 @@ from pulp import LpProblem, LpVariable
 
 from cloud_resource_matcher.modules.base import BaseSolution
 from cloud_resource_matcher.modules.base.data import CloudResource, CloudService, Cost
-from cloud_resource_matcher.modules.base.extract_solution import (
+from cloud_resource_matcher.modules.base.solution_extraction import (
     CrToCsMatching,
     ServiceInstanceCount,
 )

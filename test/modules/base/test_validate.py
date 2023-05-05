@@ -2,7 +2,7 @@
 import pytest
 
 from cloud_resource_matcher.modules.base import BaseData
-from cloud_resource_matcher.modules.base.validate import ValidationBaseTask
+from cloud_resource_matcher.modules.base.validation import ValidationBaseTask
 
 
 def test_should_not_raise_error_for_valid_data() -> None:

@@ -3,7 +3,7 @@ from optiframe import MipConstructionTask
 from pulp import LpProblem, lpSum
 
 from cloud_resource_matcher.modules.base import BaseData, BaseMipData
-from cloud_resource_matcher.modules.base.build_mip import CsToCrList
+from cloud_resource_matcher.modules.base.mip_construction import CsToCrList
 
 from .data import ServiceLimitsData
 

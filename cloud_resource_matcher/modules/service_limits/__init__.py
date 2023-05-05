@@ -5,9 +5,9 @@ This can be helpful to represent popular regions where the servers are at capaci
 """
 from optiframe import OptimizationModule
 
-from .build_mip import MipConstructionServiceLimitsTask
+from .mip_construction import MipConstructionServiceLimitsTask
 from .data import ServiceLimitsData
-from .validate import ValidationServiceLimitsTask
+from .validation import ValidationServiceLimitsTask
 
 service_limits_module = OptimizationModule(
     validation=ValidationServiceLimitsTask, mip_construction=MipConstructionServiceLimitsTask

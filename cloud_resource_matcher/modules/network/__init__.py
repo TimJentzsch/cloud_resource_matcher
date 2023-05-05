@@ -5,10 +5,10 @@ enforce maximum latency requirements and specify network usage costs.
 """
 from optiframe import OptimizationModule
 
-from .build_mip import MipConstructionNetworkTask, NetworkMipData
+from .mip_construction import MipConstructionNetworkTask, NetworkMipData
 from .data import NetworkData
 from .pre_processing import PreProcessingNetworkTask
-from .validate import ValidateNetworkTask
+from .validation import ValidateNetworkTask
 
 network_module = OptimizationModule(
     validation=ValidateNetworkTask,

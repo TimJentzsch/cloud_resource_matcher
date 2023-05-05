@@ -3,7 +3,7 @@ import pytest
 
 from cloud_resource_matcher.modules.base import BaseData
 from cloud_resource_matcher.modules.multi_cloud import MultiCloudData
-from cloud_resource_matcher.modules.multi_cloud.validate import ValidationMultiCloudTask
+from cloud_resource_matcher.modules.multi_cloud.validation import ValidationMultiCloudTask
 
 
 def test_should_not_raise_error_for_valid_data() -> None:

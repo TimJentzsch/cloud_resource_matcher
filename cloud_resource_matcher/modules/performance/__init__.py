@@ -5,10 +5,10 @@ and to represent usage-based pricing models.
 """
 from optiframe import OptimizationModule
 
-from .build_mip import MipConstructionPerformanceTask
+from .mip_construction import MipConstructionPerformanceTask
 from .data import PerformanceData
 from .pre_processing import PreProcessingPerformanceTask
-from .validate import ValidatePerformanceTask
+from .validation import ValidatePerformanceTask
 
 performance_module = OptimizationModule(
     validation=ValidatePerformanceTask,
