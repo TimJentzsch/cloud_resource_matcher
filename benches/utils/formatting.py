@@ -1,8 +1,7 @@
 """Utility functions to format the benchmark results."""
 from datetime import timedelta
 
-from optiframe import StepData
-from optiframe.framework import ModelSize, StepTimes
+from optiframe import ModelSize, StepData, StepTimes
 
 
 def print_result(instance: str, solution: StepData) -> None:

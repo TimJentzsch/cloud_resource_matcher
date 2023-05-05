@@ -1,5 +1,5 @@
 """Implementation of the pre-processing step for the network module."""
-from optiframe.framework.tasks import PreProcessingTask
+from optiframe import PreProcessingTask
 
 from cloud_resource_matcher.modules.base import BaseData
 from cloud_resource_matcher.modules.network import NetworkData
