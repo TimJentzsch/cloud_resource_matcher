@@ -39,6 +39,6 @@ def setup_benchmark(
             args.solver,
         )
         with open(f"benches/output/json/{param_name}.json", "w+") as file:
-            json.dump(results, file)
+            json.dump(results, file, indent=2)
 
     plot_results(results)
