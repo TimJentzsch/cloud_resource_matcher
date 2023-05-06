@@ -1,4 +1,6 @@
 """Utility functions for the benchmark tool."""
+import json
+import os
 from typing import Any, Callable
 
 from optiframe.framework import InitializedOptimizer
@@ -18,14 +20,25 @@ def setup_benchmark(
     """Run a benchmark and plot the results."""
     args = get_cli_args()
 
-    results = run_benchmark(
-        variation_name,
-        param_name,
-        param_values,
-        default_params,
-        get_optimizer_fn,
-        args.measures,
-        args.solver,
-    )
+    # Create directories if they don't exist
+    os.makedirs("benches/output/pdf", exist_ok=True)
+    os.makedirs("benches/output/png", exist_ok=True)
+    os.makedirs("benches/output/json", exist_ok=True)
+
+    if args.use_cache:
+        with open(f"benches/output/json/{param_name}.json", "r") as file:
+            results = json.load(file)
+    else:
+        results = run_benchmark(
+            variation_name,
+            param_name,
+            param_values,
+            default_params,
+            get_optimizer_fn,
+            args.measures,
+            args.solver,
+        )
+        with open(f"benches/output/json/{param_name}.json", "w+") as file:
+            json.dump(results, file)
 
     plot_results(results)

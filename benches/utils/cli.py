@@ -28,12 +28,11 @@ def get_cli_args() -> CliArgs:
     parser.add_argument(
         "--measures",
         type=int,
-        default=0,
+        default=1,
         help="The number of measures to take for each benchmark.",
     )
     parser.add_argument(
         "--use-cache",
-        type=bool,
         action="store_true",
         default=False,
         help="Use the cached JSON measurements, only regenerate the plots.",

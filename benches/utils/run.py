@@ -1,6 +1,5 @@
 """Utilities to run a benchmark."""
-from dataclasses import dataclass
-from typing import Any, Callable
+from typing import Any, Callable, TypedDict
 
 from optiframe import InfeasibleError, ModelSize, StepTimes
 from optiframe.framework import InitializedOptimizer
@@ -8,8 +7,7 @@ from optiframe.framework import InitializedOptimizer
 from .formatting import print_result
 
 
-@dataclass
-class BenchmarkTime:
+class BenchmarkTime(TypedDict):
     """The times need to optimize the problem instance, in seconds."""
 
     total: float
@@ -20,8 +18,7 @@ class BenchmarkTime:
     solution_extraction: float
 
 
-@dataclass
-class BenchmarkMeasure:
+class BenchmarkMeasure(TypedDict):
     """The benchmark measures for a single parameter value."""
 
     param_value: int
@@ -30,8 +27,7 @@ class BenchmarkMeasure:
     constraint_count: int
 
 
-@dataclass
-class BenchmarkResult:
+class BenchmarkResult(TypedDict):
     """The result of a benchmark suite."""
 
     variation_name: str
