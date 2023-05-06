@@ -1,10 +1,20 @@
 """Utility functions for the CLI usage of the benchmark tool."""
+from dataclasses import dataclass
 from typing import Any
 
 from cloud_resource_matcher.solver import Solver, get_pulp_solver
 
 
-def get_solver_from_args() -> Any:
+@dataclass
+class CliArgs:
+    """The CLI arguments for the benchmark tools."""
+
+    solver: Any
+    measures: int
+    use_cache: bool
+
+
+def get_cli_args() -> CliArgs:
     """Obtain a solver object from the CLI arguments."""
     import argparse
 
@@ -14,6 +24,19 @@ def get_solver_from_args() -> Any:
         choices=["cbc", "gurobi", "scip", "fscip"],
         default="cbc",
         help="The solver to use to solve the mixed-integer program.",
+    )
+    parser.add_argument(
+        "--measures",
+        type=int,
+        default=0,
+        help="The number of measures to take for each benchmark.",
+    )
+    parser.add_argument(
+        "--use-cache",
+        type=bool,
+        action="store_true",
+        default=False,
+        help="Use the cached JSON measurements, only regenerate the plots.",
     )
 
     args = parser.parse_args()
@@ -29,4 +52,8 @@ def get_solver_from_args() -> Any:
     else:
         raise RuntimeError(f"Unsupported solver {args.solver}")
 
-    return get_pulp_solver(solver=solver, msg=False)
+    return CliArgs(
+        solver=get_pulp_solver(solver=solver, msg=False),
+        measures=args.measures,
+        use_cache=args.use_cache,
+    )

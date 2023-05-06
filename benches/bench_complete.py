@@ -5,7 +5,7 @@ from optiframe import Optimizer
 from optiframe.framework import InitializedOptimizer
 from pulp import LpMinimize
 
-from benches.utils import run_benchmark
+from benches.utils import setup_benchmark
 from benches.utils.data_generation import generate_base_data, generate_network_data
 from cloud_resource_matcher.modules.base import base_module
 from cloud_resource_matcher.modules.multi_cloud import MultiCloudData, multi_cloud_module
@@ -48,7 +48,7 @@ def bench() -> None:
 
 def bench_cr_count() -> None:
     """Run benchmarks varying the number of cloud resources."""
-    run_benchmark(
+    setup_benchmark(
         "cloud resource count",
         "cr_count",
         [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
@@ -59,7 +59,7 @@ def bench_cr_count() -> None:
 
 def bench_cs_count() -> None:
     """Run benchmarks varying the number of cloud services."""
-    run_benchmark(
+    setup_benchmark(
         "cloud service count",
         "cs_count",
         [200, 300, 400, 500, 600, 700, 800, 900, 1000],
@@ -70,7 +70,7 @@ def bench_cs_count() -> None:
 
 def bench_cs_count_per_cr() -> None:
     """Run benchmarks varying the number of applicable CSs for a CR."""
-    run_benchmark(
+    setup_benchmark(
         "count of applicable cloud services per cloud resource",
         "cs_count_per_cr",
         [50, 100, 150, 200, 250, 300, 350, 400],
@@ -81,7 +81,7 @@ def bench_cs_count_per_cr() -> None:
 
 def bench_csp_count() -> None:
     """Run benchmarks varying the number of cloud service providers."""
-    run_benchmark(
+    setup_benchmark(
         "cloud service provider count",
         "csp_count",
         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
@@ -92,7 +92,7 @@ def bench_csp_count() -> None:
 
 def bench_loc_count() -> None:
     """Run benchmarks varying the number of network locations."""
-    run_benchmark(
+    setup_benchmark(
         "network location count",
         "loc_count",
         [100, 200, 300, 400, 500, 600, 700, 800, 1000],
@@ -103,7 +103,7 @@ def bench_loc_count() -> None:
 
 def bench_cr_to_loc_connections() -> None:
     """Run benchmarks varying the number of connections between a CR and a location."""
-    run_benchmark(
+    setup_benchmark(
         "count of connections between CR and a network location",
         "cr_to_loc_connections",
         [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
@@ -114,7 +114,7 @@ def bench_cr_to_loc_connections() -> None:
 
 def bench_cr_to_cr_connections() -> None:
     """Run benchmarks varying the number of connections between CR pairs."""
-    run_benchmark(
+    setup_benchmark(
         "count of connections between CR pairs",
         "cr_to_cr_connections",
         [0, 4, 8, 12, 16, 20, 24, 28, 32, 36],

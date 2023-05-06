@@ -5,7 +5,7 @@ from optiframe import Optimizer
 from optiframe.framework import InitializedOptimizer
 from pulp import LpMinimize
 
-from benches.utils import run_benchmark
+from benches.utils import setup_benchmark
 from benches.utils.data_generation import generate_base_data
 from cloud_resource_matcher.modules.base import base_module
 
@@ -30,7 +30,7 @@ def bench() -> None:
 
 def bench_cr_count() -> None:
     """Run benchmarks varying the number of cloud resources."""
-    run_benchmark(
+    setup_benchmark(
         "cloud resource count",
         "cr_count",
         [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
@@ -41,7 +41,7 @@ def bench_cr_count() -> None:
 
 def bench_cs_count() -> None:
     """Run benchmarks varying the number of cloud services."""
-    run_benchmark(
+    setup_benchmark(
         "cloud service count",
         "cs_count",
         [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
@@ -52,7 +52,7 @@ def bench_cs_count() -> None:
 
 def bench_cs_count_per_cr() -> None:
     """Run benchmarks varying the number of CSs applicable for each CR."""
-    run_benchmark(
+    setup_benchmark(
         "count of applicable cloud services per cloud resource",
         "cs_count_per_cr",
         [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],

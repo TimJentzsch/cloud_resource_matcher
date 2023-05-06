@@ -5,7 +5,7 @@ from typing import Any, Callable
 from optiframe import InfeasibleError, ModelSize, StepTimes
 from optiframe.framework import InitializedOptimizer
 
-from benches.utils import get_solver_from_args, print_result
+from .formatting import print_result
 
 
 @dataclass
@@ -34,6 +34,7 @@ class BenchmarkMeasure:
 class BenchmarkResult:
     """The result of a benchmark suite."""
 
+    variation_name: str
     param_name: str
     param_values: list[int]
     default_params: dict[str, Any]
@@ -47,6 +48,7 @@ def run_benchmark(
     default_params: dict[str, Any],
     get_optimizer_fn: Callable[[dict[str, Any]], InitializedOptimizer],
     measure_count: int,
+    solver: Any,
 ) -> BenchmarkResult:
     """Run the given benchmark and return the result."""
     measures: list[BenchmarkMeasure] = list()
@@ -59,7 +61,6 @@ def run_benchmark(
         for _ in range(measure_count):
             params = {**default_params, param_name: val}
             optimizer = get_optimizer_fn(params)
-            solver = get_solver_from_args()
 
             try:
                 solution = optimizer.solve(solver=solver)
@@ -93,6 +94,7 @@ def run_benchmark(
         )
 
     return BenchmarkResult(
+        variation_name=variation_name,
         param_name=param_name,
         param_values=param_values,
         default_params=default_params,

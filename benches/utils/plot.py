@@ -1,26 +1,31 @@
 """Utility functions to plot the benchmark results."""
 import matplotlib.pyplot as plt
-from optiframe import ModelSize, StepData, StepTimes
+
+from benches.utils.run import BenchmarkResult
 
 LINE_WIDTH = 3
 
 
-def plot_results(variation_name: str, param_values: list[int], solutions: list[StepData]) -> None:
+def plot_results(result: BenchmarkResult) -> None:
     """Create a line graph for the benchmark results."""
-    model_sizes: list[int] = [solution[ModelSize].total for solution in solutions]
+    model_sizes: list[int] = [
+        measure.variable_count * measure.constraint_count for measure in result.measures
+    ]
+    # Take the average of all measurements
     optimization_times: list[float] = [
-        solution[StepTimes].total.total_seconds() for solution in solutions
+        sum(time.total for time in measure.times) / len(measure.times)
+        for measure in result.measures
     ]
 
     col_model_size = "black"
     col_optimization_time = "gray"
 
     fig, ax = plt.subplots()
-    ax.set_xlabel(variation_name)
+    ax.set_xlabel(result.variation_name)
 
     # Model size plot
     (size_plot,) = ax.plot(
-        param_values,
+        result.param_values,
         model_sizes,
         label="model size",
         color=col_model_size,
@@ -33,7 +38,7 @@ def plot_results(variation_name: str, param_values: list[int], solutions: list[S
     # Optimization time plot
     ax2 = ax.twinx()
     (time_plot,) = ax2.plot(
-        param_values,
+        result.param_values,
         optimization_times,
         label="total optimization time",
         color=col_optimization_time,
@@ -47,5 +52,5 @@ def plot_results(variation_name: str, param_values: list[int], solutions: list[S
     ax.legend(handles=[size_plot, time_plot])
 
     # Save the plot
-    fig.savefig(f"benches/output/png/{variation_name}.png")
-    fig.savefig(f"benches/output/pdf/{variation_name}.pdf")
+    fig.savefig(f"benches/output/png/{result.param_name}.png")
+    fig.savefig(f"benches/output/pdf/{result.param_name}.pdf")
