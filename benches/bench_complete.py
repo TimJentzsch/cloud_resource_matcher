@@ -97,7 +97,7 @@ def bench_loc_count() -> None:
     setup_benchmark(
         "network location count",
         "loc_count",
-        [100, 200, 300, 400, 500, 600, 700, 800, 1000],
+        [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
         DEFAULT_PARAMS,
         get_optimizer_fn=get_optimizer,
     )
