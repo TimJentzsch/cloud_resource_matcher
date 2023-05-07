@@ -10,6 +10,8 @@ from benches.utils.data_generation import generate_base_data, generate_network_d
 from cloud_resource_matcher.modules.base import base_module
 from cloud_resource_matcher.modules.multi_cloud import MultiCloudData, multi_cloud_module
 from cloud_resource_matcher.modules.network import network_module
+from cloud_resource_matcher.modules.performance import PerformanceData, performance_module
+from cloud_resource_matcher.modules.service_limits import ServiceLimitsData, service_limits_module
 
 DEFAULT_PARAMS = {
     "cr_count": 500,
@@ -135,6 +137,23 @@ def get_optimizer(params: dict[str, Any]) -> InitializedOptimizer:
 
     base_data = generate_base_data(cr_count, cs_count, cs_count_per_cr)
 
+    performance_data = PerformanceData(
+        performance_criteria=["vCPUs", "RAM"],
+        performance_demand={
+            **{(f"cr_{cr}", "vCPUs"): cr % 5 for cr in range(cr_count)},
+            **{(f"cr_{cr}", "RAM"): (cr + cr * 3 + 25) % 64 for cr in range(cr_count)},
+        },
+        # Set high to avoid CS to be filtered out durin pre-processing
+        performance_supply={
+            **{(f"cs_{cs}", "vCPUs"): 1000 for cs in range(cs_count)},
+            **{(f"cs_{cs}", "RAM"): 1000 for cs in range(cs_count)},
+        },
+        cost_per_unit={
+            **{(f"cs_{cs}", "vCPUs"): (cs * 9) % 20 + 3 for cs in range(cs_count)},
+            **{(f"cs_{cs}", "RAM"): (cs * cs + 4 * cs) % 10 + 2 for cs in range(cs_count)},
+        },
+    )
+
     multi_data = MultiCloudData(
         cloud_service_providers=[f"csp_{csp}" for csp in range(csp_count)],
         csp_to_cs_list={
@@ -150,8 +169,22 @@ def get_optimizer(params: dict[str, Any]) -> InitializedOptimizer:
         cr_count, cs_count, loc_count, cr_to_loc_connections, cr_to_cr_connections
     )
 
+    service_limits_data = ServiceLimitsData(
+        cr_to_max_instance_demand={
+            f"cr_{cr}": min(base_data.cr_to_instance_demand[f"cr_{cr}"], 3 + cr % 20)
+            for cr in range(cr_count)
+        },
+        cs_to_instance_limit={f"cs_{cs}": 40 + cs * 3 for cs in range(cs_count)},
+    )
+
     return (
         Optimizer("bench_complete", sense=LpMinimize)
-        .add_modules(base_module, network_module, multi_cloud_module)
-        .initialize(base_data, network_data, multi_data)
+        .add_modules(
+            base_module,
+            performance_module,
+            network_module,
+            multi_cloud_module,
+            service_limits_module,
+        )
+        .initialize(base_data, performance_data, network_data, multi_data, service_limits_data)
     )
