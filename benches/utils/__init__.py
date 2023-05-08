@@ -1,15 +1,16 @@
 """Utility functions for the benchmark tool."""
+import json
+import os
 from typing import Any, Callable
 
-from optiframe import InfeasibleError, StepData
 from optiframe.framework import InitializedOptimizer
 
-from benches.utils.cli import get_solver_from_args
-from benches.utils.formatting import print_result
+from benches.utils.cli import get_cli_args
 from benches.utils.plot import plot_results
+from benches.utils.run import run_benchmark
 
 
-def run_benchmark(
+def setup_benchmark(
     variation_name: str,
     param_name: str,
     param_values: list[int],
@@ -17,18 +18,27 @@ def run_benchmark(
     get_optimizer_fn: Callable[[dict[str, Any]], InitializedOptimizer],
 ) -> None:
     """Run a benchmark and plot the results."""
-    solutions: list[StepData] = list()
+    args = get_cli_args()
 
-    for val in param_values:
-        params = {**default_params, param_name: val}
-        optimizer = get_optimizer_fn(params)
-        solver = get_solver_from_args()
+    # Create directories if they don't exist
+    os.makedirs("benches/output/pdf", exist_ok=True)
+    os.makedirs("benches/output/png", exist_ok=True)
+    os.makedirs("benches/output/json", exist_ok=True)
 
-        try:
-            solution = optimizer.solve(solver=solver)
-            print_result(f"{params}", solution)
-            solutions.append(solution)
-        except InfeasibleError:
-            print(f"- {params}  INFEASIBLE")
+    if args.use_cache:
+        with open(f"benches/output/json/{param_name}.json", "r") as file:
+            results = json.load(file)
+    else:
+        results = run_benchmark(
+            variation_name,
+            param_name,
+            param_values,
+            default_params,
+            get_optimizer_fn,
+            args.measures,
+            args.solver,
+        )
+        with open(f"benches/output/json/{param_name}.json", "w+") as file:
+            json.dump(results, file, indent=2)
 
-    plot_results(variation_name, param_values, solutions)
+    plot_results(results)

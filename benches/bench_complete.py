@@ -5,11 +5,13 @@ from optiframe import Optimizer
 from optiframe.framework import InitializedOptimizer
 from pulp import LpMinimize
 
-from benches.utils import run_benchmark
+from benches.utils import setup_benchmark
 from benches.utils.data_generation import generate_base_data, generate_network_data
 from cloud_resource_matcher.modules.base import base_module
 from cloud_resource_matcher.modules.multi_cloud import MultiCloudData, multi_cloud_module
 from cloud_resource_matcher.modules.network import network_module
+from cloud_resource_matcher.modules.performance import PerformanceData, performance_module
+from cloud_resource_matcher.modules.service_limits import ServiceLimitsData, service_limits_module
 
 DEFAULT_PARAMS = {
     "cr_count": 500,
@@ -48,7 +50,7 @@ def bench() -> None:
 
 def bench_cr_count() -> None:
     """Run benchmarks varying the number of cloud resources."""
-    run_benchmark(
+    setup_benchmark(
         "cloud resource count",
         "cr_count",
         [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
@@ -59,7 +61,7 @@ def bench_cr_count() -> None:
 
 def bench_cs_count() -> None:
     """Run benchmarks varying the number of cloud services."""
-    run_benchmark(
+    setup_benchmark(
         "cloud service count",
         "cs_count",
         [200, 300, 400, 500, 600, 700, 800, 900, 1000],
@@ -70,7 +72,7 @@ def bench_cs_count() -> None:
 
 def bench_cs_count_per_cr() -> None:
     """Run benchmarks varying the number of applicable CSs for a CR."""
-    run_benchmark(
+    setup_benchmark(
         "count of applicable cloud services per cloud resource",
         "cs_count_per_cr",
         [50, 100, 150, 200, 250, 300, 350, 400],
@@ -81,7 +83,7 @@ def bench_cs_count_per_cr() -> None:
 
 def bench_csp_count() -> None:
     """Run benchmarks varying the number of cloud service providers."""
-    run_benchmark(
+    setup_benchmark(
         "cloud service provider count",
         "csp_count",
         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
@@ -92,10 +94,10 @@ def bench_csp_count() -> None:
 
 def bench_loc_count() -> None:
     """Run benchmarks varying the number of network locations."""
-    run_benchmark(
+    setup_benchmark(
         "network location count",
         "loc_count",
-        [100, 200, 300, 400, 500, 600, 700, 800, 1000],
+        [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
         DEFAULT_PARAMS,
         get_optimizer_fn=get_optimizer,
     )
@@ -103,7 +105,7 @@ def bench_loc_count() -> None:
 
 def bench_cr_to_loc_connections() -> None:
     """Run benchmarks varying the number of connections between a CR and a location."""
-    run_benchmark(
+    setup_benchmark(
         "count of connections between CR and a network location",
         "cr_to_loc_connections",
         [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
@@ -114,7 +116,7 @@ def bench_cr_to_loc_connections() -> None:
 
 def bench_cr_to_cr_connections() -> None:
     """Run benchmarks varying the number of connections between CR pairs."""
-    run_benchmark(
+    setup_benchmark(
         "count of connections between CR pairs",
         "cr_to_cr_connections",
         [0, 4, 8, 12, 16, 20, 24, 28, 32, 36],
@@ -135,6 +137,23 @@ def get_optimizer(params: dict[str, Any]) -> InitializedOptimizer:
 
     base_data = generate_base_data(cr_count, cs_count, cs_count_per_cr)
 
+    performance_data = PerformanceData(
+        performance_criteria=["vCPUs", "RAM"],
+        performance_demand={
+            **{(f"cr_{cr}", "vCPUs"): cr % 5 for cr in range(cr_count)},
+            **{(f"cr_{cr}", "RAM"): (cr + cr * 3 + 25) % 64 for cr in range(cr_count)},
+        },
+        # Set high to avoid CS to be filtered out durin pre-processing
+        performance_supply={
+            **{(f"cs_{cs}", "vCPUs"): 1000 for cs in range(cs_count)},
+            **{(f"cs_{cs}", "RAM"): 1000 for cs in range(cs_count)},
+        },
+        cost_per_unit={
+            **{(f"cs_{cs}", "vCPUs"): (cs * 9) % 20 + 3 for cs in range(cs_count)},
+            **{(f"cs_{cs}", "RAM"): (cs * cs + 4 * cs) % 10 + 2 for cs in range(cs_count)},
+        },
+    )
+
     multi_data = MultiCloudData(
         cloud_service_providers=[f"csp_{csp}" for csp in range(csp_count)],
         csp_to_cs_list={
@@ -150,8 +169,22 @@ def get_optimizer(params: dict[str, Any]) -> InitializedOptimizer:
         cr_count, cs_count, loc_count, cr_to_loc_connections, cr_to_cr_connections
     )
 
+    service_limits_data = ServiceLimitsData(
+        cr_to_max_instance_demand={
+            f"cr_{cr}": min(base_data.cr_to_instance_demand[f"cr_{cr}"], 3 + cr % 20)
+            for cr in range(cr_count)
+        },
+        cs_to_instance_limit={f"cs_{cs}": 40 + cs * 3 for cs in range(cs_count)},
+    )
+
     return (
         Optimizer("bench_complete", sense=LpMinimize)
-        .add_modules(base_module, network_module, multi_cloud_module)
-        .initialize(base_data, network_data, multi_data)
+        .add_modules(
+            base_module,
+            performance_module,
+            network_module,
+            multi_cloud_module,
+            service_limits_module,
+        )
+        .initialize(base_data, performance_data, network_data, multi_data, service_limits_data)
     )
