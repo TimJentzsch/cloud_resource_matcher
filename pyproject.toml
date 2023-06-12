@@ -9,7 +9,8 @@ repository = "https://github.com/TimJentzsch/cloud_resource_matcher"
 exclude = ["examples", "benches", "test"]
 
 [tool.poetry.scripts]
-demo = "examples.demo:main"
+small_demo = "examples.small_demo:main"
+big_demo = "examples.big_demo:main"
 bench_mini = "benches.bench_mini:bench"
 bench_base = "benches.bench_base:bench"
 bench_complete = "benches.bench_complete:bench"
