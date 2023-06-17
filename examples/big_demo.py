@@ -5,7 +5,11 @@ from optiframe import InfeasibleError, Optimizer, SolutionObjValue
 from pulp import LpMinimize
 
 from cloud_resource_matcher.modules.base import BaseData, BaseSolution, base_module
-from cloud_resource_matcher.modules.multi_cloud import MultiCloudData, multi_cloud_module, MultiCloudSolution
+from cloud_resource_matcher.modules.multi_cloud import (
+    MultiCloudData,
+    MultiCloudSolution,
+    multi_cloud_module,
+)
 from cloud_resource_matcher.modules.network import NetworkData, network_module
 from cloud_resource_matcher.modules.performance import PerformanceData, performance_module
 
