@@ -1,3 +1,4 @@
+"""A small example, demonstrating the most basic features."""
 from optiframe import InfeasibleError, Optimizer, SolutionObjValue
 from pulp import LpMinimize
 

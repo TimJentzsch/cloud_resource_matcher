@@ -64,7 +64,7 @@ cost = solution[SolutionObjValue].objective_value
 matching = solution[BaseSolution]
 ```
 
-You can also take a look at the `examples` folder for a more detailed example.
+You can also take a look at the `examples` folder for more detailed examples.
 The `test/case_studies` folder also contains examples based on the pricing examples from cloud service providers.
 
 ### Configuring the Solver

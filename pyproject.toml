@@ -11,6 +11,7 @@ exclude = ["examples", "benches", "test"]
 [tool.poetry.scripts]
 small_demo = "examples.small_demo:main"
 big_demo = "examples.big_demo:main"
+generated_demo = "examples.generated_demo:main"
 bench_mini = "benches.bench_mini:bench"
 bench_base = "benches.bench_base:bench"
 bench_complete = "benches.bench_complete:bench"
