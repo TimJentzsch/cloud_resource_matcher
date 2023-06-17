@@ -5,7 +5,7 @@ from optiframe import InfeasibleError, Optimizer, SolutionObjValue
 from pulp import LpMinimize
 
 from cloud_resource_matcher.modules.base import BaseData, BaseSolution, base_module
-from cloud_resource_matcher.modules.multi_cloud import MultiCloudData, multi_cloud_module
+from cloud_resource_matcher.modules.multi_cloud import MultiCloudData, multi_cloud_module, MultiCloudSolution
 from cloud_resource_matcher.modules.network import NetworkData, network_module
 from cloud_resource_matcher.modules.performance import PerformanceData, performance_module
 
@@ -238,9 +238,11 @@ def main() -> None:
     # Extract the solution
     cost = solution_data[SolutionObjValue].objective_value
     base_solution: BaseSolution = solution_data[BaseSolution]
+    multi_cloud_solution: MultiCloudSolution = solution_data[MultiCloudSolution]
 
     print(f"Total cost: {cost:.2f}")
     print(f"Matching: {base_solution.cr_to_cs_matching}")
+    print(f"Selected CSPs: {multi_cloud_solution.selected_csps}")
 
 
 if __name__ == "__main__":
