@@ -7,7 +7,7 @@ from pulp import pulp
 from .data import BaseData, CloudResource, CloudService
 from .mip_construction import BaseMipData
 
-CrToCsMatching = dict[tuple[CloudResource, CloudService], int]
+CrToCsMatching = dict[CloudResource, CloudService]
 ServiceInstanceCount = dict[CloudService, int]
 
 
@@ -45,13 +45,10 @@ class SolutionExtractionBaseTask(SolutionExtractionTask[BaseSolution]):
 
         for cr in self.base_data.cloud_resources:
             for cs in self.base_data.cr_to_cs_list[cr]:
-                value = (
-                    round(pulp.value(self.base_mip_data.var_cr_to_cs_matching[cr, cs]))
-                    * self.base_data.cr_to_instance_demand[cr]
-                )
+                value = round(pulp.value(self.base_mip_data.var_cr_to_cs_matching[cr, cs]))
 
                 if value >= 1:
-                    cr_to_cs_matching[cr, cs] = value
+                    cr_to_cs_matching[cr] = cs
 
         cs_instance_count: ServiceInstanceCount = {}
 
