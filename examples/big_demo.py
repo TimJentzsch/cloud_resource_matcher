@@ -170,22 +170,22 @@ def main() -> None:
             # aws_eu-west-1
             ("aws_eu-west-1", "aws_eu-west-1"): 0.01,
             ("aws_eu-west-1", "aws_us-east-1"): 0.02,
-            ("aws_eu-west-1", "gc_europe-west2"): 0.5,  # TODO
-            ("aws_eu-west-1", "gc_us-central1"): 0.5,  # TODO
+            ("aws_eu-west-1", "gc_europe-west2"): 0.09,
+            ("aws_eu-west-1", "gc_us-central1"): 0.09,
             # aws_us-east-1
             ("aws_us-east-1", "aws_eu-west-1"): 0.02,
             ("aws_us-east-1", "aws_us-east-1"): 0.01,
-            ("aws_us-east-1", "gc_europe-west2"): 0.5,  # TODO
-            ("aws_us-east-1", "gc_us-central1"): 0.5,  # TODO
+            ("aws_us-east-1", "gc_europe-west2"): 0.09,
+            ("aws_us-east-1", "gc_us-central1"): 0.09,
             # == Google Cloud ==
             # gc_europe-west2
-            ("gc_europe-west2", "aws_eu-west-1"): 0.5,  # TODO
-            ("gc_europe-west2", "aws_us-east-1"): 0.5,  # TODO
+            ("gc_europe-west2", "aws_eu-west-1"): 0.12,
+            ("gc_europe-west2", "aws_us-east-1"): 0.12,
             ("gc_europe-west2", "gc_europe-west2"): 0.0,
             ("gc_europe-west2", "gc_us-central1"): 0.08,
             # gc_us-central1
-            ("gc_us-central1", "aws_eu-west-1"): 0.5,  # TODO
-            ("gc_us-central1", "aws_us-east-1"): 0.5,  # TODO
+            ("gc_us-central1", "aws_eu-west-1"): 0.12,
+            ("gc_us-central1", "aws_us-east-1"): 0.12,
             ("gc_us-central1", "gc_europe-west2"): 0.08,
             ("gc_us-central1", "gc_us-central1"): 0.0,
         },
