@@ -1,4 +1,4 @@
-"""A demo for the cloud resource matcher."""
+"""A demo for the cloud resource matcher with a large, generated dataset."""
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Optional
