@@ -100,7 +100,7 @@ def test_should_choose_matching_that_respects_max_latency() -> None:
         ),
     )
 
-    Expect(optimizer).to_be_feasible().with_cr_to_cs_matching({("cr_0", "cs_0"): 1}).test()
+    Expect(optimizer).to_be_feasible().with_cr_to_cs_matching({"cr_0": "cs_0"}).test()
 
 
 def test_should_calculate_service_deployments_for_cr_pairs() -> None:
@@ -135,7 +135,7 @@ def test_should_calculate_service_deployments_for_cr_pairs() -> None:
     )
 
     Expect(optimizer).to_be_feasible().with_cr_to_cs_matching(
-        {("cr_0", "cs_0"): 1, ("cr_1", "cs_1"): 3}
+        {"cr_0": "cs_0", "cr_1": "cs_1"}
     ).with_variable_values(
         {
             "cr_pair_cs_deployment(cr_0,cs_0,cr_1,cs_1)": 1,

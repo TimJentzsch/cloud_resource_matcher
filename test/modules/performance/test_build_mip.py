@@ -92,7 +92,7 @@ def test_resource_matching() -> None:
     )
 
     Expect(optimizer).to_be_feasible().with_cr_to_cs_matching(
-        {(f"cr_{i}", f"cs_{i}"): 1 for i in range(count)}
+        {f"cr_{i}": f"cs_{i}" for i in range(count)}
     ).test()
 
 
@@ -115,9 +115,7 @@ def test_cheap_insufficient_cs() -> None:
         ),
     )
 
-    Expect(optimizer).to_be_feasible().with_cr_to_cs_matching({("cr_0", "cs_1"): 1}).with_cost(
-        10
-    ).test()
+    Expect(optimizer).to_be_feasible().with_cr_to_cs_matching({"cr_0": "cs_1"}).with_cost(10).test()
 
 
 def test_allowed_incomplete_data() -> None:
@@ -160,7 +158,7 @@ def test_should_work_with_higher_cr_and_time_to_instance_demand() -> None:
         ),
     )
 
-    Expect(optimizer).to_be_feasible().with_cr_to_cs_matching({("cr_0", "cs_0"): 2})
+    Expect(optimizer).to_be_feasible().with_cr_to_cs_matching({"cr_0": "cs_0"})
 
 
 def test_should_be_infeasible_if_not_enough_cs_instances_can_be_bought() -> None:

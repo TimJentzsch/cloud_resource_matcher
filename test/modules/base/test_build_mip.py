@@ -21,9 +21,7 @@ def test_one_cr_one_cs_trivial_solution() -> None:
         )
     )
 
-    Expect(optimizer).to_be_feasible().with_cost(5).with_cr_to_cs_matching(
-        {("cr_0", "cs_0"): 1}
-    ).test()
+    Expect(optimizer).to_be_feasible().with_cost(5).with_cr_to_cs_matching({"cr_0": "cs_0"}).test()
 
 
 def test_only_one_valid_matching() -> None:
@@ -41,7 +39,7 @@ def test_only_one_valid_matching() -> None:
     )
 
     Expect(optimizer).to_be_feasible().with_cr_to_cs_matching(
-        {(f"cr_{i}", f"cs_{i}"): 1 for i in range(count)}
+        {f"cr_{i}": f"cs_{i}" for i in range(count)}
     ).test()
 
 
