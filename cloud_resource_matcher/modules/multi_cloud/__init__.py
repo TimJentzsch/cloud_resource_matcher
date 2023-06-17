@@ -8,10 +8,13 @@ from optiframe import OptimizationModule
 
 from .data import MultiCloudData
 from .mip_construction import MipConstructionMultiCloudTask, MultiCloudMipData
+from .solution_extraction import MultiCloudSolution, SolutionExtractionMultiCloudTask
 from .validation import ValidationMultiCloudTask
 
 multi_cloud_module = OptimizationModule(
-    validation=ValidationMultiCloudTask, mip_construction=MipConstructionMultiCloudTask
+    validation=ValidationMultiCloudTask,
+    mip_construction=MipConstructionMultiCloudTask,
+    solution_extraction=SolutionExtractionMultiCloudTask,
 )
 
-__all__ = ["MultiCloudData", "MultiCloudMipData", "multi_cloud_module"]
+__all__ = ["MultiCloudData", "MultiCloudMipData", "MultiCloudSolution", "multi_cloud_module"]
