@@ -12,6 +12,7 @@ class CliArgs:
     solver: Any
     measures: int
     use_cache: bool
+    dark_theme: bool
 
 
 def get_cli_args() -> CliArgs:
@@ -37,6 +38,12 @@ def get_cli_args() -> CliArgs:
         default=False,
         help="Use the cached JSON measurements, only regenerate the plots.",
     )
+    parser.add_argument(
+        "--dark-theme",
+        action="store_true",
+        default=False,
+        help="Use a dark theme for the generated plots.",
+    )
 
     args = parser.parse_args()
 
@@ -55,4 +62,5 @@ def get_cli_args() -> CliArgs:
         solver=get_pulp_solver(solver=solver, msg=False),
         measures=args.measures,
         use_cache=args.use_cache,
+        dark_theme=args.dark_theme,
     )

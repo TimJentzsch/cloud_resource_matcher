@@ -42,4 +42,4 @@ def setup_benchmark(
         with open(f"benches/output/json/{param_name}.json", "w+") as file:
             json.dump(results, file, indent=2)
 
-    plot_results(results)
+    plot_results(results, dark_theme=args.dark_theme)

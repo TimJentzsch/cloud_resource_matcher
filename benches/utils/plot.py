@@ -8,7 +8,7 @@ from benches.utils.run import BenchmarkResult
 LINE_WIDTH = 3
 
 
-def plot_results(result: BenchmarkResult, dark_theme: bool = True) -> None:
+def plot_results(result: BenchmarkResult, dark_theme: bool = False) -> None:
     """Create a line graph for the benchmark results."""
     model_sizes: list[int] = [
         measure["variable_count"] * measure["constraint_count"] for measure in result["measures"]
