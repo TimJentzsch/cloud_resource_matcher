@@ -54,3 +54,4 @@ def plot_results(result: BenchmarkResult) -> None:
     # Save the plot
     fig.savefig(f"benches/output/png/{result['param_name']}.png")
     fig.savefig(f"benches/output/pdf/{result['param_name']}.pdf")
+    fig.savefig(f"benches/output/svg/{result['param_name']}.svg")
