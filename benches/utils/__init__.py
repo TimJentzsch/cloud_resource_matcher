@@ -23,6 +23,7 @@ def setup_benchmark(
     # Create directories if they don't exist
     os.makedirs("benches/output/pdf", exist_ok=True)
     os.makedirs("benches/output/png", exist_ok=True)
+    os.makedirs("benches/output/svg", exist_ok=True)
     os.makedirs("benches/output/json", exist_ok=True)
 
     if args.use_cache:
@@ -41,4 +42,4 @@ def setup_benchmark(
         with open(f"benches/output/json/{param_name}.json", "w+") as file:
             json.dump(results, file, indent=2)
 
-    plot_results(results)
+    plot_results(results, dark_theme=args.dark_theme)
